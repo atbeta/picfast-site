@@ -1,9 +1,9 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import '../../styles/home.css';
 ---
 
 <BaseLayout title="PicFast — 自托管图片托管服务" lang="zh">
-  <!-- Hero -->
   <section class="hero">
     <div class="container">
       <div class="hero-badge">
@@ -14,7 +14,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
       </div>
       <h1>你的图片<br />你的服务器<br />完全掌控</h1>
       <p class="hero-sub">
-        几分钟内部署一套完整的图床服务。<br />
+        几分钟内部署一套完整的图床服务。
         无追踪、无限制、无第三方依赖。
       </p>
       <div class="hero-code">
@@ -24,9 +24,11 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
           <span class="dot green"></span>
           <span class="code-filename">terminal</span>
         </div>
-        <pre><code><span class="prompt">$</span> docker run -d -p 8080:8080 \
-  -v ./data:/data \
-  picfast/picfast</code></pre>
+        <pre><code><span class="prompt">$</span> git clone https://github.com/atbeta/picfast.git
+<span class="prompt">$</span> cd picfast
+<span class="prompt">$</span> cp .env.example .env
+<span class="prompt">$</span> cp config.example.yaml config.yaml
+<span class="prompt">$</span> make docker-up</code></pre>
       </div>
       <div class="hero-actions">
         <a href="/zh/docs/getting-started" class="btn btn-primary">快速开始</a>
@@ -40,7 +42,6 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
     </div>
   </section>
 
-  <!-- Features -->
   <section class="features">
     <div class="container">
       <h2 class="section-title">功能完整，轻量运行</h2>
@@ -54,12 +55,8 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
             </svg>
           </div>
           <h3>API 优先设计</h3>
-          <p>
-            完整的 REST API + OpenAPI 规范文档。支持 curl、ShareX 或任何 HTTP 客户端上传。
-            无供应商锁定，可集成到任意工作流。
-          </p>
+          <p>完整的 REST API + OpenAPI 规范文档。支持 curl、ShareX 或任何 HTTP 客户端上传。无供应商锁定，可集成到任意工作流。</p>
         </div>
-
         <div class="feature-card">
           <div class="feature-icon">
             <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
@@ -68,12 +65,8 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
             </svg>
           </div>
           <h3>隐私优先</h3>
-          <p>
-            无追踪、无分析、无广告。图片只存在你自己的服务器上。
-            可选内容审核机制，你来决定什么能上传。
-          </p>
+          <p>无追踪、无分析、无广告。图片只存在你自己的服务器上。可选内容审核机制，你来决定什么能上传。</p>
         </div>
-
         <div class="feature-card">
           <div class="feature-icon">
             <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
@@ -82,12 +75,8 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
             </svg>
           </div>
           <h3>多种存储后端</h3>
-          <p>
-            本地文件系统、S3、OSS、COS、Kodo、WebDAV。
-            切换存储后端不影响已有图片。
-          </p>
+          <p>本地文件系统、S3、OSS、COS、Kodo、WebDAV。切换存储后端不影响已有图片。</p>
         </div>
-
         <div class="feature-card">
           <div class="feature-icon">
             <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
@@ -95,12 +84,8 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
             </svg>
           </div>
           <h3>开发者体验</h3>
-          <p>
-            OpenAPI 文档支持在线调试、内置 ShareX 支持、
-            多格式链接输出（URL、Markdown、BBCode、HTML）。
-          </p>
+          <p>OpenAPI 文档支持在线调试，内置 ShareX 支持，多格式链接输出（URL、Markdown、BBCode、HTML）。</p>
         </div>
-
         <div class="feature-card">
           <div class="feature-icon">
             <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
@@ -108,13 +93,9 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
               <circle cx="11" cy="11" r="3" stroke="currentColor" stroke-width="1.75"/>
             </svg>
           </div>
-          <h3>可扩展架构</h3>
-          <p>
-            基于用户组的权限系统、可配置上传限制、
-            图片处理（压缩、水印、缩略图生成）。
-          </p>
+          <h3>AI / MCP 集成</h3>
+          <p>内置 MCP 服务器，AI 助手可通过标准化协议直接上传和管理图片。适合接入各类 AI Agent 工作流。</p>
         </div>
-
         <div class="feature-card">
           <div class="feature-icon">
             <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
@@ -123,36 +104,25 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
             </svg>
           </div>
           <h3>现代技术栈</h3>
-          <p>
-            Go 后端 + React 前端。单二进制部署。
-            PostgreSQL 持久化，无外部服务依赖。
-          </p>
+          <p>Go 后端 + React 前端。一条命令 Docker Compose 启动。PostgreSQL 持久化，内置 Prometheus 指标和 Mailpit 邮件测试。</p>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- Comparison -->
   <section class="comparison">
     <div class="container">
       <h2 class="section-title">与同类方案对比</h2>
       <div class="table-wrapper">
         <table>
-          <thead>
-            <tr>
-              <th></th>
-              <th>Chevereto</th>
-              <th>Photoview</th>
-              <th>自建 S3</th>
-              <th>PicFast</th>
-            </tr>
-          </thead>
+          <thead><tr><th></th><th>Chevereto</th><th>Photoview</th><th>自建 S3</th><th>PicFast</th></tr></thead>
           <tbody>
             <tr><td>部署时间</td><td>约 30 分钟</td><td>约 20 分钟</td><td>约 2 小时</td><td><strong>约 5 分钟</strong></td></tr>
             <tr><td>API 支持</td><td>基础</td><td>有限</td><td>自定义</td><td><strong>OpenAPI + 在线文档</strong></td></tr>
             <tr><td>ShareX 集成</td><td>✅</td><td>❌</td><td>自定义</td><td><strong>✅ 内置</strong></td></tr>
             <tr><td>存储后端</td><td>有限</td><td>仅本地</td><td>仅 S3</td><td><strong>6 种后端</strong></td></tr>
             <tr><td>内容审核</td><td>❌</td><td>❌</td><td>自定义</td><td><strong>✅ 内置</strong></td></tr>
+            <tr><td>AI / MCP 集成</td><td>❌</td><td>❌</td><td>❌</td><td><strong>✅ 内置</strong></td></tr>
             <tr><td>缩略图生成</td><td>✅</td><td>✅</td><td>自定义</td><td><strong>✅ 自动</strong></td></tr>
             <tr><td>图片处理</td><td>基础</td><td>有限</td><td>自定义</td><td><strong>✅ 压缩 + 水印</strong></td></tr>
             <tr><td>开源</td><td>付费</td><td>✅</td><td>N/A</td><td><strong>✅ MIT</strong></td></tr>
@@ -162,7 +132,6 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
     </div>
   </section>
 
-  <!-- Quick Start -->
   <section class="quick-start">
     <div class="container">
       <h2 class="section-title">快速开始</h2>
@@ -170,83 +139,39 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
         <div class="qs-step">
           <div class="qs-num">1</div>
           <div class="qs-content">
-            <h3>拉取镜像</h3>
-            <p>一条命令启动，数据保留在本地卷中。</p>
-            <div class="hero-code small">
-              <pre><code>docker run -d -p 8080:8080 \
-  -v $(pwd)/data:/data \
-  picfast/picfast</code></pre>
-            </div>
+            <h3>克隆并配置</h3>
+            <p>克隆仓库，复制配置文件并修改为自己的设置。</p>
+            <div class="hero-code small"><pre><code>git clone https://github.com/atbeta/picfast.git
+cd picfast
+cp .env.example .env
+cp config.example.yaml config.yaml
+$EDITOR config.yaml</code></pre></div>
           </div>
         </div>
         <div class="qs-step">
           <div class="qs-num">2</div>
           <div class="qs-content">
-            <h3>配置</h3>
-            <p>编辑 <code>config.yaml</code>，设置域名、存储方式和后台账号。</p>
-            <div class="hero-code small">
-              <pre><code>cp config.example.yaml config.yaml
-$EDITOR config.yaml</code></pre>
-            </div>
+            <h3>启动服务</h3>
+            <p>一条命令同时启动 PostgreSQL、Mailpit（本地邮件测试工具）和应用。</p>
+            <div class="hero-code small"><pre><code>make docker-up</code></pre></div>
           </div>
         </div>
         <div class="qs-step">
           <div class="qs-num">3</div>
           <div class="qs-content">
             <h3>通过 API 上传</h3>
-            <p>用一条 curl 命令上传你的第一张图片。</p>
-            <div class="hero-code small">
-              <pre><code>curl -X POST http://localhost:8080/api/v1/upload \
+            <p>注册账号、获取 token，然后上传第一张图片。</p>
+            <div class="hero-code small"><pre><code>curl -X POST http://localhost:18080/api/v1/auth/register \
+  -H "Content-Type: application/json" \
+  -d '&#123;"email":"you@example.com","password":"hunter2","name":"You"&#125;'
+
+curl -X POST http://localhost:18080/api/v1/images \
   -H "Authorization: Bearer YOUR_TOKEN" \
-  -F "file=@image.png"</code></pre>
-            </div>
+  -F "file=@image.png"</code></pre></div>
           </div>
         </div>
       </div>
-      <p class="qs-cta">
-        <a href="/zh/docs/getting-started" class="btn btn-primary">完整文档 →</a>
-      </p>
+      <p class="qs-cta"><a href="/zh/docs/getting-started" class="btn btn-primary">完整文档 →</a></p>
     </div>
   </section>
 </BaseLayout>
-
-<style>
-  .hero { padding: 5rem 0 4rem; text-align: center; }
-  .hero .container { max-width: 720px; }
-  .hero-badge { display: inline-flex; align-items: center; gap: 0.375rem; padding: 0.3125rem 0.75rem; background: var(--bg-alt); border: 1px solid var(--border); border-radius: 100px; font-size: 0.8125rem; font-weight: 500; color: var(--text-muted); margin-bottom: 2rem; }
-  h1 { font-size: clamp(2.25rem, 6vw, 3.5rem); font-weight: 700; line-height: 1.15; letter-spacing: -0.025em; margin-bottom: 1.25rem; }
-  .hero-sub { font-size: 1.125rem; color: var(--text-muted); max-width: 540px; margin: 0 auto 2.5rem; line-height: 1.7; }
-  .hero-code { background: var(--bg-alt); border: 1px solid var(--border); border-radius: var(--radius); text-align: left; margin-bottom: 1.75rem; overflow: hidden; }
-  .code-label { display: flex; align-items: center; gap: 0.375rem; padding: 0.5rem 1rem; border-bottom: 1px solid var(--border); background: var(--code-bg); }
-  .dot { width: 10px; height: 10px; border-radius: 50%; }
-  .dot.red { background: #ff5f57; } .dot.yellow { background: #febc2e; } .dot.green { background: #28c840; }
-  .code-filename { font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-muted); margin-left: 0.375rem; }
-  .hero-code pre { padding: 1.25rem; margin: 0; background: transparent; border-radius: 0; font-size: 0.875rem; overflow-x: auto; }
-  .hero-code .prompt { color: var(--accent); margin-right: 0.5rem; user-select: none; }
-  .hero-actions { display: flex; align-items: center; justify-content: center; gap: 0.75rem; flex-wrap: wrap; }
-  .features { padding: 5rem 0; background: var(--bg-alt); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
-  .section-title { font-size: 1.75rem; font-weight: 700; text-align: center; margin-bottom: 3rem; letter-spacing: -0.02em; }
-  .features-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
-  @media (max-width: 900px) { .features-grid { grid-template-columns: repeat(2, 1fr); } }
-  @media (max-width: 560px) { .features-grid { grid-template-columns: 1fr; } }
-  .feature-card { background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.5rem; }
-  .feature-icon { width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; background: var(--bg-alt); border: 1px solid var(--border); border-radius: 8px; margin-bottom: 1rem; color: var(--accent); }
-  .feature-card h3 { font-size: 1rem; font-weight: 600; margin-bottom: 0.5rem; }
-  .feature-card p { font-size: 0.9375rem; color: var(--text-muted); line-height: 1.65; }
-  .comparison { padding: 5rem 0; }
-  .table-wrapper { overflow-x: auto; -webkit-overflow-scrolling: touch; }
-  table { width: 100%; border-collapse: collapse; font-size: 0.9375rem; min-width: 640px; }
-  th, td { text-align: left; padding: 0.75rem 1rem; border-bottom: 1px solid var(--border); }
-  th { font-weight: 600; font-size: 0.875rem; color: var(--text-muted); background: var(--bg-alt); }
-  th:last-child, td:last-child { background: var(--bg-alt); }
-  tbody tr:hover { background: var(--bg-alt); }
-  td:first-child { color: var(--text-muted); font-size: 0.875rem; }
-  .quick-start { padding: 5rem 0; background: var(--bg-alt); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
-  .quick-start-grid { display: flex; flex-direction: column; gap: 2rem; max-width: 680px; margin: 0 auto; }
-  .qs-step { display: flex; gap: 1.25rem; align-items: flex-start; }
-  .qs-num { flex-shrink: 0; width: 32px; height: 32px; background: var(--accent); color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.875rem; font-weight: 700; margin-top: 0.25rem; }
-  .qs-content h3 { font-size: 1rem; font-weight: 600; margin-bottom: 0.375rem; }
-  .qs-content p { font-size: 0.9375rem; color: var(--text-muted); margin-bottom: 0.75rem; }
-  .hero-code.small pre { font-size: 0.8125rem; padding: 1rem; }
-  .qs-cta { text-align: center; margin-top: 2.5rem; }
-</style>

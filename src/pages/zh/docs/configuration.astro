@@ -4,12 +4,12 @@ import DocsLayout from '../../../layouts/DocsLayout.astro';
 
 <DocsLayout title="配置参考" description="PicFast 完整配置参考。">
   <h1>配置参考</h1>
-  <p>PicFast 通过 <code>config.yaml</code> 或环境变量进行配置。</p>
+  <p>PicFast 支持两种配置方式：<code>config.yaml</code> 或环境变量。环境变量始终优先于 YAML 配置。</p>
 
   <h2>完整示例</h2>
   <pre><code>server:
   port: 8080
-  base_url: "https://pics.example.com"
+  base_url: "http://localhost:8080"
   web_dir: ""
   pprof_enabled: false
 
@@ -18,8 +18,8 @@ database:
 
 jwt:
   secret: "change-me-in-production"
-  access_ttl: "15m"
-  refresh_ttl: "168h"
+  access_ttl: 15m
+  refresh_ttl: 168h
   signing_method: "HS256"
 
 storage:
@@ -27,7 +27,7 @@ storage:
   thumbnail_dir: "./data/thumbnails"
 
 mail:
-  host: "smtp.example.com"
+  host: ""
   port: 587
   username: ""
   password: ""
@@ -37,20 +37,23 @@ mail:
 
 app:
   name: "PicFast"
-  site_description: "我的图床服务"
+  site_description: "PicFast is a modern self-hosted image hosting service."
+  favicon_url: ""
   allow_guest_upload: false
-  allow_registration: true
+  allow_registration: false
   require_email_verification: false
-  audit_upload_logs: true
+  audit_upload_logs: false
   user_initial_capacity: 524288000
-  default_image_ttl: ""
-  admin_email: "admin@example.com"
-  admin_password: "changeme"
+  default_image_ttl: "0"
+  admin_email: ""
+  admin_password: ""
   moderation_mode: ""
   icp_number: ""
   icp_link: "https://beian.miit.gov.cn/"
   psb_number: ""
-  psb_link: ""</code></pre>
+  psb_link: ""
+  analytics_provider: ""
+  analytics_config: "{}"</code></pre>
 
   <h2>配置项说明</h2>
 
@@ -59,9 +62,9 @@ app:
     <thead><tr><th>键</th><th>类型</th><th>默认值</th><th>说明</th></tr></thead>
     <tbody>
       <tr><td><code>port</code></td><td>int</td><td>8080</td><td>监听端口</td></tr>
-      <tr><td><code>base_url</code></td><td>string</td><td>http://localhost:8080</td><td>服务公开访问地址</td></tr>
-      <tr><td><code>web_dir</code></td><td>string</td><td>""</td><td>前端文件目录（可选）</td></tr>
-      <tr><td><code>pprof_enabled</code></td><td>bool</td><td>false</td><td>开启 Go pprof 端点（仅管理员）</td></tr>
+      <tr><td><code>base_url</code></td><td>string</td><td>http://localhost:8080</td><td>服务公开访问地址。验证邮件链接和 ShareX 配置依赖此值，必须设为实际访问域名。</td></tr>
+      <tr><td><code>web_dir</code></td><td>string</td><td>""</td><td>前端静态文件目录（可选；自动检测 <code>web-dist/</code> 和 <code>web/dist/</code>）</td></tr>
+      <tr><td><code>pprof_enabled</code></td><td>bool</td><td>false</td><td>开启 Go pprof 端点（<code>/api/v1/admin/debug/pprof/*</code>，仅管理员可用）</td></tr>
     </tbody>
   </table>
 
@@ -69,7 +72,7 @@ app:
   <table>
     <thead><tr><th>键</th><th>类型</th><th>默认值</th><th>说明</th></tr></thead>
     <tbody>
-      <tr><td><code>secret</code></td><td>string</td><td>—</td><td><strong>必填。</strong> Token 签名密钥，必须修改。</td></tr>
+      <tr><td><code>secret</code></td><td>string</td><td>change-me-in-production</td><td><strong>必填。必须修改。</strong> 使用默认值会导致启动时报错退出。生产环境请使用强随机密钥。</td></tr>
       <tr><td><code>access_ttl</code></td><td>duration</td><td>15m</td><td>Access token 有效期</td></tr>
       <tr><td><code>refresh_ttl</code></td><td>duration</td><td>168h</td><td>Refresh token 有效期（7 天）</td></tr>
       <tr><td><code>signing_method</code></td><td>string</td><td>HS256</td><td>HS256、HS384 或 HS512</td></tr>
@@ -81,12 +84,35 @@ app:
     <thead><tr><th>键</th><th>类型</th><th>默认值</th><th>说明</th></tr></thead>
     <tbody>
       <tr><td><code>allow_guest_upload</code></td><td>bool</td><td>false</td><td>允许不登录上传</td></tr>
-      <tr><td><code>allow_registration</code></td><td>bool</td><td>false</td><td>允许新用户注册</td></tr>
-      <tr><td><code>require_email_verification</code></td><td>bool</td><td>false</td><td>登录前必须验证邮箱</td></tr>
-      <tr><td><code>audit_upload_logs</code></td><td>bool</td><td>false</td><td>记录所有上传操作日志</td></tr>
-      <tr><td><code>user_initial_capacity</code></td><td>bytes</td><td>524288000</td><td>新用户默认存储配额（500 MB）</td></tr>
-      <tr><td><code>default_image_ttl</code></td><td>duration</td><td>""</td><td>图片默认过期时间（空=永不过期）</td></tr>
-      <tr><td><code>moderation_mode</code></td><td>string</td><td>""</td><td><code>disabled</code>、<code>manual</code> 或 <code>auto</code></td></tr>
+      <tr><td><code>allow_registration</code></td><td>bool</td><td>false</td><td>允许新用户注册。默认关闭注册。</td></tr>
+      <tr><td><code>require_email_verification</code></td><td>bool</td><td>false</td><td>登录前必须验证邮箱。仅在 <code>mail.*</code> 配置正确且 SMTP 可达时生效。</td></tr>
+      <tr><td><code>audit_upload_logs</code></td><td>bool</td><td>false</td><td>记录所有上传操作到审计日志</td></tr>
+      <tr><td><code>user_initial_capacity</code></td><td>int64</td><td>524288000</td><td>新用户默认存储配额（500 MB）</td></tr>
+      <tr><td><code>default_image_ttl</code></td><td>duration</td><td>0（永不过期）</td><td>图片默认过期时间（如 <code>24h</code>、<code>168h</code>；0 = 永不过期）</td></tr>
+      <tr><td><code>admin_email</code></td><td>string</td><td>""</td><td>设置后首次启动时自动创建管理员账号（需同时设置 <code>admin_password</code>）</td></tr>
+      <tr><td><code>admin_password</code></td><td>string</td><td>""</td><td>自动创建的管理员账号密码</td></tr>
+      <tr><td><code>moderation_mode</code></td><td>string</td><td>""</td><td>""（关闭）、<code>"manual"</code>（人工审核）、<code>"auto"</code>（待实现）</td></tr>
+      <tr><td><code>favicon_url</code></td><td>string</td><td>""</td><td>自定义站点图标 URL；空则使用内置默认图标</td></tr>
     </tbody>
   </table>
+
+  <h3>mail</h3>
+  <table>
+    <thead><tr><th>键</th><th>类型</th><th>默认值</th><th>说明</th></tr></thead>
+    <tbody>
+      <tr><td><code>host</code></td><td>string</td><td>""</td><td>SMTP 服务器地址</td></tr>
+      <tr><td><code>port</code></td><td>int</td><td>587</td><td>SMTP 端口（587 = STARTTLS，465 = TLS，25 = 无加密）</td></tr>
+      <tr><td><code>encryption</code></td><td>string</td><td>starttls</td><td><code>"starttls"</code>、<code>"tls"</code> 或 <code>"none"</code></td></tr>
+      <tr><td><code>from_email</code></td><td>string</td><td>""</td><td>发件人地址；配置 SMTP 时必须填写</td></tr>
+    </tbody>
+  </table>
+
+  <h2>关于邮箱验证</h2>
+  <p>默认注册成功后立即登录。如需启用邮箱验证：</p>
+  <ol>
+    <li>配置 <code>mail.*</code> 为有效的 SMTP 服务器</li>
+    <li>设置 <code>app.require_email_verification = true</code></li>
+  </ol>
+  <p>如果设置了邮箱验证但 SMTP 不可达，系统会退回普通注册流程，并在启动日志中输出警告。</p>
+  <p>本地开发推荐使用内置的 Mailpit（端口 1025 SMTP / 8025 Web UI），所有邮件都会拦截到本地收件箱，不会真的发到外部邮箱。</p>
 </DocsLayout>

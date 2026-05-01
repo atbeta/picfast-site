@@ -2,51 +2,60 @@
 import DocsLayout from '../../layouts/DocsLayout.astro';
 ---
 
-<DocsLayout title="Deployment" description="Deploy PicFast with Docker, Docker Compose, or bare metal.">
+<DocsLayout title="Deployment" description="Deploy PicFast with Docker Compose or bare metal.">
   <h1>Deployment</h1>
 
-  <h2>Docker</h2>
-  <p>The simplest way to run PicFast:</p>
-  <pre><code>docker run -d -p 8080:8080 \
-  -v $(pwd)/data:/data \
-  -e PICFAST_DATABASE_URL=postgres://user:pass@host:5432/picfast \
-  -e PICFAST_JWT_SECRET=your-secret \
-  picfast/picfast</code></pre>
+  <h2>Docker Compose (recommended)</h2>
+  <p>The recommended way to run PicFast. Spins up PostgreSQL, mailpit, and the app together:</p>
+  <pre><code>git clone https://github.com/atbeta/picfast.git
+cd picfast
+cp .env.example .env
+cp config.example.yaml config.yaml
+make docker-up</code></pre>
+  <p>The app will be available at <code>http://localhost:18080</code>.</p>
 
-  <h2>Docker Compose</h2>
-  <p>Recommended for production. See the <a href="/docs/getting-started">Quick Start</a> for a full example.</p>
-
-  <h2>Environment Variables</h2>
-  <p>All config keys can be set via environment variables using the <code>PICFAST_</code> prefix with <code>.</code> replaced by <code>_</code>:</p>
+  <h2>Environment variables</h2>
+  <p>All config keys can be set via <code>PICFAST_</code> prefixed environment variables:</p>
   <pre><code>PICFAST_SERVER_PORT=8080
 PICFAST_SERVER_BASE_URL=https://pics.example.com
 PICFAST_JWT_SECRET=your-strong-secret
 PICFAST_DATABASE_URL=postgres://picfast:picfast@localhost:5432/picfast
-PICFAST_STORAGE_LOCAL_ROOT=/data/uploads
-PICFAST_STORAGE_THUMBNAIL_DIR=/data/thumbnails</code></pre>
+PICFAST_STORAGE_LOCAL_ROOT=./data/uploads
+PICFAST_STORAGE_THUMBNAIL_DIR=./data/thumbnails</code></pre>
 
-  <h2>Reverse Proxy</h2>
+  <h2>Reverse proxy</h2>
   <h3>Nginx</h3>
-  <pre><code>server {'{'}n    listen 443 ssl;n    server_name pics.example.com;nn    ssl_certificate /etc/ssl/certs/pics.crt;n    ssl_certificate_key /etc/ssl/private/pics.key;nn    client_max_body_size 100M;nn    location / {'{'}n        proxy_pass http://127.0.0.1:8080;n        proxy_set_header Host $host;n        proxy_set_header X-Real-IP $remote_addr;n        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;n        proxy_set_header X-Forwarded-Proto $scheme;n    {'}'}
+  <pre><code>server {'{'}
+    listen 443 ssl;
+    server_name pics.example.com;
+
+    ssl_certificate /etc/ssl/certs/pics.crt;
+    ssl_certificate_key /etc/ssl/private/pics.key;
+
+    client_max_body_size 100M;
+
+    location / {'{'}
+        proxy_pass http://127.0.0.1:18080;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    {'}'}
 {'}'}</code></pre>
 
   <h3>Traefik</h3>
-  <p>Example labels for Docker Compose:</p>
+  <p>Add these labels to your Docker Compose service:</p>
   <pre><code>labels:
   - "traefik.enable=true"
   - "traefik.http.routers.picfast.rule=Host(`pics.example.com`)"
   - "traefik.http.routers.picfast.tls=true"
   - "traefik.http.services.picfast.loadbalancer.server.port=8080"</code></pre>
 
-  <h2>Database Backup</h2>
-  <p>Use <code>pg_dump</code> to back up the database:</p>
-  <pre><code>pg_dump -U picfast -h localhost picfast > backup.sql</code></pre>
-  <p>Or in Docker:</p>
-  <pre><code>docker exec -t postgres pg_dump -U picfast picfast > backup.sql</code></pre>
+  <h2>Database backup</h2>
+  <pre><code>docker exec picfast-db pg_dump -U picfast picfast > backup.sql</code></pre>
 
   <h2>Updating</h2>
-  <pre><code>docker pull picfast/picfast:latest
-docker compose down
-docker compose up -d</code></pre>
+  <pre><code>git pull
+make docker-up</code></pre>
   <p>Migrations run automatically on startup.</p>
 </DocsLayout>

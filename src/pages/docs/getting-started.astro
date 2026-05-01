@@ -10,56 +10,28 @@ import DocsLayout from '../../layouts/DocsLayout.astro';
 
   <h2>Prerequisites</h2>
   <ul>
-    <li><a href="https://docs.docker.com/get-docker/" target="_blank" rel="noopener">Docker</a></li>
-    <li><a href="https://www.postgresql.org/" target="_blank" rel="noopener">PostgreSQL</a> 16+ (or use the included Docker Compose setup)</li>
+    <li><a href="https://docs.docker.com/get-docker/" target="_blank" rel="noopener">Docker</a> and Docker Compose</li>
+    <li><a href="https://git-scm.com/" target="_blank" rel="noopener">Git</a></li>
   </ul>
 
-  <h2>1. Start with Docker Compose</h2>
-  <p>Create a <code>docker-compose.yml</code> file:</p>
-  <pre><code>version: '3.8'
-services:
-  picfast:
-    image: picfast/picfast:latest
-    ports:
-      - "8080:8080"
-    volumes:
-      - ./data:/data
-    environment:
-      - PICFAST_DATABASE_URL=postgres://picfast:picfast@postgres:5432/picfast?sslmode=disable
-      - PICFAST_JWT_SECRET=your-secret-here
-    depends_on:
-      - postgres
+  <h2>1. Clone and configure</h2>
+  <p>Clone the repo and copy the example config files:</p>
+  <pre><code>git clone https://github.com/atbeta/picfast.git
+cd picfast
+cp .env.example .env
+cp config.example.yaml config.yaml</code></pre>
+  <p>Edit <code>config.yaml</code> with your settings. At minimum, set <code>jwt.secret</code> to a strong random value:</p>
+  <pre><code>jwt:
+  secret: "your-strong-random-secret-here"</code></pre>
 
-  postgres:
-    image: postgres:16-alpine
-    environment:
-      - POSTGRES_DB=picfast
-      - POSTGRES_USER=picfast
-      - POSTGRES_PASSWORD=picfast
-    volumes:
-      - pgdata:/var/lib/postgresql/data
+  <h2>2. Start services</h2>
+  <p>This spins up PostgreSQL, mailpit (for local email testing), and the app:</p>
+  <pre><code>make docker-up</code></pre>
+  <p>Database migrations run automatically on first startup.</p>
 
-volumes:
-  pgdata:</code></pre>
-
-  <h2>2. Configure</h2>
-  <p>Copy the example config and edit it:</p>
-  <pre><code>cp config.example.yaml config.yaml
-$EDITOR config.yaml</code></pre>
-  <p>Key settings to change:</p>
-  <ul>
-    <li><code>jwt.secret</code> — set a strong random secret</li>
-    <li><code>server.base_url</code> — your public URL (e.g. <code>https://pics.yoursite.com</code>)</li>
-    <li><code>app.admin_email</code> and <code>app.admin_password</code> — your admin account</li>
-  </ul>
-
-  <h2>3. Run</h2>
-  <pre><code>docker compose up -d</code></pre>
-  <p>PicFast will automatically run database migrations on startup.</p>
-
-  <h2>4. Verify</h2>
-  <p>Open <code>http://localhost:8080</code> in your browser. You should see the login page.</p>
-  <p>Log in with the admin credentials you set in <code>config.yaml</code>.</p>
+  <h2>3. Access the app</h2>
+  <p>The app is available at <code>http://localhost:18080</code>.</p>
+  <p>Create your admin account by registering through the UI, then grant it admin role in the database or via admin settings.</p>
 
   <h2>What's next?</h2>
   <ul>
