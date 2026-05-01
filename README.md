@@ -9,10 +9,10 @@ Built with [Astro](https://astro.build) (static output), TypeScript, and vanilla
 ## Develop
 
 ```bash
-npm install
-npm run dev      # local dev server
-npm run build    # production build
-npm run preview  # preview production build
+pnpm install
+pnpm dev      # local dev server
+pnpm build    # production build
+pnpm preview  # preview production build
 ```
 
 ## Structure
@@ -33,7 +33,7 @@ src/
 Vercel, Cloudflare Pages, Netlify, or any static host.
 
 ```bash
-npm run build
+pnpm build
 ```
 
 Output goes to `dist/`.
