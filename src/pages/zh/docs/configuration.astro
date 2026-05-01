@@ -1,0 +1,92 @@
+---
+import DocsLayout from '../../../layouts/DocsLayout.astro';
+---
+
+<DocsLayout title="配置参考" description="PicFast 完整配置参考。">
+  <h1>配置参考</h1>
+  <p>PicFast 通过 <code>config.yaml</code> 或环境变量进行配置。</p>
+
+  <h2>完整示例</h2>
+  <pre><code>server:
+  port: 8080
+  base_url: "https://pics.example.com"
+  web_dir: ""
+  pprof_enabled: false
+
+database:
+  url: "postgres://picfast:picfast@localhost:5432/picfast?sslmode=disable"
+
+jwt:
+  secret: "change-me-in-production"
+  access_ttl: "15m"
+  refresh_ttl: "168h"
+  signing_method: "HS256"
+
+storage:
+  local_root: "./data/uploads"
+  thumbnail_dir: "./data/thumbnails"
+
+mail:
+  host: "smtp.example.com"
+  port: 587
+  username: ""
+  password: ""
+  from_email: ""
+  from_name: "PicFast"
+  encryption: "starttls"
+
+app:
+  name: "PicFast"
+  site_description: "我的图床服务"
+  allow_guest_upload: false
+  allow_registration: true
+  require_email_verification: false
+  audit_upload_logs: true
+  user_initial_capacity: 524288000
+  default_image_ttl: ""
+  admin_email: "admin@example.com"
+  admin_password: "changeme"
+  moderation_mode: ""
+  icp_number: ""
+  icp_link: "https://beian.miit.gov.cn/"
+  psb_number: ""
+  psb_link: ""</code></pre>
+
+  <h2>配置项说明</h2>
+
+  <h3>server</h3>
+  <table>
+    <thead><tr><th>键</th><th>类型</th><th>默认值</th><th>说明</th></tr></thead>
+    <tbody>
+      <tr><td><code>port</code></td><td>int</td><td>8080</td><td>监听端口</td></tr>
+      <tr><td><code>base_url</code></td><td>string</td><td>http://localhost:8080</td><td>服务公开访问地址</td></tr>
+      <tr><td><code>web_dir</code></td><td>string</td><td>""</td><td>前端文件目录（可选）</td></tr>
+      <tr><td><code>pprof_enabled</code></td><td>bool</td><td>false</td><td>开启 Go pprof 端点（仅管理员）</td></tr>
+    </tbody>
+  </table>
+
+  <h3>jwt</h3>
+  <table>
+    <thead><tr><th>键</th><th>类型</th><th>默认值</th><th>说明</th></tr></thead>
+    <tbody>
+      <tr><td><code>secret</code></td><td>string</td><td>—</td><td><strong>必填。</strong> Token 签名密钥，必须修改。</td></tr>
+      <tr><td><code>access_ttl</code></td><td>duration</td><td>15m</td><td>Access token 有效期</td></tr>
+      <tr><td><code>refresh_ttl</code></td><td>duration</td><td>168h</td><td>Refresh token 有效期（7 天）</td></tr>
+      <tr><td><code>signing_method</code></td><td>string</td><td>HS256</td><td>HS256、HS384 或 HS512</td></tr>
+    </tbody>
+  </table>
+
+  <h3>app</h3>
+  <table>
+    <thead><tr><th>键</th><th>类型</th><th>默认值</th><th>说明</th></tr></thead>
+    <tbody>
+      <tr><td><code>allow_guest_upload</code></td><td>bool</td><td>false</td><td>允许不登录上传</td></tr>
+      <tr><td><code>allow_registration</code></td><td>bool</td><td>false</td><td>允许新用户注册</td></tr>
+      <tr><td><code>require_email_verification</code></td><td>bool</td><td>false</td><td>登录前必须验证邮箱</td></tr>
+      <tr><td><code>audit_upload_logs</code></td><td>bool</td><td>false</td><td>记录所有上传操作日志</td></tr>
+      <tr><td><code>user_initial_capacity</code></td><td>bytes</td><td>524288000</td><td>新用户默认存储配额（500 MB）</td></tr>
+      <tr><td><code>default_image_ttl</code></td><td>duration</td><td>""</td><td>图片默认过期时间（空=永不过期）</td></tr>
+      <tr><td><code>moderation_mode</code></td><td>string</td><td>""</td><td><code>disabled</code>、<code>manual</code> 或 <code>auto</code></td></tr>
+    </tbody>
+  </table>
+</DocsLayout>

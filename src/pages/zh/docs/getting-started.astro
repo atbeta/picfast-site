@@ -1,0 +1,70 @@
+---
+import DocsLayout from '../../../layouts/DocsLayout.astro';
+---
+
+<DocsLayout title="快速开始" description="几分钟内让 PicFast 运行起来。">
+  <h1>快速开始</h1>
+  <p>
+    PicFast 是一个自托管的图片托管服务。不到 5 分钟即可运行。
+  </p>
+
+  <h2>环境要求</h2>
+  <ul>
+    <li><a href="https://docs.docker.com/get-docker/" target="_blank" rel="noopener">Docker</a></li>
+    <li><a href="https://www.postgresql.org/" target="_blank" rel="noopener">PostgreSQL</a> 16+（或使用附带的 Docker Compose 配置）</li>
+  </ul>
+
+  <h2>1. 使用 Docker Compose 启动</h2>
+  <p>创建 <code>docker-compose.yml</code> 文件：</p>
+  <pre><code>version: '3.8'
+services:
+  picfast:
+    image: picfast/picfast:latest
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./data:/data
+    environment:
+      - PICFAST_DATABASE_URL=postgres://picfast:picfast@postgres:5432/picfast?sslmode=disable
+      - PICFAST_JWT_SECRET=your-secret-here
+    depends_on:
+      - postgres
+
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      - POSTGRES_DB=picfast
+      - POSTGRES_USER=picfast
+      - POSTGRES_PASSWORD=picfast
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata:</code></pre>
+
+  <h2>2. 配置</h2>
+  <p>复制配置模板并编辑：</p>
+  <pre><code>cp config.example.yaml config.yaml
+$EDITOR config.yaml</code></pre>
+  <p>需要修改的关键配置：</p>
+  <ul>
+    <li><code>jwt.secret</code> — 设置一个强随机密钥</li>
+    <li><code>server.base_url</code> — 你的公开访问地址（如 <code>https://pics.yoursite.com</code>）</li>
+    <li><code>app.admin_email</code> 和 <code>app.admin_password</code> — 管理员账号密码</li>
+  </ul>
+
+  <h2>3. 启动</h2>
+  <pre><code>docker compose up -d</code></pre>
+  <p>PicFast 启动时会自动执行数据库迁移。</p>
+
+  <h2>4. 验证</h2>
+  <p>在浏览器中打开 <code>http://localhost:8080</code>，你应该能看到登录页面。</p>
+  <p>使用在 <code>config.yaml</code> 中设置的管理员账号密码登录。</p>
+
+  <h2>接下来做什么？</h2>
+  <ul>
+    <li><a href="/zh/docs/configuration">配置参考 →</a></li>
+    <li><a href="/zh/docs/storage">配置存储后端 →</a></li>
+    <li><a href="/zh/docs/api">API 文档 →</a></li>
+  </ul>
+</DocsLayout>

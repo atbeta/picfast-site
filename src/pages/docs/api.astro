@@ -1,0 +1,56 @@
+---
+import DocsLayout from '../../layouts/DocsLayout.astro';
+---
+
+<DocsLayout title="API Reference" description="PicFast REST API documentation.">
+  <h1>API Reference</h1>
+  <p>
+    PicFast exposes a REST API at <code>/api/v1</code>. All endpoints require authentication unless marked as public.
+  </p>
+
+  <h2>Authentication</h2>
+  <p>Authenticate using a Bearer token in the <code>Authorization</code> header:</p>
+  <pre><code>Authorization: Bearer &lt;access_token&gt;</code></pre>
+  <p>Get a token via <code>POST /api/v1/auth/login</code>.</p>
+
+  <h2>Public endpoints</h2>
+  <ul>
+    <li><code>GET /api/v1/config</code> — Site configuration</li>
+    <li><code>GET /api/v1/version</code> — Version info</li>
+    <li><code>GET /openapi.yaml</code> — OpenAPI spec</li>
+    <li><code>GET /openapi.json</code> — OpenAPI spec (JSON)</li>
+    <li><code>GET /docs</code> — API documentation UI</li>
+    <li><code>POST /api/v1/auth/register</code> — Register account</li>
+    <li><code>POST /api/v1/auth/login</code> — Login</li>
+    <li><code>POST /api/v1/auth/refresh</code> — Refresh token</li>
+  </ul>
+
+  <h2>Upload</h2>
+  <h3>POST /api/v1/images</h3>
+  <p>Upload an image (authenticated). <code>multipart/form-data</code>:</p>
+  <table>
+    <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr><td><code>file</code></td><td>file</td><td>Image file (required)</td></tr>
+      <tr><td><code>album_id</code></td><td>int</td><td>Album ID to group the image</td></tr>
+      <tr><td><code>permission</code></td><td>int</td><td>0 = private, 1 = public (default)</td></tr>
+      <tr><td><code>expires_in</code></td><td>string</td><td>Duration like <code>24h</code>, <code>7d</code></td></tr>
+      <tr><td><code>strategy_id</code></td><td>int</td><td>Storage backend to use</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Guest upload</h2>
+  <h3>POST /api/v1/upload</h3>
+  <p>Same as above, but also works without authentication if guest upload is enabled.</p>
+
+  <h2>API tokens</h2>
+  <p>For programmatic access, create API tokens via the web UI or <code>POST /api/v1/api-tokens</code>. Use the token as a Bearer token.</p>
+
+  <h2>OpenAPI spec</h2>
+  <p>The full API spec is available at:</p>
+  <ul>
+    <li><a href="/openapi.yaml" target="_blank">/openapi.yaml</a> (YAML)</li>
+    <li><a href="/openapi.json" target="_blank">/openapi.json</a> (JSON)</li>
+    <li><a href="/docs" target="_blank">/docs</a> — Interactive documentation</li>
+  </ul>
+</DocsLayout>

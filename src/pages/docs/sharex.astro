@@ -1,0 +1,39 @@
+---
+import DocsLayout from '../../layouts/DocsLayout.astro';
+---
+
+<DocsLayout title="ShareX Integration" description="Configure ShareX with PicFast.">
+  <h1>ShareX Integration</h1>
+  <p>ShareX is a Windows tool for screenshots, file uploads, and more. PicFast has built-in ShareX support.</p>
+
+  <h2>Get your ShareX configuration</h2>
+  <p>Log in to PicFast, go to <strong>Settings → ShareX</strong>, and download the configuration file. Import it in ShareX under <strong>Destinations → Import → from file</strong>.</p>
+
+  <h2>Manual setup</h2>
+  <p>In ShareX, create a new <strong>Custom uploader</strong>:</p>
+  <h3>Request settings</h3>
+  <table>
+    <thead><tr><th>Field</th><th>Value</th></tr></thead>
+    <tbody>
+      <tr><td>Request URL</td><td><code>https://your-picfast.com/api/v1/sharex/upload</code></td></tr>
+      <tr><td>Request method</td><td><code>POST</code></td></tr>
+      <tr><td>Body</td><td><code>multipart/form-data</code></td></tr>
+      <tr><td>File form name</td><td><code>file</code></td></tr>
+      <tr><td>Argument name</td><td><code>key</code></td></tr>
+      <tr><td>Argument value</td><td>Leave empty</td></tr>
+      <tr><td>Headers</td><td><code>Authorization: Bearer YOUR_TOKEN</code></td></tr>
+    </tbody>
+  </table>
+
+  <h3>Response settings</h3>
+  <table>
+    <thead><tr><th>Field</th><th>Value</th></tr></thead>
+    <tbody>
+      <tr><td>Response type</td><td><code>Text</code></td></tr>
+      <tr><td>URL</td><td><code>json:$.links.url</code></td></tr>
+    </tbody>
+  </table>
+
+  <h2>Verify</h2>
+  <p>Take a screenshot or upload a file in ShareX. The image URL should appear in your clipboard automatically.</p>
+</DocsLayout>

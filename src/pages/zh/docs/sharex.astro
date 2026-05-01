@@ -1,0 +1,39 @@
+---
+import DocsLayout from '../../../layouts/DocsLayout.astro';
+---
+
+<DocsLayout title="ShareX 集成" description="配置 ShareX 配合 PicFast 使用。">
+  <h1>ShareX 集成</h1>
+  <p>ShareX 是一款 Windows 截图和文件上传工具。PicFast 内置 ShareX 支持。</p>
+
+  <h2>获取 ShareX 配置文件</h2>
+  <p>登录 PicFast，进入 <strong>设置 → ShareX</strong>，下载配置文件。在 ShareX 中选择 <strong>Destinations → Import → from file</strong> 导入。</p>
+
+  <h2>手动配置</h2>
+  <p>在 ShareX 中创建新的 <strong>Custom uploader</strong>：</p>
+  <h3>请求设置</h3>
+  <table>
+    <thead><tr><th>字段</th><th>值</th></tr></thead>
+    <tbody>
+      <tr><td>Request URL</td><td><code>https://your-picfast.com/api/v1/sharex/upload</code></td></tr>
+      <tr><td>Request method</td><td><code>POST</code></td></tr>
+      <tr><td>Body</td><td><code>multipart/form-data</code></td></tr>
+      <tr><td>File form name</td><td><code>file</code></td></tr>
+      <tr><td>Argument name</td><td><code>key</code></td></tr>
+      <tr><td>Argument value</td><td>留空</td></tr>
+      <tr><td>Headers</td><td><code>Authorization: Bearer YOUR_TOKEN</code></td></tr>
+    </tbody>
+  </table>
+
+  <h3>响应设置</h3>
+  <table>
+    <thead><tr><th>字段</th><th>值</th></tr></thead>
+    <tbody>
+      <tr><td>Response type</td><td><code>Text</code></td></tr>
+      <tr><td>URL</td><td><code>json:$.links.url</code></td></tr>
+    </tbody>
+  </table>
+
+  <h2>验证</h2>
+  <p>在 ShareX 中截图或上传文件，图片链接应自动复制到剪贴板。</p>
+</DocsLayout>

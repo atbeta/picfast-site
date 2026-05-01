@@ -1,0 +1,70 @@
+---
+import DocsLayout from '../../layouts/DocsLayout.astro';
+---
+
+<DocsLayout title="Quick Start" description="Get PicFast running in minutes.">
+  <h1>Quick Start</h1>
+  <p>
+    PicFast is a self-hosted image hosting service. It takes less than 5 minutes to get running.
+  </p>
+
+  <h2>Prerequisites</h2>
+  <ul>
+    <li><a href="https://docs.docker.com/get-docker/" target="_blank" rel="noopener">Docker</a></li>
+    <li><a href="https://www.postgresql.org/" target="_blank" rel="noopener">PostgreSQL</a> 16+ (or use the included Docker Compose setup)</li>
+  </ul>
+
+  <h2>1. Start with Docker Compose</h2>
+  <p>Create a <code>docker-compose.yml</code> file:</p>
+  <pre><code>version: '3.8'
+services:
+  picfast:
+    image: picfast/picfast:latest
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./data:/data
+    environment:
+      - PICFAST_DATABASE_URL=postgres://picfast:picfast@postgres:5432/picfast?sslmode=disable
+      - PICFAST_JWT_SECRET=your-secret-here
+    depends_on:
+      - postgres
+
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      - POSTGRES_DB=picfast
+      - POSTGRES_USER=picfast
+      - POSTGRES_PASSWORD=picfast
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata:</code></pre>
+
+  <h2>2. Configure</h2>
+  <p>Copy the example config and edit it:</p>
+  <pre><code>cp config.example.yaml config.yaml
+$EDITOR config.yaml</code></pre>
+  <p>Key settings to change:</p>
+  <ul>
+    <li><code>jwt.secret</code> — set a strong random secret</li>
+    <li><code>server.base_url</code> — your public URL (e.g. <code>https://pics.yoursite.com</code>)</li>
+    <li><code>app.admin_email</code> and <code>app.admin_password</code> — your admin account</li>
+  </ul>
+
+  <h2>3. Run</h2>
+  <pre><code>docker compose up -d</code></pre>
+  <p>PicFast will automatically run database migrations on startup.</p>
+
+  <h2>4. Verify</h2>
+  <p>Open <code>http://localhost:8080</code> in your browser. You should see the login page.</p>
+  <p>Log in with the admin credentials you set in <code>config.yaml</code>.</p>
+
+  <h2>What's next?</h2>
+  <ul>
+    <li><a href="/docs/configuration">Configuration reference →</a></li>
+    <li><a href="/docs/storage">Set up storage backends →</a></li>
+    <li><a href="/docs/api">API documentation →</a></li>
+  </ul>
+</DocsLayout>

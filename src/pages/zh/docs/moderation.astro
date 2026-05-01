@@ -1,0 +1,24 @@
+---
+import DocsLayout from '../../../layouts/DocsLayout.astro';
+---
+
+<DocsLayout title="内容审核" description="在 PicFast 中配置内容审核。">
+  <h1>内容审核</h1>
+  <p>PicFast 提供可选的内容审核功能，可在图片公开展示前进行人工审查。</p>
+
+  <h2>审核模式</h2>
+
+  <h3>关闭（默认）</h3>
+  <p>所有上传立即可访问，无需审查。</p>
+
+  <h3>人工审核</h3>
+  <p>上传的图片标记为<strong>待审核</strong>状态，不会在公开列表中显示。管理员在后台 <strong>Moderation</strong> 页面审核。审核通过后图片公开，驳回则自动删除。</p>
+
+  <h2>配置</h2>
+  <p>在 <code>config.yaml</code> 或后台管理界面设置审核模式：</p>
+  <pre><code>app:
+  moderation_mode: "manual"  # "" | "disabled" | "manual"</code></pre>
+
+  <h2>管理员审核</h2>
+  <p>进入 <strong>Admin → Moderation</strong> 查看待审核图片，逐个审核通过或拒绝，可附备注。</p>
+</DocsLayout>

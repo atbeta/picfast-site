@@ -1,0 +1,92 @@
+---
+import DocsLayout from '../../layouts/DocsLayout.astro';
+---
+
+<DocsLayout title="Configuration" description="Full configuration reference for PicFast.">
+  <h1>Configuration</h1>
+  <p>PicFast is configured via <code>config.yaml</code> or environment variables.</p>
+
+  <h2>Full example</h2>
+  <pre><code>server:
+  port: 8080
+  base_url: "https://pics.example.com"
+  web_dir: ""
+  pprof_enabled: false
+
+database:
+  url: "postgres://picfast:picfast@localhost:5432/picfast?sslmode=disable"
+
+jwt:
+  secret: "change-me-in-production"
+  access_ttl: "15m"
+  refresh_ttl: "168h"
+  signing_method: "HS256"
+
+storage:
+  local_root: "./data/uploads"
+  thumbnail_dir: "./data/thumbnails"
+
+mail:
+  host: "smtp.example.com"
+  port: 587
+  username: ""
+  password: ""
+  from_email: ""
+  from_name: "PicFast"
+  encryption: "starttls"
+
+app:
+  name: "PicFast"
+  site_description: "My image hosting service"
+  allow_guest_upload: false
+  allow_registration: true
+  require_email_verification: false
+  audit_upload_logs: true
+  user_initial_capacity: 524288000
+  default_image_ttl: ""
+  admin_email: "admin@example.com"
+  admin_password: "changeme"
+  moderation_mode: ""
+  icp_number: ""
+  icp_link: "https://beian.miit.gov.cn/"
+  psb_number: ""
+  psb_link: ""</code></pre>
+
+  <h2>Configuration options</h2>
+
+  <h3>server</h3>
+  <table>
+    <thead><tr><th>Key</th><th>Type</th><th>Default</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr><td><code>port</code></td><td>int</td><td>8080</td><td>HTTP port to listen on</td></tr>
+      <tr><td><code>base_url</code></td><td>string</td><td>http://localhost:8080</td><td>Public URL of the service</td></tr>
+      <tr><td><code>web_dir</code></td><td>string</td><td>""</td><td>Path to frontend dist (optional)</td></tr>
+      <tr><td><code>pprof_enabled</code></td><td>bool</td><td>false</td><td>Enable Go pprof endpoints (admin only)</td></tr>
+    </tbody>
+  </table>
+
+  <h3>jwt</h3>
+  <table>
+    <thead><tr><th>Key</th><th>Type</th><th>Default</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr><td><code>secret</code></td><td>string</td><td>—</td><td><strong>Required.</strong> Token signing secret. Must be changed.</td></tr>
+      <tr><td><code>access_ttl</code></td><td>duration</td><td>15m</td><td>Access token lifetime</td></tr>
+      <tr><td><code>refresh_ttl</code></td><td>duration</td><td>168h</td><td>Refresh token lifetime (7 days)</td></tr>
+      <tr><td><code>signing_method</code></td><td>string</td><td>HS256</td><td>HS256, HS384, or HS512</td></tr>
+    </tbody>
+  </table>
+
+  <h3>app</h3>
+  <table>
+    <thead><tr><th>Key</th><th>Type</th><th>Default</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr><td><code>allow_guest_upload</code></td><td>bool</td><td>false</td><td>Allow uploading without an account</td></tr>
+      <tr><td><code>allow_registration</code></td><td>bool</td><td>false</td><td>Allow new user sign-ups</td></tr>
+      <tr><td><code>require_email_verification</code></td><td>bool</td><td>false</td><td>Require email verification before login</td></tr>
+      <tr><td><code>audit_upload_logs</code></td><td>bool</td><td>false</td><td>Log all upload events</td></tr>
+      <tr><td><code>user_initial_capacity</code></td><td>bytes</td><td>524288000</td><td>Default storage quota per user (500 MB)</td></tr>
+      <tr><td><code>default_image_ttl</code></td><td>duration</td><td>""</td><td>Default expiry for uploaded images (empty = never)</td></tr>
+      <tr><td><code>moderation_mode</code></td><td>string</td><td>""</td><td><code>disabled</code>, <code>manual</code>, or <code>auto</code></td></tr>
+    </tbody>
+  </table>
+</DocsLayout>

@@ -1,0 +1,33 @@
+---
+import DocsLayout from '../../../layouts/DocsLayout.astro';
+---
+
+<DocsLayout title="上传图片" description="如何向 PicFast 上传图片。">
+  <h1>上传图片</h1>
+
+  <h2>网页上传</h2>
+  <p>登录 <code>/</code> 后，拖拽或点击上传文件。</p>
+
+  <h2>curl</h2>
+  <pre><code># 认证上传
+curl -X POST http://localhost:8080/api/v1/images \
+  -H "Authorization: Bearer YOUR_TOKEN" \
+  -F "file=@image.png"
+
+# 设置过期时间（24小时）
+curl -X POST http://localhost:8080/api/v1/images \
+  -H "Authorization: Bearer YOUR_TOKEN" \
+  -F "file=@image.png" \
+  -F "expires_in=24h"</code></pre>
+
+  <h2>ShareX</h2>
+  <p>完整的 ShareX 配置说明见 <a href="/zh/docs/sharex">ShareX 集成</a> 页面。</p>
+
+  <h2>返回值</h2>
+  <p>上传成功后会返回图片信息和多种链接格式：</p>
+  <pre><code>{'{'}"id": 1,"key": "abc123","origin_name": "image.png","size_bytes": 204800,"mimetype": "image/png","extension": "png","width": 1920,"height": 1080,"links": {'{'}"url": "https://pics.example.com/i/abc123.png","html": "&lt;img src=\"https://pics.example.com/i/abc123.png\" /&gt;","markdown": "![](https://pics.example.com/i/abc123.png)","bbcode": "[img]https://pics.example.com/i/abc123.png[/img]","thumbnail_url": "https://pics.example.com/t/abc123.png"{'}'},"created_at": "2026-05-02T00:00:00Z"{'}'}</code></pre>
+
+  <h2>支持的格式与限制</h2>
+  <p>支持格式：<code>jpg</code>、<code>png</code>、<code>gif</code>、<code>webp</code>、<code>svg</code>、<code>bmp</code>、<code>ico</code>。</p>
+  <p>文件大小上限由用户组配置决定，默认 50 MB。</p>
+</DocsLayout>

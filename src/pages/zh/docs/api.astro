@@ -1,0 +1,56 @@
+---
+import DocsLayout from '../../../layouts/DocsLayout.astro';
+---
+
+<DocsLayout title="API 参考" description="PicFast REST API 文档。">
+  <h1>API 参考</h1>
+  <p>
+    PicFast 在 <code>/api/v1</code> 提供 REST API。除非标注为公开接口，其他均需要身份认证。
+  </p>
+
+  <h2>认证</h2>
+  <p>在 <code>Authorization</code> 请求头中使用 Bearer token：</p>
+  <pre><code>Authorization: Bearer &lt;access_token&gt;</code></pre>
+  <p>通过 <code>POST /api/v1/auth/login</code> 获取 token。</p>
+
+  <h2>公开接口</h2>
+  <ul>
+    <li><code>GET /api/v1/config</code> — 站点配置</li>
+    <li><code>GET /api/v1/version</code> — 版本信息</li>
+    <li><code>GET /openapi.yaml</code> — OpenAPI 规范文件</li>
+    <li><code>GET /openapi.json</code> — OpenAPI 规范文件（JSON）</li>
+    <li><code>GET /docs</code> — API 文档界面</li>
+    <li><code>POST /api/v1/auth/register</code> — 注册账号</li>
+    <li><code>POST /api/v1/auth/login</code> — 登录</li>
+    <li><code>POST /api/v1/auth/refresh</code> — 刷新 token</li>
+  </ul>
+
+  <h2>上传图片</h2>
+  <h3>POST /api/v1/images</h3>
+  <p>上传图片（需认证）。<code>multipart/form-data</code> 格式：</p>
+  <table>
+    <thead><tr><th>字段</th><th>类型</th><th>说明</th></tr></thead>
+    <tbody>
+      <tr><td><code>file</code></td><td>file</td><td>图片文件（必填）</td></tr>
+      <tr><td><code>album_id</code></td><td>int</td><td>所属相册 ID</td></tr>
+      <tr><td><code>permission</code></td><td>int</td><td>0 = 私有，1 = 公开（默认）</td></tr>
+      <tr><td><code>expires_in</code></td><td>string</td><td>过期时间，如 <code>24h</code>、<code>7d</code></td></tr>
+      <tr><td><code>strategy_id</code></td><td>int</td><td>使用的存储后端 ID</td></tr>
+    </tbody>
+  </table>
+
+  <h2>游客上传</h2>
+  <h3>POST /api/v1/upload</h3>
+  <p>与上接口相同，但当开启游客上传时无需认证。</p>
+
+  <h2>API Token</h2>
+  <p>程序化访问可通过 Web UI 或 <code>POST /api/v1/api-tokens</code> 创建 API Token，作为 Bearer token 使用。</p>
+
+  <h2>OpenAPI 规范</h2>
+  <p>完整 API 规范文件：</p>
+  <ul>
+    <li><a href="/openapi.yaml" target="_blank">/openapi.yaml</a>（YAML）</li>
+    <li><a href="/openapi.json" target="_blank">/openapi.json</a>（JSON）</li>
+    <li><a href="/docs" target="_blank">/docs</a> — 交互式 API 文档</li>
+  </ul>
+</DocsLayout>
