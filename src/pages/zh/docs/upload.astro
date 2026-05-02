@@ -2,11 +2,11 @@
 import DocsLayout from '../../../layouts/DocsLayout.astro';
 ---
 
-<DocsLayout title="上传图片" description="如何向 PicFast 上传图片。">
+<DocsLayout title="上传图片" description="向 PicFast 上传图片的多种方式。">
   <h1>上传图片</h1>
 
-  <h2>网页上传</h2>
-  <p>登录 <code>/</code> 后，拖拽或点击上传文件。</p>
+  <h2>Web 界面</h2>
+  <p>登录后拖拽文件或点击上传。Web UI 支持批量上传，上传成功后自动复制分享链接。</p>
 
   <h2>curl</h2>
   <pre><code># 认证上传
@@ -14,20 +14,60 @@ curl -X POST http://localhost:18080/api/v1/images \
   -H "Authorization: Bearer YOUR_TOKEN" \
   -F "file=@image.png"
 
-# 设置过期时间（24小时）
+# 设置过期时间（24 小时）
 curl -X POST http://localhost:18080/api/v1/images \
   -H "Authorization: Bearer YOUR_TOKEN" \
   -F "file=@image.png" \
-  -F "expires_in=24h"</code></pre>
+  -F "expires_in=24h"
+
+# 游客上传（需在管理后台启用游客上传功能）
+curl -X POST http://localhost:18080/api/v1/upload \
+  -F "file=@image.png"</code></pre>
 
   <h2>ShareX</h2>
-  <p>完整的 ShareX 配置说明见 <a href="/zh/docs/sharex">ShareX 集成</a> 页面。</p>
+  <p>PicFast 内置 ShareX 配置端点。详细设置请参阅 <a href="/zh/docs/sharex">ShareX 集成</a>页面。</p>
 
-  <h2>返回值</h2>
-  <p>上传成功后会返回图片信息和多种链接格式：</p>
-  <pre><code>&#123;"id": 1,"key": "abc123","origin_name": "image.png","size_bytes": 204800,"mimetype": "image/png","extension": "png","width": 1920,"height": 1080,"links": &#123;"url": "https://pics.example.com/i/abc123.png","html": "&lt;img src=\"https://pics.example.com/i/abc123.png\" /&gt;","markdown": "![](https://pics.example.com/i/abc123.png)","bbcode": "[img]https://pics.example.com/i/abc123.png[/img]","thumbnail_url": "https://pics.example.com/t/abc123.png"&#125;,"created_at": "2026-05-02T00:00:00Z"&#125;</code></pre>
+  <h2>MCP（AI Agent）</h2>
+  <p>AI 助手可通过 PicFast 的 MCP 服务器直接上传图片：</p>
+  <pre><code>npx @picfast/mcp</code></pre>
+  <p>配置服务器地址及 API token 后，AI Agent 即可调用 <code>upload_image</code> 工具上传本地图片。详见 <a href="/zh/docs/api">API 参考</a>中的 MCP 配置说明。</p>
+
+  <h2>Python</h2>
+  <pre><code>import requests
+
+url = "https://pics.example.com/api/v1/images"
+headers = &#123;"Authorization": "Bearer YOUR_TOKEN"&#125;
+with open("image.png", "rb") as f:
+    files = &#123;"file": f&#125;
+    r = requests.post(url, headers=headers, files=files)
+    print(r.json()["links"]["url"])</code></pre>
+
+  <h2>JavaScript</h2>
+  <pre><code>const form = new FormData();
+const file = await fs.openAsBlob("image.png");
+form.append("file", file);
+
+const res = await fetch("https://pics.example.com/api/v1/images", &#123;
+  method: "POST",
+  headers: &#123; "Authorization": "Bearer YOUR_TOKEN" &#125;,
+  body: form,
+&#125;);
+const data = await res.json();
+console.log(data.links.markdown);</code></pre>
+
+  <h2>响应格式</h2>
+  <p>上传成功后返回的 JSON 示例：</p>
+  <pre><code>&#123;"id": 1,"key": "abc123","origin_name": "image.png",
+  "size_bytes": 204800,"mimetype": "image/png","extension": "png",
+  "width": 1920,"height": 1080,
+  "links": &#123;"url": "https://pics.example.com/i/abc123.png",
+    "html": "&lt;img src=\"https://pics.example.com/i/abc123.png\" /&gt;",
+    "markdown": "![](https://pics.example.com/i/abc123.png)",
+    "bbcode": "[img]https://pics.example.com/i/abc123.png[/img]",
+    "thumbnail_url": "https://pics.example.com/t/abc123.png"&#125;,
+  "created_at": "2026-05-02T00:00:00Z"&#125;</code></pre>
 
   <h2>支持的格式与限制</h2>
-  <p>支持格式：<code>jpg</code>、<code>png</code>、<code>gif</code>、<code>webp</code>、<code>svg</code>、<code>bmp</code>、<code>ico</code>。</p>
-  <p>文件大小上限由用户组配置决定，默认 50 MB。</p>
+  <p>支持的格式：<code>jpg</code>、<code>png</code>、<code>gif</code>、<code>webp</code>、<code>svg</code>、<code>bmp</code>、<code>ico</code>。</p>
+  <p>单文件最大体积按分组配置，默认 50 MB。</p>
 </DocsLayout>

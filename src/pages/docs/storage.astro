@@ -4,10 +4,10 @@ import DocsLayout from '../../layouts/DocsLayout.astro';
 
 <DocsLayout title="Storage Backends" description="Configure storage backends in PicFast.">
   <h1>Storage Backends</h1>
-  <p>PicFast supports multiple storage backends. Each is configured via the admin panel.</p>
+  <p>PicFast supports 6 storage backends. Each is configured via the admin panel under <strong>Storage Strategies</strong>. You can create multiple strategies and assign them to different user groups.</p>
 
   <h2>Local</h2>
-  <p>Store files on the local filesystem. Simplest option, good for single-server deployments.</p>
+  <p>Store files on the local filesystem. Simplest option — good for single-server deployments and development.</p>
   <pre><code>&#123;
   "type": "local",
   "root": "/data/uploads",
@@ -15,7 +15,7 @@ import DocsLayout from '../../layouts/DocsLayout.astro';
 &#125;</code></pre>
 
   <h2>S3-compatible</h2>
-  <p>AWS S3, MinIO, Cloudflare R2, and other S3-compatible services.</p>
+  <p>AWS S3, MinIO, Cloudflare R2, and any S3-compatible service.</p>
   <pre><code>&#123;
   "type": "s3",
   "endpoint": "https://s3.us-east-1.amazonaws.com",
@@ -26,7 +26,7 @@ import DocsLayout from '../../layouts/DocsLayout.astro';
   "url": "https://my-picfast.s3.us-east-1.amazonaws.com"
 &#125;</code></pre>
 
-  <h2>Aliyun OSS</h2>
+  <h2>Alibaba OSS</h2>
   <pre><code>&#123;
   "type": "oss",
   "endpoint": "oss-cn-hangzhou.aliyuncs.com",
@@ -56,6 +56,7 @@ import DocsLayout from '../../layouts/DocsLayout.astro';
 &#125;</code></pre>
 
   <h2>WebDAV</h2>
+  <p>Connect to any WebDAV-compatible storage (Nextcloud, ownCloud, etc.).</p>
   <pre><code>&#123;
   "type": "webdav",
   "endpoint": "https://dav.example.com",
@@ -65,5 +66,5 @@ import DocsLayout from '../../layouts/DocsLayout.astro';
 &#125;</code></pre>
 
   <h2>Switching backends</h2>
-  <p>Images already stored in one backend stay there. When you switch the default backend, new uploads go to the new backend. Existing images continue to be served from their original locations.</p>
+  <p>Images already stored in one backend stay there. When you change the default strategy for a group, new uploads go to the new backend. Existing images continue to be served from their original locations — no migration needed.</p>
 </DocsLayout>

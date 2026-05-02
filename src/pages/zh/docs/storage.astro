@@ -2,20 +2,20 @@
 import DocsLayout from '../../../layouts/DocsLayout.astro';
 ---
 
-<DocsLayout title="存储后端" description="在 PicFast 中配置存储后端。">
+<DocsLayout title="存储后端" description="配置 PicFast 的存储后端。">
   <h1>存储后端</h1>
-  <p>PicFast 支持多种存储后端，通过后台管理界面进行配置。</p>
+  <p>PicFast 支持 6 种存储后端，均在管理后台的<strong>存储策略</strong>中配置。可创建多个策略并分配给不同用户分组。</p>
 
-  <h2>本地存储</h2>
-  <p>将文件存储在本地文件系统。最简单的方案，适合单服务器部署。</p>
+  <h2>本地</h2>
+  <p>将文件存储于本地文件系统。最简单的方式，适合单机部署与开发环境。</p>
   <pre><code>&#123;
   "type": "local",
   "root": "/data/uploads",
   "url": "https://pics.example.com/uploads"
 &#125;</code></pre>
 
-  <h2>S3 兼容存储</h2>
-  <p>支持 AWS S3、MinIO、Cloudflare R2 等 S3 兼容对象存储服务。</p>
+  <h2>S3 兼容</h2>
+  <p>支持 AWS S3、MinIO、Cloudflare R2 及其他 S3 兼容服务。</p>
   <pre><code>&#123;
   "type": "s3",
   "endpoint": "https://s3.us-east-1.amazonaws.com",
@@ -56,6 +56,7 @@ import DocsLayout from '../../../layouts/DocsLayout.astro';
 &#125;</code></pre>
 
   <h2>WebDAV</h2>
+  <p>连接任意 WebDAV 兼容存储（Nextcloud、ownCloud 等）。</p>
   <pre><code>&#123;
   "type": "webdav",
   "endpoint": "https://dav.example.com",
@@ -65,5 +66,5 @@ import DocsLayout from '../../../layouts/DocsLayout.astro';
 &#125;</code></pre>
 
   <h2>切换后端</h2>
-  <p>已存储在某个后端的图片不受影响。切换默认后端后，新上传的图片会写入新后端，已有图片继续从原位置提供访问。</p>
+  <p>已存储的图片不受后端切换影响。更改分组的默认存储策略后，新上传的文件将写入新后端，已有文件仍从原有位置提供服务，无需数据迁移。</p>
 </DocsLayout>

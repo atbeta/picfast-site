@@ -2,55 +2,87 @@
 import DocsLayout from '../../../layouts/DocsLayout.astro';
 ---
 
-<DocsLayout title="API 参考" description="PicFast REST API 文档。">
+<DocsLayout title="API 参考" description="PicFast REST API 与 MCP 集成文档。">
   <h1>API 参考</h1>
   <p>
-    PicFast 在 <code>/api/v1</code> 提供 REST API。除非标注为公开接口，其他均需要身份认证。
+    PicFast 在 <code>/api/v1</code> 路径下提供 REST API。除标注为公开的端点外，其余均需认证。
   </p>
 
-  <h2>认证</h2>
-  <p>在 <code>Authorization</code> 请求头中使用 Bearer token：</p>
+  <h2>认证方式</h2>
+  <p>在 <code>Authorization</code> 请求头中携带 Bearer token：</p>
   <pre><code>Authorization: Bearer &lt;access_token&gt;</code></pre>
-  <p>通过 <code>POST /api/v1/auth/login</code> 获取 token。</p>
+  <p>可通过 <code>POST /api/v1/auth/login</code> 获取 token，或在管理面板中创建 API token（以 <code>img_</code> 为前缀）。</p>
 
-  <h2>公开接口</h2>
+  <h2>公开端点</h2>
   <ul>
     <li><code>GET /api/v1/config</code> — 站点配置</li>
     <li><code>GET /api/v1/version</code> — 版本信息</li>
-    <li><code>GET /openapi.yaml</code> — OpenAPI 规范文件</li>
-    <li><code>GET /openapi.json</code> — OpenAPI 规范文件（JSON）</li>
-    <li><code>GET /docs</code> — API 文档界面</li>
+    <li><code>GET /openapi.yaml</code> — OpenAPI 规范（YAML）</li>
+    <li><code>GET /openapi.json</code> — OpenAPI 规范（JSON）</li>
+    <li><code>GET /docs</code> — 交互式 API 文档界面</li>
     <li><code>POST /api/v1/auth/register</code> — 注册账号</li>
     <li><code>POST /api/v1/auth/login</code> — 登录</li>
-    <li><code>POST /api/v1/auth/refresh</code> — 刷新 token</li>
+    <li><code>POST /api/v1/auth/refresh</code> — 刷新 access token</li>
+    <li><code>POST /api/v1/upload</code> — 游客上传（需在管理后台启用）</li>
   </ul>
 
   <h2>上传图片</h2>
   <h3>POST /api/v1/images</h3>
-  <p>上传图片（需认证）。<code>multipart/form-data</code> 格式：</p>
+  <p>上传图片（需认证），使用 <code>multipart/form-data</code> 格式：</p>
   <table>
     <thead><tr><th>字段</th><th>类型</th><th>说明</th></tr></thead>
     <tbody>
       <tr><td><code>file</code></td><td>file</td><td>图片文件（必填）</td></tr>
-      <tr><td><code>album_id</code></td><td>int</td><td>所属相册 ID</td></tr>
+      <tr><td><code>album_id</code></td><td>int</td><td>相册 ID，用于分组</td></tr>
       <tr><td><code>permission</code></td><td>int</td><td>0 = 私有，1 = 公开（默认）</td></tr>
       <tr><td><code>expires_in</code></td><td>string</td><td>过期时间，如 <code>24h</code>、<code>7d</code></td></tr>
-      <tr><td><code>strategy_id</code></td><td>int</td><td>使用的存储后端 ID</td></tr>
+      <tr><td><code>strategy_id</code></td><td>int</td><td>目标存储后端 ID</td></tr>
     </tbody>
   </table>
 
   <h2>游客上传</h2>
   <h3>POST /api/v1/upload</h3>
-  <p>与上接口相同，但当开启游客上传时无需认证。</p>
+  <p>表单字段同上，启用游客上传后无需认证即可使用。</p>
 
   <h2>API Token</h2>
-  <p>程序化访问可通过 Web UI 或 <code>POST /api/v1/api-tokens</code> 创建 API Token，作为 Bearer token 使用。</p>
+  <p>在 Web UI 的设置页面创建 API token，用于程序化访问。Token 以 <code>img_</code> 为前缀，可配置权限范围，在 Authorization 头中作为 Bearer token 使用。</p>
+
+  <h2>MCP 服务器（AI Agent 集成）</h2>
+  <p>PicFast 内置 MCP（Model Context Protocol）服务器，使 Claude、Cursor 等 AI 助手可直接与图床交互。MCP 服务器以 <code>@picfast/mcp</code> 发布在 npm。</p>
+
+  <h3>快速接入</h3>
+  <pre><code>npx @picfast/mcp</code></pre>
+  <p>在 MCP 客户端中配置：</p>
+  <pre><code>&#123;
+  "mcpServers": &#123;
+    "picfast": &#123;
+      "command": "npx",
+      "args": ["-y", "@picfast/mcp"],
+      "env": &#123;
+        "PICFAST_BASE_URL": "https://picfast.example.com",
+        "PICFAST_API_TOKEN": "img_xxxxxxxx"
+      &#125;
+    &#125;
+  &#125;
+&#125;</code></pre>
+
+  <h3>可用 MCP 工具</h3>
+  <table>
+    <thead><tr><th>工具</th><th>认证</th><th>说明</th></tr></thead>
+    <tbody>
+      <tr><td><code>upload_image</code></td><td>可选</td><td>从本地文件路径上传图片，支持游客模式</td></tr>
+      <tr><td><code>list_images</code></td><td>必须</td><td>分页查看图片列表</td></tr>
+      <tr><td><code>get_image</code></td><td>必须</td><td>获取图片详情及分享链接（URL、Markdown、HTML、BBCode）</td></tr>
+      <tr><td><code>delete_image</code></td><td>必须</td><td>按 key 删除图片</td></tr>
+      <tr><td><code>get_usage_stats</code></td><td>必须</td><td>查看存储配额及使用量</td></tr>
+    </tbody>
+  </table>
 
   <h2>OpenAPI 规范</h2>
-  <p>完整 API 规范文件：</p>
+  <p>完整 API 规范文件位于：</p>
   <ul>
-    <li><a href="/openapi.yaml" target="_blank">/openapi.yaml</a>（YAML）</li>
-    <li><a href="/openapi.json" target="_blank">/openapi.json</a>（JSON）</li>
-    <li><a href="/docs" target="_blank">/docs</a> — 交互式 API 文档</li>
+    <li><code>/openapi.yaml</code> — YAML 格式</li>
+    <li><code>/openapi.json</code> — JSON 格式</li>
+    <li><code>/docs</code> — 交互式 Swagger UI，支持在线调试</li>
   </ul>
 </DocsLayout>

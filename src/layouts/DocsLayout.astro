@@ -56,6 +56,9 @@ const locale = currentPath.startsWith('/zh') ? 'zh' : 'en';
           <li><a href={locale === 'en' ? '/docs/moderation' : '/zh/docs/moderation'} class:list={[{ active: currentPath.endsWith('moderation') }]}>
             {locale === 'en' ? 'Content Moderation' : '内容审核'}
           </a></li>
+          <li><a href={locale === 'en' ? '/docs/mcp' : '/zh/docs/mcp'} class:list={[{ active: currentPath.endsWith('mcp') }]}>
+            {locale === 'en' ? 'MCP Integration' : 'MCP 集成'}
+          </a></li>
         </ul>
       </div>
     </aside>

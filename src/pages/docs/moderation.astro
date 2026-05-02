@@ -4,21 +4,29 @@ import DocsLayout from '../../layouts/DocsLayout.astro';
 
 <DocsLayout title="Content Moderation" description="Configure content moderation in PicFast.">
   <h1>Content Moderation</h1>
-  <p>PicFast includes optional content moderation to review images before they become publicly visible.</p>
+  <p>PicFast includes optional content moderation so you can review images before they become publicly visible. This is useful for public-facing deployments where you want to prevent abuse.</p>
 
   <h2>Moderation modes</h2>
 
   <h3>Disabled (default)</h3>
-  <p>All uploads are immediately accessible. No review required.</p>
+  <p>All uploads are immediately accessible. No review required. This is the right choice for private or team-internal deployments.</p>
 
   <h3>Manual</h3>
-  <p>Uploaded images are marked as <strong>pending</strong> and hidden from public feeds. Administrators review them in the admin panel under <strong>Moderation</strong>. Approved images become visible; rejected ones are deleted.</p>
+  <p>Uploaded images are marked as <strong>pending</strong> and hidden from public feeds until an admin approves them. Administrators can approve or reject images in the admin panel under <strong>Moderation</strong>.</p>
 
   <h2>Configuration</h2>
-  <p>Set the moderation mode in <code>config.yaml</code> or the admin panel:</p>
+  <p>Set the moderation mode in <code>config.yaml</code> or via the admin panel under Site Settings:</p>
   <pre><code>app:
   moderation_mode: "manual"  # "" (disabled) | "manual"</code></pre>
+  <p>Set <code>moderation_mode: ""</code> or omit the setting to disable moderation.</p>
 
-  <h2>Admin review</h2>
-  <p>Go to <strong>Admin → Moderation</strong> to see pending images. Approve or reject each one with optional notes.</p>
+  <h2>Admin review workflow</h2>
+  <p>When moderation is enabled:</p>
+  <ol>
+    <li>Users upload images as usual</li>
+    <li>Images appear as "pending" and are only visible to the uploader and admins</li>
+    <li>Admins review pending images in <strong>Admin &rarr; Moderation</strong></li>
+    <li>Approved images become publicly accessible; rejected images are deleted</li>
+  </ol>
+  <p>Rejection is permanent — the image file is deleted from storage. Use this feature carefully for borderline cases.</p>
 </DocsLayout>

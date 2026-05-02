@@ -3,7 +3,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import '../../styles/home.css';
 ---
 
-<BaseLayout title="PicFast — 自托管图片托管服务" lang="zh">
+<BaseLayout title="PicFast — 自托管图床平台" lang="zh">
   <section class="hero">
     <div class="container">
       <div class="hero-badge">
@@ -12,10 +12,11 @@ import '../../styles/home.css';
         </svg>
         开源 · GNU GPL v3
       </div>
-      <h1>你的图片<br />你的服务器<br />完全掌控</h1>
+      <h1>一行命令，部署完整的<br />自托管图床平台。</h1>
       <p class="hero-sub">
-        几分钟内部署一套完整的图床服务。
-        无追踪、无限制、无第三方依赖。
+        执行 <code>make docker-up</code> 即可启动全部服务。
+        内置 Web 管理面板、6 种存储后端、API 优先架构。
+        原生支持 MCP 协议供 AI 工作流集成，同时提供 ShareX 等客户端工具接入。
       </p>
       <div class="hero-code">
         <div class="code-label">
@@ -27,7 +28,6 @@ import '../../styles/home.css';
         <pre><code><span class="prompt">$</span> git clone https://github.com/atbeta/picfast.git
 <span class="prompt">$</span> cd picfast
 <span class="prompt">$</span> cp .env.example .env
-<span class="prompt">$</span> cp config.example.yaml config.yaml
 <span class="prompt">$</span> make docker-up</code></pre>
       </div>
       <div class="hero-actions">
@@ -44,8 +44,30 @@ import '../../styles/home.css';
 
   <section class="features">
     <div class="container">
-      <h2 class="section-title">功能完整，轻量运行</h2>
+      <h2 class="section-title">功能完备，部署极简</h2>
       <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+              <rect x="2" y="3" width="18" height="16" rx="3" stroke="currentColor" stroke-width="1.75"/>
+              <path d="M7 10h8M7 14h5" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/>
+              <rect x="4" y="2" width="6" height="4" rx="1" fill="currentColor"/>
+            </svg>
+          </div>
+          <h3>一键 Docker 部署</h3>
+          <p>克隆仓库、填写配置、执行 <code>make docker-up</code> 即可启动全部服务（PostgreSQL、应用、Mailpit）。Docker Hub 提供预构建镜像，生产部署同样便捷。</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+              <rect x="3" y="3" width="16" height="16" rx="3" stroke="currentColor" stroke-width="1.75"/>
+              <path d="M3 8h16M7 8v11" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/>
+              <rect x="7" y="1" width="8" height="3" rx="1" fill="currentColor"/>
+            </svg>
+          </div>
+          <h3>完整管理面板</h3>
+          <p>基于 React 构建的管理后台，可集中管理用户、分组、存储策略、图片资源及站点配置。日常运维无需直接操作数据库。</p>
+        </div>
         <div class="feature-card">
           <div class="feature-icon">
             <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
@@ -54,18 +76,18 @@ import '../../styles/home.css';
               <circle cx="7" cy="7" r="1.5" fill="currentColor"/>
             </svg>
           </div>
-          <h3>API 优先设计</h3>
-          <p>完整的 REST API + OpenAPI 规范文档。支持 curl、ShareX 或任何 HTTP 客户端上传。无供应商锁定，可集成到任意工作流。</p>
+          <h3>API 优先，AI 就绪</h3>
+          <p>完整的 REST API 与 OpenAPI 规范文档，支持在线调试。内置 MCP 服务器，Claude、Cursor 等 AI 助手可通过标准协议完成图片上传、查询与管理。执行 <code>npx @picfast/mcp</code> 即可接入。</p>
         </div>
         <div class="feature-card">
           <div class="feature-icon">
             <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
               <path d="M11 2L3 6v6c0 5.25 3.4 10.15 8 11.4 4.6-1.25 8-6.15 8-11.4V6L11 2z" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
-              <path d="M8 11l2 2 4-4" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M7 10l3 3 5-5" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
           </div>
-          <h3>隐私优先</h3>
-          <p>无追踪、无分析、无广告。图片只存在你自己的服务器上。可选内容审核机制，你来决定什么能上传。</p>
+          <h3>原生工具集成</h3>
+          <p>ShareX 配置文件一键下载导入，支持多格式链接输出（URL、Markdown、BBCode、HTML）。兼容任意 HTTP 客户端，无供应商锁定风险。</p>
         </div>
         <div class="feature-card">
           <div class="feature-icon">
@@ -74,17 +96,8 @@ import '../../styles/home.css';
               <path d="M4 8h14M8 8v10" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/>
             </svg>
           </div>
-          <h3>多种存储后端</h3>
-          <p>本地文件系统、S3、OSS、COS、Kodo、WebDAV。切换存储后端不影响已有图片。</p>
-        </div>
-        <div class="feature-card">
-          <div class="feature-icon">
-            <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
-              <path d="M4 12h14M4 6h14M4 18h14" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/>
-            </svg>
-          </div>
-          <h3>开发者体验</h3>
-          <p>OpenAPI 文档支持在线调试，内置 ShareX 支持，多格式链接输出（URL、Markdown、BBCode、HTML）。</p>
+          <h3>6 种存储后端</h3>
+          <p>支持本地文件系统、S3 兼容协议（MinIO、R2）、阿里云 OSS、腾讯云 COS、七牛云 Kodo 及 WebDAV。切换后端无需迁移已有数据。</p>
         </div>
         <div class="feature-card">
           <div class="feature-icon">
@@ -93,18 +106,8 @@ import '../../styles/home.css';
               <circle cx="11" cy="11" r="3" stroke="currentColor" stroke-width="1.75"/>
             </svg>
           </div>
-          <h3>AI / MCP 集成</h3>
-          <p>内置 MCP 服务器 — 工具、资源和 prompts。AI 助手可通过标准化协议上传、查看和管理图片，适合接入各类 AI Agent 工作流。</p>
-        </div>
-        <div class="feature-card">
-          <div class="feature-icon">
-            <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
-              <rect x="3" y="3" width="16" height="16" rx="3" stroke="currentColor" stroke-width="1.75"/>
-              <path d="M7 11h8M7 7h8M7 15h5" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/>
-            </svg>
-          </div>
-          <h3>现代技术栈</h3>
-          <p>Go 后端 + React 前端。一条命令 Docker Compose 启动。PostgreSQL 持久化，内置 Prometheus 指标和 Mailpit 邮件测试。</p>
+          <h3>图片处理与安全</h3>
+          <p>自动生成缩略图，支持可配置的图片压缩与水印。可选内容审核功能，通过管理员审批队列保障公开内容的合规性。</p>
         </div>
       </div>
     </div>
@@ -118,14 +121,14 @@ import '../../styles/home.css';
           <thead><tr><th></th><th>Chevereto</th><th>Photoview</th><th>自建 S3</th><th>PicFast</th></tr></thead>
           <tbody>
             <tr><td>部署时间</td><td>约 30 分钟</td><td>约 20 分钟</td><td>约 2 小时</td><td><strong>约 5 分钟</strong></td></tr>
+            <tr><td>管理面板</td><td>基础</td><td>有限</td><td>无</td><td><strong>完整 React 后台</strong></td></tr>
             <tr><td>API 支持</td><td>基础</td><td>有限</td><td>自定义</td><td><strong>OpenAPI + 在线文档</strong></td></tr>
             <tr><td>ShareX 集成</td><td>✅</td><td>❌</td><td>自定义</td><td><strong>✅ 内置</strong></td></tr>
+            <tr><td>AI / MCP 工具</td><td>❌</td><td>❌</td><td>❌</td><td><strong>✅ 5 工具 + 资源</strong></td></tr>
             <tr><td>存储后端</td><td>有限</td><td>仅本地</td><td>仅 S3</td><td><strong>6 种后端</strong></td></tr>
             <tr><td>内容审核</td><td>❌</td><td>❌</td><td>自定义</td><td><strong>✅ 内置</strong></td></tr>
-            <tr><td>AI / MCP 工具</td><td>❌</td><td>❌</td><td>❌</td><td><strong>✅ 5 工具 + prompts + 资源</strong></td></tr>
-            <tr><td>缩略图生成</td><td>✅</td><td>✅</td><td>自定义</td><td><strong>✅ 自动</strong></td></tr>
             <tr><td>图片处理</td><td>基础</td><td>有限</td><td>自定义</td><td><strong>✅ 压缩 + 水印</strong></td></tr>
-            <tr><td>协议</td><td>付费</td><td>MIT</td><td>N/A</td><td><strong>✅ GPL v3</strong></td></tr>
+            <tr><td>协议</td><td>付费</td><td>MIT</td><td>N/A</td><td><strong>GPL v3</strong></td></tr>
           </tbody>
         </table>
       </div>
@@ -140,7 +143,7 @@ import '../../styles/home.css';
           <div class="qs-num">1</div>
           <div class="qs-content">
             <h3>克隆并配置</h3>
-            <p>克隆仓库，复制配置文件并修改为自己的设置。</p>
+            <p>克隆仓库，复制示例配置文件，按需修改。</p>
             <div class="hero-code small"><pre><code>git clone https://github.com/atbeta/picfast.git
 cd picfast
 cp .env.example .env
@@ -152,15 +155,15 @@ $EDITOR config.yaml</code></pre></div>
           <div class="qs-num">2</div>
           <div class="qs-content">
             <h3>启动服务</h3>
-            <p>一条命令同时启动 PostgreSQL、Mailpit（本地邮件测试工具）和应用。</p>
+            <p>一行命令启动 PostgreSQL、Mailpit（本地邮件测试）及应用。</p>
             <div class="hero-code small"><pre><code>make docker-up</code></pre></div>
           </div>
         </div>
         <div class="qs-step">
           <div class="qs-num">3</div>
           <div class="qs-content">
-            <h3>通过 API 上传</h3>
-            <p>注册账号、获取 token，然后上传第一张图片。</p>
+            <h3>上传第一张图片</h3>
+            <p>注册账号、获取 token，通过 curl 上传 —— 也可使用 Web UI、ShareX 或 MCP。</p>
             <div class="hero-code small"><pre><code>curl -X POST http://localhost:18080/api/v1/auth/register \
   -H "Content-Type: application/json" \
   -d '&#123;"email":"you@example.com","password":"hunter2","name":"You"&#125;'
@@ -171,7 +174,7 @@ curl -X POST http://localhost:18080/api/v1/images \
           </div>
         </div>
       </div>
-      <p class="qs-cta"><a href="/zh/docs/getting-started" class="btn btn-primary">完整文档 →</a></p>
+      <p class="qs-cta"><a href="/zh/docs/getting-started" class="btn btn-primary">浏览完整文档 &rarr;</a></p>
     </div>
   </section>
 </BaseLayout>

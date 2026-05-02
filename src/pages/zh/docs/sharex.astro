@@ -2,26 +2,27 @@
 import DocsLayout from '../../../layouts/DocsLayout.astro';
 ---
 
-<DocsLayout title="ShareX 集成" description="配置 ShareX 配合 PicFast 使用。">
+<DocsLayout title="ShareX 集成" description="配置 ShareX 与 PicFast 对接。">
   <h1>ShareX 集成</h1>
-  <p>ShareX 是一款 Windows 截图和文件上传工具。PicFast 内置 ShareX 支持。</p>
+  <p>PicFast 提供完整的 ShareX 支持。ShareX 是 Windows 平台免费开源的截图与文件上传工具。</p>
 
-  <h2>获取 ShareX 配置文件</h2>
-  <p>登录 PicFast，进入 <strong>设置 → ShareX</strong>，下载配置文件。在 ShareX 中选择 <strong>Destinations → Import → from file</strong> 导入。</p>
+  <h2>一键配置</h2>
+  <p>登录 PicFast，进入 <strong>设置 &rarr; ShareX</strong>，点击下载个性化配置文件。然后在 ShareX 中通过 <strong>目标 &rarr; 导入 &rarr; 从文件导入</strong> 即可完成配置。</p>
+  <p>下载的配置文件已包含你的 API token 与服务器地址，无需任何手动填写。</p>
 
-  <h2>手动配置</h2>
-  <p>在 ShareX 中创建新的 <strong>Custom uploader</strong>：</p>
+  <h2>手动设置</h2>
+  <p>也可在 ShareX 中创建<strong>自定义上传器</strong>手动配置：</p>
   <h3>请求设置</h3>
   <table>
     <thead><tr><th>字段</th><th>值</th></tr></thead>
     <tbody>
-      <tr><td>Request URL</td><td><code>https://your-picfast.com/api/v1/sharex/upload</code></td></tr>
-      <tr><td>Request method</td><td><code>POST</code></td></tr>
-      <tr><td>Body</td><td><code>multipart/form-data</code></td></tr>
-      <tr><td>File form name</td><td><code>file</code></td></tr>
-      <tr><td>Argument name</td><td><code>key</code></td></tr>
-      <tr><td>Argument value</td><td>留空</td></tr>
-      <tr><td>Headers</td><td><code>Authorization: Bearer YOUR_TOKEN</code></td></tr>
+      <tr><td>请求 URL</td><td><code>https://your-picfast.com/api/v1/sharex/upload</code></td></tr>
+      <tr><td>请求方法</td><td><code>POST</code></td></tr>
+      <tr><td>请求体</td><td><code>multipart/form-data</code></td></tr>
+      <tr><td>文件表单名</td><td><code>file</code></td></tr>
+      <tr><td>参数名</td><td><code>key</code></td></tr>
+      <tr><td>参数值</td><td>留空</td></tr>
+      <tr><td>请求头</td><td><code>Authorization: Bearer YOUR_TOKEN</code></td></tr>
     </tbody>
   </table>
 
@@ -29,11 +30,18 @@ import DocsLayout from '../../../layouts/DocsLayout.astro';
   <table>
     <thead><tr><th>字段</th><th>值</th></tr></thead>
     <tbody>
-      <tr><td>Response type</td><td><code>Text</code></td></tr>
+      <tr><td>响应类型</td><td><code>Text</code></td></tr>
       <tr><td>URL</td><td><code>json:$.links.url</code></td></tr>
     </tbody>
   </table>
 
   <h2>验证</h2>
-  <p>在 ShareX 中截图或上传文件，图片链接应自动复制到剪贴板。</p>
+  <p>在 ShareX 中截图或上传文件，图片 URL 将自动复制到剪贴板。默认同时提供 Markdown 格式链接。</p>
+
+  <h2>常见问题</h2>
+  <ul>
+    <li>请确保 <code>server.base_url</code> 已设置为实际访问域名，ShareX 配置文件生成器会基于该值构造请求 URL。</li>
+    <li>若上传超时，请检查反向代理的 <code>client_max_body_size</code> 是否大于等于分组的上传体积限制。</li>
+    <li>若 API token 失效，可在 PicFast 的设置页面中重新生成。</li>
+  </ul>
 </DocsLayout>

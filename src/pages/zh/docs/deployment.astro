@@ -6,20 +6,48 @@ import DocsLayout from '../../../layouts/DocsLayout.astro';
   <h1>部署</h1>
 
   <h2>Docker Compose（推荐）</h2>
-  <p>推荐方式，同时启动 PostgreSQL、mailpit 和应用：</p>
+  <p>最快捷的启动方式，同时启动 PostgreSQL、Mailpit 及应用：</p>
   <pre><code>git clone https://github.com/atbeta/picfast.git
 cd picfast
 cp .env.example .env
 cp config.example.yaml config.yaml
 make docker-up</code></pre>
-  <p>应用运行在 <code>http://localhost:18080</code>。</p>
+  <p>应用将在 <code>http://localhost:18080</code> 可用。</p>
+
+  <h2>Docker Hub 镜像</h2>
+  <p>预构建镜像发布在 Docker Hub，适用于生产环境或无需完整源码的场景：</p>
+  <pre><code>docker pull xbeta/picfast:latest</code></pre>
+  <p>可用标签：</p>
+  <ul>
+    <li><code>latest</code> — main 分支最新稳定构建</li>
+    <li><code>vX.Y.Z</code> — 语义化版本标签</li>
+    <li><code>sha-&lt;commit&gt;</code> — 按提交追踪的构建标签</li>
+  </ul>
+
+  <h2>生产环境 Compose 模板</h2>
+  <p>适用于配合 Traefik 反向代理的生产部署：</p>
+  <pre><code>cd docker
+cp .env.traefik.example .env
+docker compose -f docker-compose.traefik.yml up -d</code></pre>
+  <p>此模板包含 PostgreSQL、PicFast 及 Traefik 标签。首次启动时，若设置了 <code>PICFAST_APP_ADMIN_EMAIL</code> 与 <code>PICFAST_APP_ADMIN_PASSWORD</code>，将自动创建管理员账号。</p>
+
+  <h2>上线前检查清单</h2>
+  <p>部署至生产环境前，请确认以下配置已替换为实际值：</p>
+  <ul>
+    <li><code>PICFAST_JWT_SECRET</code> — 使用高强度随机密钥</li>
+    <li><code>PICFAST_SERVER_BASE_URL</code> — 设置为实际访问域名（如 <code>https://img.example.com</code>）</li>
+    <li><code>PICFAST_APP_ADMIN_EMAIL</code> / <code>PICFAST_APP_ADMIN_PASSWORD</code> — 使用强密码</li>
+    <li><code>POSTGRES_PASSWORD</code> — 勿使用示例密码</li>
+    <li>反向代理正确透传 <code>Host</code> 与 <code>X-Forwarded-Proto</code> 请求头</li>
+    <li>反向代理的上传体积限制与实际需求匹配</li>
+  </ul>
 
   <h2>环境变量</h2>
-  <p>所有配置项都可以通过 <code>PICFAST_</code> 前缀的环境变量设置：</p>
+  <p>所有配置项均可通过 <code>PICFAST_</code> 前缀的环境变量进行设置：</p>
   <pre><code>PICFAST_SERVER_PORT=8080
 PICFAST_SERVER_BASE_URL=https://pics.example.com
 PICFAST_JWT_SECRET=your-strong-secret
-PICFAST_DATABASE_URL=postgres://picfast:picfast@localhost:5432/picfast
+PICFAST_DATABASE_URL=postgres://picfast:picfast@localhost:5432/picfast?sslmode=disable
 PICFAST_STORAGE_LOCAL_ROOT=./data/uploads
 PICFAST_STORAGE_THUMBNAIL_DIR=./data/thumbnails</code></pre>
 
@@ -43,8 +71,16 @@ PICFAST_STORAGE_THUMBNAIL_DIR=./data/thumbnails</code></pre>
     &#125;
 &#125;</code></pre>
 
+  <h3>Caddy</h3>
+  <pre><code>pics.example.com &#123;
+    reverse_proxy 127.0.0.1:18080
+    request_body &#123;
+        max_size 100MB
+    &#125;
+&#125;</code></pre>
+
   <h3>Traefik</h3>
-  <p>在 Docker Compose service 中添加以下 labels：</p>
+  <p>在 Docker Compose 服务中添加以下标签：</p>
   <pre><code>labels:
   - "traefik.enable=true"
   - "traefik.http.routers.picfast.rule=Host&#96;pics.example.com&#96;"
@@ -54,8 +90,8 @@ PICFAST_STORAGE_THUMBNAIL_DIR=./data/thumbnails</code></pre>
   <h2>数据库备份</h2>
   <pre><code>docker exec picfast-db pg_dump -U picfast picfast > backup.sql</code></pre>
 
-  <h2>更新版本</h2>
+  <h2>更新</h2>
   <pre><code>git pull
 make docker-up</code></pre>
-  <p>数据库迁移会在启动时自动执行。</p>
+  <p>若使用 Docker Hub 镜像，拉取新标签后重建容器即可。数据库迁移会在启动时自动执行。</p>
 </DocsLayout>

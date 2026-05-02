@@ -6,7 +6,7 @@ import DocsLayout from '../../layouts/DocsLayout.astro';
   <h1>Deployment</h1>
 
   <h2>Docker Compose (recommended)</h2>
-  <p>The recommended way to run PicFast. Spins up PostgreSQL, mailpit, and the app together:</p>
+  <p>The fastest way to deploy PicFast. Spins up PostgreSQL, Mailpit, and the application together:</p>
   <pre><code>git clone https://github.com/atbeta/picfast.git
 cd picfast
 cp .env.example .env
@@ -14,12 +14,40 @@ cp config.example.yaml config.yaml
 make docker-up</code></pre>
   <p>The app will be available at <code>http://localhost:18080</code>.</p>
 
+  <h2>Docker Hub image</h2>
+  <p>Prebuilt images are published to Docker Hub. This is ideal for production or when you don't need the full source:</p>
+  <pre><code>docker pull xbeta/picfast:latest</code></pre>
+  <p>Available tags:</p>
+  <ul>
+    <li><code>latest</code> — latest stable build from main</li>
+    <li><code>vX.Y.Z</code> — specific release version</li>
+    <li><code>sha-&lt;commit&gt;</code> — commit-traceable build</li>
+  </ul>
+
+  <h2>Production Compose template</h2>
+  <p>For production deployments with Traefik reverse proxy:</p>
+  <pre><code>cd docker
+cp .env.traefik.example .env
+docker compose -f docker-compose.traefik.yml up -d</code></pre>
+  <p>This template includes PostgreSQL, PicFast, and Traefik labels. On first startup, it auto-creates the admin account if <code>PICFAST_APP_ADMIN_EMAIL</code> and <code>PICFAST_APP_ADMIN_PASSWORD</code> are set.</p>
+
+  <h2>Pre-flight checklist</h2>
+  <p>Before going to production, make sure these are configured:</p>
+  <ul>
+    <li><code>PICFAST_JWT_SECRET</code> — strong random value</li>
+    <li><code>PICFAST_SERVER_BASE_URL</code> — your actual domain (e.g., <code>https://img.example.com</code>)</li>
+    <li><code>PICFAST_APP_ADMIN_EMAIL</code> / <code>PICFAST_APP_ADMIN_PASSWORD</code> — avoid weak passwords</li>
+    <li><code>POSTGRES_PASSWORD</code> — don't use the example password</li>
+    <li>Reverse proxy correctly passes <code>Host</code> and <code>X-Forwarded-Proto</code> headers</li>
+    <li>Upload size limits in reverse proxy match your requirements</li>
+  </ul>
+
   <h2>Environment variables</h2>
   <p>All config keys can be set via <code>PICFAST_</code> prefixed environment variables:</p>
   <pre><code>PICFAST_SERVER_PORT=8080
 PICFAST_SERVER_BASE_URL=https://pics.example.com
 PICFAST_JWT_SECRET=your-strong-secret
-PICFAST_DATABASE_URL=postgres://picfast:picfast@localhost:5432/picfast
+PICFAST_DATABASE_URL=postgres://picfast:picfast@localhost:5432/picfast?sslmode=disable
 PICFAST_STORAGE_LOCAL_ROOT=./data/uploads
 PICFAST_STORAGE_THUMBNAIL_DIR=./data/thumbnails</code></pre>
 
@@ -43,6 +71,14 @@ PICFAST_STORAGE_THUMBNAIL_DIR=./data/thumbnails</code></pre>
     &#125;
 &#125;</code></pre>
 
+  <h3>Caddy</h3>
+  <pre><code>pics.example.com &#123;
+    reverse_proxy 127.0.0.1:18080
+    request_body &#123;
+        max_size 100MB
+    &#125;
+&#125;</code></pre>
+
   <h3>Traefik</h3>
   <p>Add these labels to your Docker Compose service:</p>
   <pre><code>labels:
@@ -57,5 +93,5 @@ PICFAST_STORAGE_THUMBNAIL_DIR=./data/thumbnails</code></pre>
   <h2>Updating</h2>
   <pre><code>git pull
 make docker-up</code></pre>
-  <p>Migrations run automatically on startup.</p>
+  <p>If using the Docker Hub image, pull the new tag and recreate the container. Database migrations run automatically on startup.</p>
 </DocsLayout>

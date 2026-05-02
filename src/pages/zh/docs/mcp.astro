@@ -1,0 +1,96 @@
+---
+import DocsLayout from '../../../layouts/DocsLayout.astro';
+---
+
+<DocsLayout title="MCP 集成" description="通过 Model Context Protocol 将 PicFast 接入 AI Agent。">
+  <h1>MCP 集成</h1>
+  <p>
+    PicFast 内置 Model Context Protocol（MCP）服务器，让 Claude、Cursor、VS Code Copilot 等 AI Agent 直接与你的图床平台交互。AI 助手可通过标准化协议完成图片上传、浏览与管理。
+  </p>
+
+  <h2>什么是 MCP？</h2>
+  <p>
+    Model Context Protocol 是一项开放标准，用于让 AI 应用与外部工具和数据源交互。PicFast 的 MCP 服务器将你的图床以工具和资源的形式暴露给任意兼容 MCP 的客户端。
+  </p>
+
+  <h2>安装</h2>
+  <p>MCP 服务器以 <code>@picfast/mcp</code> 发布在 npm。无需全局安装，通过 <code>npx</code> 直接运行：</p>
+  <pre><code>npx @picfast/mcp</code></pre>
+
+  <h2>配置</h2>
+  <p>在 MCP 客户端设置中配置以下环境变量：</p>
+  <table>
+    <thead><tr><th>变量</th><th>必填</th><th>说明</th></tr></thead>
+    <tbody>
+      <tr><td><code>PICFAST_BASE_URL</code></td><td>是</td><td>PicFast 服务器地址，如 <code>https://picfast.example.com</code></td></tr>
+      <tr><td><code>PICFAST_API_TOKEN</code></td><td>否</td><td>用于认证操作的 API token。在 PicFast 管理后台创建（token 以 <code>img_</code> 为前缀）。不填则仅支持游客上传。</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Claude Desktop</h3>
+  <p>在 <code>claude_desktop_config.json</code> 中添加：</p>
+  <pre><code>&#123;
+  "mcpServers": &#123;
+    "picfast": &#123;
+      "command": "npx",
+      "args": ["-y", "@picfast/mcp"],
+      "env": &#123;
+        "PICFAST_BASE_URL": "https://picfast.example.com",
+        "PICFAST_API_TOKEN": "img_xxxxxxxx"
+      &#125;
+    &#125;
+  &#125;
+&#125;</code></pre>
+
+  <h3>Cursor / VS Code</h3>
+  <p>配置格式同上，在 <strong>设置 → MCP</strong> 中添加。</p>
+
+  <h2>工具</h2>
+  <table>
+    <thead><tr><th>工具</th><th>认证</th><th>说明</th></tr></thead>
+    <tbody>
+      <tr><td><code>upload_image</code></td><td>否</td><td>从本地文件路径上传图片。无需 token 即可在游客模式下使用。</td></tr>
+      <tr><td><code>list_images</code></td><td>是</td><td>分页查看已上传的图片列表。</td></tr>
+      <tr><td><code>get_image</code></td><td>是</td><td>获取图片详情及所有分享链接格式（URL、Markdown、HTML、BBCode）。</td></tr>
+      <tr><td><code>delete_image</code></td><td>是</td><td>按 key 删除指定图片。</td></tr>
+      <tr><td><code>get_usage_stats</code></td><td>是</td><td>查看当前存储配额、使用量及图片数量。</td></tr>
+    </tbody>
+  </table>
+
+  <h3>上传响应格式</h3>
+  <p><code>upload_image</code> 调用成功后返回的 JSON 字段：</p>
+  <pre><code>&#123;
+  "key": "abc123",
+  "url": "https://picfast.example.com/i/abc123.png",
+  "markdown": "![](https://picfast.example.com/i/abc123.png)",
+  "html": "&lt;img src=\"https://picfast.example.com/i/abc123.png\" /&gt;",
+  "bbcode": "[img]https://picfast.example.com/i/abc123.png[/img]",
+  "mimetype": "image/png",
+  "original_size": 204800,
+  "stored_size": 196500,
+  "processed": true
+&#125;</code></pre>
+
+  <h2>资源</h2>
+  <p>MCP 客户端还可以读取以下资源 URI 获取结构化数据：</p>
+  <table>
+    <thead><tr><th>URI</th><th>认证</th><th>说明</th></tr></thead>
+    <tbody>
+      <tr><td><code>picfast://user/profile</code></td><td>是</td><td>当前用户信息</td></tr>
+      <tr><td><code>picfast://images/&#123;key&#125;</code></td><td>是</td><td>指定图片的元数据与链接</td></tr>
+    </tbody>
+  </table>
+
+  <h2>游客模式</h2>
+  <p>
+    未设置 <code>PICFAST_API_TOKEN</code> 时，MCP 服务器以游客模式运行，仅 <code>upload_image</code> 可用。需在 PicFast 管理后台启用游客上传功能（站点设置 → 允许游客上传）。其他需认证的工具在无 token 调用时将返回错误。
+  </p>
+
+  <h2>错误处理</h2>
+  <p>所有工具调用失败时返回统一的 JSON 结构：</p>
+  <pre><code>&#123;"error": &#123;"code": "UPLOAD_FAILED", "message": "上传未能完成。"&#125;&#125;</code></pre>
+  <p>错误码包含：<code>UNAUTHORIZED</code>、<code>FORBIDDEN_SCOPE</code>、<code>INVALID_IMAGE_DATA</code>、<code>UPLOAD_FAILED</code>、<code>IMAGE_NOT_FOUND</code>、<code>INTERNAL_ERROR</code>。</p>
+
+  <h2>许可证</h2>
+  <p>MCP 服务器采用 MIT 许可证。npm 包地址：<a href="https://www.npmjs.com/package/@picfast/mcp" target="_blank" rel="noopener">@picfast/mcp</a>。</p>
+</DocsLayout>

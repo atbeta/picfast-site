@@ -7,7 +7,7 @@ interface Props {
 
 const {
   title,
-  description = 'PicFast — Open source, self-hosted image hosting with API-first design',
+  description = 'PicFast — Self-hosted image hosting platform. Deploy in one command with Docker. Full admin panel, 6 storage backends, API-first with MCP AI integration and ShareX support.',
   lang = 'en',
 } = Astro.props;
 
@@ -31,6 +31,12 @@ const docsLink = locale === 'en' ? '/docs/getting-started' : '/zh/docs/getting-s
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+    <script is:inline>
+      (function() {
+        var t = localStorage.getItem('picfast-theme');
+        if (t) document.documentElement.setAttribute('data-theme', t);
+      })();
+    </script>
   </head>
   <body>
     <header class="site-header">
@@ -50,6 +56,15 @@ const docsLink = locale === 'en' ? '/docs/getting-started' : '/zh/docs/getting-s
           <a href="https://github.com/atbeta/picfast" class="nav-link" target="_blank" rel="noopener">
             GitHub
           </a>
+          <button id="theme-toggle" class="theme-btn" aria-label="Toggle theme">
+            <svg class="icon-sun" width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <circle cx="8" cy="8" r="3" stroke="currentColor" stroke-width="1.75"/>
+              <path d="M8 1v1.5M8 13.5V15M15 8h-1.5M2.5 8H1M12.95 3.05l-1.06 1.06M4.11 11.89l-1.06 1.06M12.95 12.95l-1.06-1.06M4.11 4.11L3.05 3.05" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+            <svg class="icon-moon" width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <path d="M13 10.5A6 6 0 015.5 3 5 5 0 1013 10.5z" stroke="currentColor" stroke-width="1.75" stroke-linejoin="round"/>
+            </svg>
+          </button>
           <a href={switchLocale} class="nav-link lang-switch">
             {switchLocaleLabel}
           </a>
@@ -74,8 +89,8 @@ const docsLink = locale === 'en' ? '/docs/getting-started' : '/zh/docs/getting-s
           </a>
           <p class="footer-tagline">
             {locale === 'en'
-              ? 'Open source, self-hosted image hosting'
-              : '开源、自托管的图片托管服务'}
+              ? 'Self-hosted image hosting platform. One command to deploy.'
+              : '自托管图床平台，一行命令即可部署。'}
           </p>
         </div>
         <div class="footer-links">
@@ -90,6 +105,25 @@ const docsLink = locale === 'en' ? '/docs/getting-started' : '/zh/docs/getting-s
         </p>
       </div>
     </footer>
+
+    <script is:inline>
+      (function() {
+        var btn = document.getElementById('theme-toggle');
+        var html = document.documentElement;
+
+        function effectiveTheme() {
+          var stored = localStorage.getItem('picfast-theme');
+          if (stored === 'dark' || stored === 'light') return stored;
+          return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        }
+
+        btn.addEventListener('click', function() {
+          var next = effectiveTheme() === 'dark' ? 'light' : 'dark';
+          html.setAttribute('data-theme', next);
+          localStorage.setItem('picfast-theme', next);
+        });
+      })();
+    </script>
   </body>
 </html>
 
@@ -109,8 +143,20 @@ const docsLink = locale === 'en' ? '/docs/getting-started' : '/zh/docs/getting-s
     --font-mono: 'JetBrains Mono', monospace;
   }
 
+  :root[data-theme="dark"] {
+    --bg: #0f1117;
+    --bg-alt: #1a1d27;
+    --text: #e5e7eb;
+    --text-muted: #9ca3af;
+    --border: #2d3140;
+    --accent: #3b82f6;
+    --accent-hover: #60a5fa;
+    --code-bg: #1e2330;
+    --code-text: #e5e7eb;
+  }
+
   @media (prefers-color-scheme: dark) {
-    :root {
+    :root:not([data-theme="light"]) {
       --bg: #0f1117;
       --bg-alt: #1a1d27;
       --text: #e5e7eb;
@@ -284,6 +330,35 @@ const docsLink = locale === 'en' ? '/docs/getting-started' : '/zh/docs/getting-s
     font-size: 0.8125rem;
     border: 1px solid var(--border);
     border-radius: 4px;
+  }
+
+  .theme-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 6px;
+    border: none;
+    background: transparent;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: color 0.15s, background 0.15s;
+  }
+  .theme-btn:hover {
+    color: var(--text);
+    background: var(--bg-alt);
+  }
+
+  .icon-sun { display: block; }
+  .icon-moon { display: none; }
+
+  :root[data-theme="dark"] .icon-sun { display: none; }
+  :root[data-theme="dark"] .icon-moon { display: block; }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) .icon-sun { display: none; }
+    :root:not([data-theme="light"]) .icon-moon { display: block; }
   }
 
   .site-footer {

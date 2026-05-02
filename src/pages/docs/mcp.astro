@@ -1,0 +1,96 @@
+---
+import DocsLayout from '../../layouts/DocsLayout.astro';
+---
+
+<DocsLayout title="MCP Integration" description="Connect PicFast to AI agents via the Model Context Protocol.">
+  <h1>MCP Integration</h1>
+  <p>
+    PicFast ships a Model Context Protocol (MCP) server that lets AI agents — Claude, Cursor, VS Code Copilot, and others — interact with your image hosting platform directly. Upload images from local files, browse your library, and manage uploads, all through a standardized protocol.
+  </p>
+
+  <h2>What is MCP?</h2>
+  <p>
+    The Model Context Protocol is an open standard that enables AI applications to interact with external tools and data sources. PicFast's MCP server exposes your image hosting as a set of tools and resources that any MCP-compatible client can consume.
+  </p>
+
+  <h2>Installation</h2>
+  <p>The MCP server is published as <code>@picfast/mcp</code> on npm. No global install required — run it directly with <code>npx</code>:</p>
+  <pre><code>npx @picfast/mcp</code></pre>
+
+  <h2>Configuration</h2>
+  <p>Configure the MCP server in your client's settings. Two environment variables control behavior:</p>
+  <table>
+    <thead><tr><th>Variable</th><th>Required</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr><td><code>PICFAST_BASE_URL</code></td><td>Yes</td><td>Your PicFast server URL, e.g. <code>https://picfast.example.com</code></td></tr>
+      <tr><td><code>PICFAST_API_TOKEN</code></td><td>No</td><td>API token for authenticated operations. Create one in the PicFast console (tokens start with <code>img_</code>). Omit for guest upload only.</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Claude Desktop</h3>
+  <p>Add to your <code>claude_desktop_config.json</code>:</p>
+  <pre><code>&#123;
+  "mcpServers": &#123;
+    "picfast": &#123;
+      "command": "npx",
+      "args": ["-y", "@picfast/mcp"],
+      "env": &#123;
+        "PICFAST_BASE_URL": "https://picfast.example.com",
+        "PICFAST_API_TOKEN": "img_xxxxxxxx"
+      &#125;
+    &#125;
+  &#125;
+&#125;</code></pre>
+
+  <h3>Cursor / VS Code</h3>
+  <p>Same configuration format. Add it in the MCP settings panel under <strong>Settings → MCP</strong>.</p>
+
+  <h2>Tools</h2>
+  <table>
+    <thead><tr><th>Tool</th><th>Auth Required</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr><td><code>upload_image</code></td><td>No</td><td>Upload an image from a local file path. Works in guest mode without a token.</td></tr>
+      <tr><td><code>list_images</code></td><td>Yes</td><td>List your uploaded images with pagination support.</td></tr>
+      <tr><td><code>get_image</code></td><td>Yes</td><td>Retrieve image details including all share link formats (URL, Markdown, HTML, BBCode).</td></tr>
+      <tr><td><code>delete_image</code></td><td>Yes</td><td>Delete an image by its key.</td></tr>
+      <tr><td><code>get_usage_stats</code></td><td>Yes</td><td>Check your current storage quota, usage, and image count.</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Upload response format</h3>
+  <p>A successful <code>upload_image</code> call returns a JSON response with these fields:</p>
+  <pre><code>&#123;
+  "key": "abc123",
+  "url": "https://picfast.example.com/i/abc123.png",
+  "markdown": "![](https://picfast.example.com/i/abc123.png)",
+  "html": "&lt;img src=\"https://picfast.example.com/i/abc123.png\" /&gt;",
+  "bbcode": "[img]https://picfast.example.com/i/abc123.png[/img]",
+  "mimetype": "image/png",
+  "original_size": 204800,
+  "stored_size": 196500,
+  "processed": true
+&#125;</code></pre>
+
+  <h2>Resources</h2>
+  <p>MCP clients can also read these resource URIs for structured data access:</p>
+  <table>
+    <thead><tr><th>URI</th><th>Auth Required</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr><td><code>picfast://user/profile</code></td><td>Yes</td><td>Current user profile information</td></tr>
+      <tr><td><code>picfast://images/&#123;key&#125;</code></td><td>Yes</td><td>Image metadata and links for a specific image</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Guest mode</h2>
+  <p>
+    When no <code>PICFAST_API_TOKEN</code> is set, the MCP server operates in guest mode. Only <code>upload_image</code> is available. Guest upload must be enabled on your PicFast instance (admin settings → allow guest upload). Authenticated tools will return an error if called without a token.
+  </p>
+
+  <h2>Error handling</h2>
+  <p>All tool errors return a consistent JSON structure:</p>
+  <pre><code>&#123;"error": &#123;"code": "UPLOAD_FAILED", "message": "The upload could not be completed."&#125;&#125;</code></pre>
+  <p>Error codes include: <code>UNAUTHORIZED</code>, <code>FORBIDDEN_SCOPE</code>, <code>INVALID_IMAGE_DATA</code>, <code>UPLOAD_FAILED</code>, <code>IMAGE_NOT_FOUND</code>, <code>INTERNAL_ERROR</code>.</p>
+
+  <h2>License</h2>
+  <p>The MCP server is MIT-licensed. The npm package is <a href="https://www.npmjs.com/package/@picfast/mcp" target="_blank" rel="noopener">@picfast/mcp</a>.</p>
+</DocsLayout>

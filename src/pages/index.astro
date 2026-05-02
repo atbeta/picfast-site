@@ -3,7 +3,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import '../styles/home.css';
 ---
 
-<BaseLayout title="PicFast — Self-hosted Image Hosting">
+<BaseLayout title="PicFast — Self-hosted Image Hosting Platform">
   <section class="hero">
     <div class="container">
       <div class="hero-badge">
@@ -12,10 +12,11 @@ import '../styles/home.css';
         </svg>
         Open Source · GNU GPL v3
       </div>
-      <h1>Your images.<br />Your server.<br />Your control.</h1>
+      <h1>Self-hosted image hosting,<br />deployed in one command.</h1>
       <p class="hero-sub">
-        Deploy a full-featured image hosting service in minutes.
-        No tracking, no limits, no third-party dependency.
+        A complete image hosting platform, launched with a single <code>make docker-up</code>.
+        Features a full admin panel, 6 storage backends, and an API-first architecture.
+        Natively integrates with AI agents via MCP, ShareX for quick captures, and any HTTP client.
       </p>
       <div class="hero-code">
         <div class="code-label">
@@ -27,7 +28,6 @@ import '../styles/home.css';
         <pre><code><span class="prompt">$</span> git clone https://github.com/atbeta/picfast.git
 <span class="prompt">$</span> cd picfast
 <span class="prompt">$</span> cp .env.example .env
-<span class="prompt">$</span> cp config.example.yaml config.yaml
 <span class="prompt">$</span> make docker-up</code></pre>
       </div>
       <div class="hero-actions">
@@ -44,8 +44,30 @@ import '../styles/home.css';
 
   <section class="features">
     <div class="container">
-      <h2 class="section-title">Everything you need, nothing you don't</h2>
+      <h2 class="section-title">Everything you need, one command away</h2>
       <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+              <rect x="2" y="3" width="18" height="16" rx="3" stroke="currentColor" stroke-width="1.75"/>
+              <path d="M7 10h8M7 14h5" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/>
+              <rect x="4" y="2" width="6" height="4" rx="1" fill="currentColor"/>
+            </svg>
+          </div>
+          <h3>One-Command Deploy</h3>
+          <p>Clone, configure, run <code>make docker-up</code> — the full stack starts in one go. PostgreSQL, the application, and Mailpit launch together. Prebuilt images on Docker Hub make production deployment equally straightforward.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+              <rect x="3" y="3" width="16" height="16" rx="3" stroke="currentColor" stroke-width="1.75"/>
+              <path d="M3 8h16M7 8v11" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/>
+              <rect x="7" y="1" width="8" height="3" rx="1" fill="currentColor"/>
+            </svg>
+          </div>
+          <h3>Full Admin Panel</h3>
+          <p>Manage users, groups, storage strategies, images, and site configuration from a clean React dashboard. Day-to-day operations require no direct database access.</p>
+        </div>
         <div class="feature-card">
           <div class="feature-icon">
             <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
@@ -54,18 +76,18 @@ import '../styles/home.css';
               <circle cx="7" cy="7" r="1.5" fill="currentColor"/>
             </svg>
           </div>
-          <h3>API-First Design</h3>
-          <p>Clean REST API with OpenAPI spec. Upload via curl, ShareX, or any HTTP client. Integrate with your existing workflow — no vendor lock-in.</p>
+          <h3>API-First, AI-Ready</h3>
+          <p>Clean REST API with an OpenAPI spec and live documentation. The built-in MCP server enables Claude, Cursor, and other AI agents to upload, list, and manage images. Run <code>npx @picfast/mcp</code> to connect.</p>
         </div>
         <div class="feature-card">
           <div class="feature-icon">
             <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
               <path d="M11 2L3 6v6c0 5.25 3.4 10.15 8 11.4 4.6-1.25 8-6.15 8-11.4V6L11 2z" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
-              <path d="M8 11l2 2 4-4" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M7 10l3 3 5-5" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
           </div>
-          <h3>Privacy by Default</h3>
-          <p>No tracking, no analytics, no ads. Your images stay on your server. Optional content moderation — you control what gets hosted.</p>
+          <h3>Native Tool Integrations</h3>
+          <p>One-click ShareX setup via a dedicated config endpoint. Multi-format output — URL, Markdown, BBCode, HTML. Works with curl, Python, JavaScript, or any HTTP client. No vendor lock-in.</p>
         </div>
         <div class="feature-card">
           <div class="feature-icon">
@@ -74,17 +96,8 @@ import '../styles/home.css';
               <path d="M4 8h14M8 8v10" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/>
             </svg>
           </div>
-          <h3>Multiple Storage Backends</h3>
-          <p>Local filesystem, S3, OSS, COS, Kodo, or WebDAV. Switch storage backends without re-uploading existing images.</p>
-        </div>
-        <div class="feature-card">
-          <div class="feature-icon">
-            <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
-              <path d="M4 12h14M4 6h14M4 18h14" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/>
-            </svg>
-          </div>
-          <h3>Developer Experience</h3>
-          <p>OpenAPI documentation with live testing, ShareX support, multi-format link output (URL, Markdown, BBCode, HTML).</p>
+          <h3>6 Storage Backends</h3>
+          <p>Local filesystem, S3-compatible (MinIO, R2), Alibaba OSS, Tencent COS, Qiniu Kodo, and WebDAV. Switch backends anytime — existing images stay where they are.</p>
         </div>
         <div class="feature-card">
           <div class="feature-icon">
@@ -93,18 +106,8 @@ import '../styles/home.css';
               <circle cx="11" cy="11" r="3" stroke="currentColor" stroke-width="1.75"/>
             </svg>
           </div>
-          <h3>AI / MCP Integration</h3>
-          <p>Built-in MCP server for AI agents — tools, resources, and prompts. Let AI assistants upload, list, and manage images through a standardized protocol.</p>
-        </div>
-        <div class="feature-card">
-          <div class="feature-icon">
-            <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
-              <rect x="3" y="3" width="16" height="16" rx="3" stroke="currentColor" stroke-width="1.75"/>
-              <path d="M7 11h8M7 7h8M7 15h5" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/>
-            </svg>
-          </div>
-          <h3>Modern Stack</h3>
-          <p>Built with Go and React. Docker Compose single-command startup. PostgreSQL for persistence, Prometheus metrics and Mailpit included.</p>
+          <h3>Image Processing & Safety</h3>
+          <p>Automatic thumbnail generation, configurable compression, and watermark support. Optional content moderation with an admin approval queue.</p>
         </div>
       </div>
     </div>
@@ -120,14 +123,14 @@ import '../styles/home.css';
           </thead>
           <tbody>
             <tr><td>Setup time</td><td>~30 min</td><td>~20 min</td><td>~2 hours</td><td><strong>~5 min</strong></td></tr>
-            <tr><td>API support</td><td>Basic</td><td>Limited</td><td>Custom</td><td><strong>OpenAPI + docs</strong></td></tr>
+            <tr><td>Admin panel</td><td>Basic</td><td>Limited</td><td>None</td><td><strong>Full React dashboard</strong></td></tr>
+            <tr><td>API support</td><td>Basic</td><td>Limited</td><td>Custom</td><td><strong>OpenAPI + live docs</strong></td></tr>
             <tr><td>ShareX integration</td><td>✅</td><td>❌</td><td>Custom</td><td><strong>✅ Built-in</strong></td></tr>
+            <tr><td>AI / MCP tools</td><td>❌</td><td>❌</td><td>❌</td><td><strong>✅ 5 tools + resources</strong></td></tr>
             <tr><td>Storage backends</td><td>Limited</td><td>Local only</td><td>S3 only</td><td><strong>6 backends</strong></td></tr>
             <tr><td>Content moderation</td><td>❌</td><td>❌</td><td>Custom</td><td><strong>✅ Built-in</strong></td></tr>
-            <tr><td>AI / MCP tools</td><td>❌</td><td>❌</td><td>❌</td><td><strong>✅ 5 tools + prompts + resources</strong></td></tr>
-            <tr><td>Thumbnail generation</td><td>✅</td><td>✅</td><td>Custom</td><td><strong>✅ Auto</strong></td></tr>
             <tr><td>Image processing</td><td>Basic</td><td>Limited</td><td>Custom</td><td><strong>✅ Compression + watermark</strong></td></tr>
-            <tr><td>License</td><td>Paid</td><td>MIT</td><td>N/A</td><td><strong>✅ GPL v3</strong></td></tr>
+            <tr><td>License</td><td>Paid</td><td>MIT</td><td>N/A</td><td><strong>GPL v3</strong></td></tr>
           </tbody>
         </table>
       </div>
@@ -142,7 +145,7 @@ import '../styles/home.css';
           <div class="qs-num">1</div>
           <div class="qs-content">
             <h3>Clone and configure</h3>
-            <p>Clone the repo, copy the example config files, and edit with your settings.</p>
+            <p>Clone the repo, copy the example config files, and adjust to your needs.</p>
             <div class="hero-code small"><pre><code>git clone https://github.com/atbeta/picfast.git
 cd picfast
 cp .env.example .env
@@ -153,16 +156,16 @@ $EDITOR config.yaml</code></pre></div>
         <div class="qs-step">
           <div class="qs-num">2</div>
           <div class="qs-content">
-            <h3>Start services</h3>
-            <p>Spins up PostgreSQL, Mailpit (local email testing), and the app with one command.</p>
+            <h3>Start everything</h3>
+            <p>One command launches PostgreSQL, Mailpit (local email testing), and the application.</p>
             <div class="hero-code small"><pre><code>make docker-up</code></pre></div>
           </div>
         </div>
         <div class="qs-step">
           <div class="qs-num">3</div>
           <div class="qs-content">
-            <h3>Upload via API</h3>
-            <p>Register a user, get a token, then upload your first image.</p>
+            <h3>Upload your first image</h3>
+            <p>Register a user, obtain a token, and upload via curl — or use the web UI, ShareX, or MCP.</p>
             <div class="hero-code small"><pre><code>curl -X POST http://localhost:18080/api/v1/auth/register \
   -H "Content-Type: application/json" \
   -d '&#123;"email":"you@example.com","password":"hunter2","name":"You"&#125;'
@@ -173,7 +176,7 @@ curl -X POST http://localhost:18080/api/v1/images \
           </div>
         </div>
       </div>
-      <p class="qs-cta"><a href="/docs/getting-started" class="btn btn-primary">Full documentation →</a></p>
+      <p class="qs-cta"><a href="/docs/getting-started" class="btn btn-primary">Full documentation &rarr;</a></p>
     </div>
   </section>
 </BaseLayout>

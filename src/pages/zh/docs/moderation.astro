@@ -2,23 +2,31 @@
 import DocsLayout from '../../../layouts/DocsLayout.astro';
 ---
 
-<DocsLayout title="内容审核" description="在 PicFast 中配置内容审核。">
+<DocsLayout title="内容审核" description="配置 PicFast 的内容审核功能。">
   <h1>内容审核</h1>
-  <p>PicFast 提供可选的内容审核功能，可在图片公开展示前进行人工审查。</p>
+  <p>PicFast 提供可选的内容审核功能，可在图片对外公开之前进行审查，适用于面向公网开放、需要防止滥用的部署场景。</p>
 
   <h2>审核模式</h2>
 
   <h3>关闭（默认）</h3>
-  <p>所有上传立即可访问，无需审查。</p>
+  <p>所有上传的图片立即可见，无需审核。适合私有或团队内部部署。</p>
 
-  <h3>人工审核</h3>
-  <p>上传的图片标记为<strong>待审核</strong>状态，不会在公开列表中显示。管理员在后台 <strong>Moderation</strong> 页面审核。审核通过后图片公开，驳回则自动删除。</p>
+  <h3>手动审核</h3>
+  <p>上传的图片标记为<strong>待审核</strong>，仅在管理员批准后才对外公开。管理员可在后台的<strong>审核</strong>页面中进行审查。</p>
 
-  <h2>配置</h2>
-  <p>在 <code>config.yaml</code> 或后台管理界面设置审核模式：</p>
+  <h2>配置方式</h2>
+  <p>在 <code>config.yaml</code> 中设置审核模式，或通过管理后台的站点设置修改：</p>
   <pre><code>app:
-  moderation_mode: "manual"  # "" (disabled) | "manual"</code></pre>
+  moderation_mode: "manual"  # ""（关闭）| "manual"（手动审核）</code></pre>
+  <p>设置为 <code>""</code> 或不填写该字段即为关闭。</p>
 
-  <h2>管理员审核</h2>
-  <p>进入 <strong>Admin → Moderation</strong> 查看待审核图片，逐个审核通过或拒绝，可附备注。</p>
+  <h2>审核流程</h2>
+  <p>启用审核后：</p>
+  <ol>
+    <li>用户照常上传图片</li>
+    <li>图片标记为"待审核"，仅上传者与管理员可见</li>
+    <li>管理员在<strong>管理后台 &rarr; 审核</strong>中查看待审核图片</li>
+    <li>批准的图片变为公开可见，拒绝的图片将被删除</li>
+  </ol>
+  <p>注意：拒绝操作不可撤销，图片文件将从存储中永久删除，请谨慎判断。</p>
 </DocsLayout>

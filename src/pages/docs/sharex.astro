@@ -4,13 +4,14 @@ import DocsLayout from '../../layouts/DocsLayout.astro';
 
 <DocsLayout title="ShareX Integration" description="Configure ShareX with PicFast.">
   <h1>ShareX Integration</h1>
-  <p>ShareX is a Windows tool for screenshots, file uploads, and more. PicFast has built-in ShareX support.</p>
+  <p>PicFast provides built-in ShareX support. ShareX is a free, open-source screenshot and file upload tool for Windows.</p>
 
-  <h2>Get your ShareX configuration</h2>
-  <p>Log in to PicFast, go to <strong>Settings → ShareX</strong>, and download the configuration file. Import it in ShareX under <strong>Destinations → Import → from file</strong>.</p>
+  <h2>One-click setup</h2>
+  <p>Log in to PicFast, go to <strong>Settings &rarr; ShareX</strong>, and download your personalized configuration file. Then in ShareX: <strong>Destinations &rarr; Import &rarr; from file</strong>.</p>
+  <p>The downloaded config includes your API token and server URL, so no manual setup is required.</p>
 
   <h2>Manual setup</h2>
-  <p>In ShareX, create a new <strong>Custom uploader</strong>:</p>
+  <p>If you prefer to configure manually, create a new <strong>Custom uploader</strong> in ShareX:</p>
   <h3>Request settings</h3>
   <table>
     <thead><tr><th>Field</th><th>Value</th></tr></thead>
@@ -35,5 +36,12 @@ import DocsLayout from '../../layouts/DocsLayout.astro';
   </table>
 
   <h2>Verify</h2>
-  <p>Take a screenshot or upload a file in ShareX. The image URL should appear in your clipboard automatically.</p>
+  <p>Take a screenshot or upload a file in ShareX. The image URL should appear in your clipboard automatically. By default, the Markdown-formatted link is also available.</p>
+
+  <h2>Troubleshooting</h2>
+  <ul>
+    <li>Make sure <code>server.base_url</code> is set to your actual domain. The ShareX config generator uses this value to construct request URLs.</li>
+    <li>If uploads time out, check your reverse proxy's <code>client_max_body_size</code> — it should be at least as large as your per-group upload limit.</li>
+    <li>Verify your API token is still valid. Tokens can be rotated in the PicFast UI under Settings.</li>
+  </ul>
 </DocsLayout>

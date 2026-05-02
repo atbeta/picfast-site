@@ -5,7 +5,7 @@ import DocsLayout from '../../layouts/DocsLayout.astro';
 <DocsLayout title="Quick Start" description="Get PicFast running in minutes.">
   <h1>Quick Start</h1>
   <p>
-    PicFast is a self-hosted image hosting service. It takes less than 5 minutes to get running.
+    PicFast is a self-hosted image hosting platform. It can be deployed via Docker in minutes.
   </p>
 
   <h2>Prerequisites</h2>
@@ -24,19 +24,50 @@ cp config.example.yaml config.yaml</code></pre>
   <pre><code>jwt:
   secret: "your-strong-random-secret-here"</code></pre>
 
-  <h2>2. Start services</h2>
-  <p>This spins up PostgreSQL, mailpit (for local email testing), and the app:</p>
+  <h2>2. Start everything</h2>
+  <p>One command launches PostgreSQL, Mailpit (local email testing), and the app:</p>
   <pre><code>make docker-up</code></pre>
-  <p>Database migrations run automatically on first startup.</p>
+  <p>Database migrations run automatically on first startup. If you set <code>admin_email</code> and <code>admin_password</code>, an admin account is auto-created.</p>
 
   <h2>3. Access the app</h2>
-  <p>The app is available at <code>http://localhost:18080</code>.</p>
-  <p>Create your admin account by registering through the UI, then grant it admin role in the database or via admin settings.</p>
+  <p>Open <code>http://localhost:18080</code>. Register an account or log in if the admin account was auto-created.</p>
+
+  <h2>4. Upload your first image</h2>
+  <p>You can upload via the web UI, the API, ShareX, or through the MCP server for AI agents:</p>
+  <pre><code># Via curl
+curl -X POST http://localhost:18080/api/v1/images \
+  -H "Authorization: Bearer YOUR_TOKEN" \
+  -F "file=@image.png"
+
+# Via MCP (AI agent integration)
+npx @picfast/mcp</code></pre>
+
+  <h2>Alternative: Docker Hub image</h2>
+  <p>You can also run PicFast directly from the published Docker image without cloning the repo:</p>
+  <pre><code>docker network create picfast-net
+
+docker run -d --name picfast-db --network picfast-net \
+  -e POSTGRES_USER=picfast -e POSTGRES_PASSWORD=picfast \
+  -e POSTGRES_DB=picfast \
+  -v picfast-pgdata:/var/lib/postgresql/data \
+  postgres:16-alpine
+
+docker run -d --name picfast --network picfast-net -p 18080:8080 \
+  -e PICFAST_DATABASE_URL='postgres://picfast:picfast@picfast-db:5432/picfast?sslmode=disable' \
+  -e PICFAST_JWT_SECRET='replace-with-a-strong-secret' \
+  -e PICFAST_SERVER_BASE_URL='http://localhost:18080' \
+  -e PICFAST_APP_ADMIN_EMAIL='admin@example.com' \
+  -e PICFAST_APP_ADMIN_PASSWORD='change-this-password' \
+  -v picfast-uploads:/app/data/uploads \
+  -v picfast-thumbnails:/app/data/thumbnails \
+  xbeta/picfast:latest</code></pre>
 
   <h2>What's next?</h2>
   <ul>
-    <li><a href="/docs/configuration">Configuration reference →</a></li>
-    <li><a href="/docs/storage">Set up storage backends →</a></li>
-    <li><a href="/docs/api">API documentation →</a></li>
+    <li><a href="/docs/configuration">Configuration reference &rarr;</a></li>
+    <li><a href="/docs/storage">Set up storage backends &rarr;</a></li>
+    <li><a href="/docs/api">API documentation &rarr;</a></li>
+    <li><a href="/docs/sharex">Set up ShareX integration &rarr;</a></li>
+    <li><a href="/docs/deployment">Production deployment &rarr;</a></li>
   </ul>
 </DocsLayout>

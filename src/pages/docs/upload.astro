@@ -6,7 +6,7 @@ import DocsLayout from '../../layouts/DocsLayout.astro';
   <h1>Upload Images</h1>
 
   <h2>Web interface</h2>
-  <p>Log in at <code>/</code> and drag-and-drop or click to upload files.</p>
+  <p>Log in and drag files to upload, or click to browse. The web UI supports batch upload and automatically copies share links on completion.</p>
 
   <h2>curl</h2>
   <pre><code># Authenticated upload
@@ -18,10 +18,42 @@ curl -X POST http://localhost:18080/api/v1/images \
 curl -X POST http://localhost:18080/api/v1/images \
   -H "Authorization: Bearer YOUR_TOKEN" \
   -F "file=@image.png" \
-  -F "expires_in=24h"</code></pre>
+  -F "expires_in=24h"
+
+# Guest upload (if enabled)
+curl -X POST http://localhost:18080/api/v1/upload \
+  -F "file=@image.png"</code></pre>
 
   <h2>ShareX</h2>
-  <p>See the <a href="/docs/sharex">ShareX Integration</a> page for full setup instructions.</p>
+  <p>PicFast provides a built-in ShareX config endpoint. See the <a href="/docs/sharex">ShareX Integration</a> page for full setup instructions.</p>
+
+  <h2>MCP (AI agents)</h2>
+  <p>AI assistants can upload images directly through PicFast's MCP server:</p>
+  <pre><code>npx @picfast/mcp</code></pre>
+  <p>Configure with your server URL and API token, then AI agents can use the <code>upload_image</code> tool to upload local image files directly. See the <a href="/docs/api">API reference</a> for MCP setup details.</p>
+
+  <h2>Python</h2>
+  <pre><code>import requests
+
+url = "https://pics.example.com/api/v1/images"
+headers = &#123;"Authorization": "Bearer YOUR_TOKEN"&#125;
+with open("image.png", "rb") as f:
+    files = &#123;"file": f&#125;
+    r = requests.post(url, headers=headers, files=files)
+    print(r.json()["links"]["url"])</code></pre>
+
+  <h2>JavaScript</h2>
+  <pre><code>const form = new FormData();
+const file = await fs.openAsBlob("image.png");
+form.append("file", file);
+
+const res = await fetch("https://pics.example.com/api/v1/images", &#123;
+  method: "POST",
+  headers: &#123; "Authorization": "Bearer YOUR_TOKEN" &#125;,
+  body: form,
+&#125;);
+const data = await res.json();
+console.log(data.links.markdown);</code></pre>
 
   <h2>Response</h2>
   <p>A successful upload returns:</p>
@@ -37,5 +69,5 @@ curl -X POST http://localhost:18080/api/v1/images \
 
   <h2>Formats &amp; limits</h2>
   <p>Accepted formats: <code>jpg</code>, <code>png</code>, <code>gif</code>, <code>webp</code>, <code>svg</code>, <code>bmp</code>, <code>ico</code>.</p>
-  <p>Maximum file size is configured per group. Default is 50 MB.</p>
+  <p>Maximum file size is configured per group. Default is 50 MB per file.</p>
 </DocsLayout>
