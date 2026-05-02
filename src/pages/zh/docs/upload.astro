@@ -10,12 +10,12 @@ import DocsLayout from '../../../layouts/DocsLayout.astro';
 
   <h2>curl</h2>
   <pre><code># 认证上传
-curl -X POST http://localhost:8080/api/v1/images \
+curl -X POST http://localhost:18080/api/v1/images \
   -H "Authorization: Bearer YOUR_TOKEN" \
   -F "file=@image.png"
 
 # 设置过期时间（24小时）
-curl -X POST http://localhost:8080/api/v1/images \
+curl -X POST http://localhost:18080/api/v1/images \
   -H "Authorization: Bearer YOUR_TOKEN" \
   -F "file=@image.png" \
   -F "expires_in=24h"</code></pre>
@@ -25,7 +25,7 @@ curl -X POST http://localhost:8080/api/v1/images \
 
   <h2>返回值</h2>
   <p>上传成功后会返回图片信息和多种链接格式：</p>
-  <pre><code>{'{'}"id": 1,"key": "abc123","origin_name": "image.png","size_bytes": 204800,"mimetype": "image/png","extension": "png","width": 1920,"height": 1080,"links": {'{'}"url": "https://pics.example.com/i/abc123.png","html": "&lt;img src=\"https://pics.example.com/i/abc123.png\" /&gt;","markdown": "![](https://pics.example.com/i/abc123.png)","bbcode": "[img]https://pics.example.com/i/abc123.png[/img]","thumbnail_url": "https://pics.example.com/t/abc123.png"{'}'},"created_at": "2026-05-02T00:00:00Z"{'}'}</code></pre>
+  <pre><code>{'{'}#123;"id": 1,"key": "abc123","origin_name": "image.png","size_bytes": 204800,"mimetype": "image/png","extension": "png","width": 1920,"height": 1080,"links": {'{'}#123;"url": "https://pics.example.com/i/abc123.png","html": "&lt;img src=\"https://pics.example.com/i/abc123.png\" /&gt;","markdown": "![](https://pics.example.com/i/abc123.png)","bbcode": "[img]https://pics.example.com/i/abc123.png[/img]","thumbnail_url": "https://pics.example.com/t/abc123.png"{'}'}#125;,"created_at": "2026-05-02T00:00:00Z"{'}'}#125;</code></pre>
 
   <h2>支持的格式与限制</h2>
   <p>支持格式：<code>jpg</code>、<code>png</code>、<code>gif</code>、<code>webp</code>、<code>svg</code>、<code>bmp</code>、<code>ico</code>。</p>
