@@ -1,0 +1,175 @@
+---
+import DocsLayout from '../../layouts/DocsLayout.astro';
+---
+
+<DocsLayout title="Home Network &amp; NAS" description="Deploy PicFast on home NAS hardware and expose it securely with tunnels.">
+  <h1>Home Network &amp; NAS Deployment</h1>
+  <p>
+    Running PicFast on your own NAS keeps your images on hardware you control — no cloud provider, no monthly fees. This guide covers getting PicFast on common NAS platforms and exposing it to the internet when you don't have a public IP address.
+  </p>
+
+  <h2>Why NAS?</h2>
+  <p>NAS hardware is ideal for an image hosting platform:</p>
+  <ul>
+    <li>Drives are already there, and storage is the whole point</li>
+    <li>Modern NAS boxes run Docker natively</li>
+    <li>Energy-efficient 24/7 operation</li>
+    <li>Your data stays on your drives, on your LAN</li>
+  </ul>
+
+  <h2>NAS platforms</h2>
+  <p>PicFast runs on any platform that supports Docker. Here are the specifics for each:</p>
+
+  <h3>Synology</h3>
+  <p>Use <strong>Container Manager</strong> (formerly Docker). Create a stack from docker-compose:</p>
+  <ol>
+    <li>Open Container Manager → Project → Create</li>
+    <li>Paste the docker-compose content below, adjusting paths and secrets</li>
+    <li>Map <code>/volume1/docker/picfast/uploads</code> (or wherever your storage lives) as the data volume</li>
+  </ol>
+
+  <h3>QNAP</h3>
+  <p>Use <strong>Container Station</strong>. Create an application from docker-compose, same as Synology. Make sure volumes point to a shared folder under <code>/share/</code>.</p>
+
+  <h3>TrueNAS</h3>
+  <p>Use the <strong>Apps</strong> screen with the Docker Compose option, or deploy via <code>docker compose</code> in a jail/VM. ZFS datasets make great volume mounts for uploads and thumbnails.</p>
+
+  <h3>Unraid</h3>
+  <p>Add a container via the <strong>Docker</strong> tab with a custom compose file. Point volumes to <code>/mnt/user/picfast/</code> for parity-protected storage.</p>
+
+  <h3>Generic Linux / Raspberry Pi</h3>
+  <p>Clone the repo or use the Docker Hub image. On a Pi, use <code>xbeta/picfast:latest</code> (multi-arch includes ARM64).</p>
+
+  <h2>Minimal NAS compose</h2>
+  <p>Here's a lean docker-compose file for home deployment. Save as <code>docker-compose.yml</code> and run <code>docker compose up -d</code>:</p>
+  <pre><code>services:
+    db:
+      image: postgres:16-alpine
+      restart: unless-stopped
+      environment:
+        POSTGRES_USER: picfast
+        POSTGRES_PASSWORD: picfast
+        POSTGRES_DB: picfast
+      volumes:
+        - pgdata:/var/lib/postgresql/data
+
+    app:
+      image: xbeta/picfast:latest
+      restart: unless-stopped
+      ports:
+        - "18080:8080"
+      environment:
+        PICFAST_DATABASE_URL: "postgres://picfast:picfast@db:5432/picfast?sslmode=disable"
+        PICFAST_JWT_SECRET: "replace-with-a-strong-random-value"
+        PICFAST_SERVER_BASE_URL: "https://your-domain.com"
+        PICFAST_APP_ADMIN_EMAIL: "admin@example.com"
+        PICFAST_APP_ADMIN_PASSWORD: "change-this-password"
+        PICFAST_STORAGE_LOCAL_ROOT: "/app/data/uploads"
+        PICFAST_STORAGE_THUMBNAIL_DIR: "/app/data/thumbnails"
+      volumes:
+        - uploads:/app/data/uploads
+        - thumbnails:/app/data/thumbnails
+      depends_on:
+        - db
+
+  volumes:
+    pgdata:
+    uploads:
+    thumbnails:</code></pre>
+
+  <h2>Exposing to the internet</h2>
+  <p>
+    Most home networks don't have a static public IP. Even with one, opening ports on a home router is a security risk. The solution is a <strong>tunnel</strong> — an encrypted outbound connection that proxies public traffic to your local service without opening ports.
+  </p>
+
+  <h3>Option 1: Cloudflare Tunnel (recommended)</h3>
+  <p>Cloudflare Tunnel (cloudflared) is free, stable, and requires no open ports. You need a domain with DNS managed by Cloudflare.</p>
+
+  <h4>Setup</h4>
+  <ol>
+    <li>Install <code>cloudflared</code> on your NAS or host</li>
+    <li>Authenticate: <code>cloudflared tunnel login</code></li>
+    <li>Create a tunnel: <code>cloudflared tunnel create picfast</code></li>
+    <li>Configure the tunnel — create <code>config.yml</code>:</li>
+  </ol>
+  <pre><code>tunnel: &lt;tunnel-id&gt;
+  credentials-file: /home/user/.cloudflared/&lt;tunnel-id&gt;.json
+
+  ingress:
+    - hostname: pics.yourdomain.com
+      service: http://localhost:18080
+    - service: http_status:404</code></pre>
+  <ol start="5">
+    <li>Create a DNS record: <code>cloudflared tunnel route dns picfast pics.yourdomain.com</code></li>
+    <li>Start the tunnel: <code>cloudflared tunnel run picfast</code></li>
+  </ol>
+
+  <p>To run it persistently, add cloudflared to your compose file as an additional service:</p>
+  <pre><code>  tunnel:
+    image: cloudflare/cloudflared:latest
+    restart: unless-stopped
+    command: tunnel run
+    environment:
+      TUNNEL_TOKEN: "&lt;your-tunnel-token&gt;"</code></pre>
+
+  <p>Cloudflare Tunnel provides DDoS protection, free SSL, and caching. However, Cloudflare proxies your traffic — they see the data in transit. If you need end-to-end privacy, use Tailscale instead.</p>
+
+  <h3>Option 2: Tailscale</h3>
+  <p>Tailscale creates a WireGuard-based mesh network between your devices. It has two modes for exposing services:</p>
+
+  <h4>Tailscale Serve (LAN-only, no public exposure)</h4>
+  <p>Exposes a service within your tailnet. Other Tailscale users on your network can access it via a <code>*.ts.net</code> name:</p>
+  <pre><code>tailscale serve --bg 18080</code></pre>
+  <p>Now your PicFast instance is at <code>https://&lt;node-name&gt;.tailnet-name.ts.net</code> — but only for other devices on your tailnet. Good for private family use.</p>
+
+  <h4>Tailscale Funnel (public internet)</h4>
+  <p>Funnel extends Tailscale Serve to the public internet. Any device on the internet can reach your service:</p>
+  <pre><code>tailscale serve --bg 18080
+tailscale funnel --bg 18080</code></pre>
+  <p>Funnel has limits — 443 only, bandwidth caps on the free plan. But it's dead simple and requires zero DNS configuration.</p>
+
+  <h3>Option 3: FRP (Fast Reverse Proxy)</h3>
+  <p>FRP is widely used in China for 内网穿透 where Cloudflare and Tailscale may be slow or unavailable. It requires a separate VPS as a relay server.</p>
+
+  <h4>Server side (VPS with public IP)</h4>
+  <pre><code># frps.toml
+  bindPort = 7000
+  vhostHTTPPort = 8080</code></pre>
+
+  <h4>Client side (your NAS, behind NAT)</h4>
+  <pre><code># frpc.toml
+  serverAddr = "&lt;vps-ip&gt;"
+  serverPort = 7000
+
+  [[proxies]]
+  name = "picfast-web"
+  type = "http"
+  localPort = 18080
+  customDomains = ["pics.yourdomain.com"]</code></pre>
+
+  <p>The VPS receives traffic on port 8080 and relays it through the outbound tunnel to your NAS. FRP is fast, but you need to manage the VPS, handle SSL termination yourself (via Nginx or Caddy on the VPS), and pay for the server.</p>
+
+  <h2>Comparing tunnel options</h2>
+  <table>
+    <thead><tr><th></th><th>Cloudflare Tunnel</th><th>Tailscale Funnel</th><th>FRP</th></tr></thead>
+    <tbody>
+      <tr><td>Public access</td><td>✅</td><td>✅</td><td>✅</td></tr>
+      <tr><td>Requires domain</td><td>Yes</td><td>No</td><td>Yes (for HTTPS)</td></tr>
+      <tr><td>Requires VPS</td><td>No</td><td>No</td><td>Yes</td></tr>
+      <tr><td>SSL / HTTPS</td><td>Auto</td><td>Auto</td><td>Manual (Nginx/Caddy)</td></tr>
+      <tr><td>Bandwidth</td><td>Free (fair use)</td><td>Limited on free plan</td><td>Limited by VPS</td></tr>
+      <tr><td>Privacy</td><td>Cloudflare decrypts</td><td>End-to-end encrypted</td><td>Relay server can see traffic</td></tr>
+      <tr><td>Works in China</td><td>Partial</td><td>Slow</td><td>✅</td></tr>
+      <tr><td>Best for</td><td>Global, production</td><td>Personal, private</td><td>China, full control</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Security notes</h2>
+  <ul>
+    <li>Always set <code>PICFAST_JWT_SECRET</code> to a strong random value</li>
+    <li>Disable guest upload (<code>PICFAST_APP_ALLOW_GUEST_UPLOAD=false</code>) unless you specifically need it</li>
+    <li>Close registration after creating your accounts (<code>PICFAST_APP_ALLOW_REGISTRATION=false</code>)</li>
+    <li>Configure your tunnel to enforce HTTPS — all three options above do this by default</li>
+    <li>If using FRP on a Chinese VPS, set up file-based rate limiting (your reverse proxy handles this)</li>
+  </ul>
+</DocsLayout>

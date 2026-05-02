@@ -65,6 +65,9 @@ const locale = currentPath.startsWith('/zh') ? 'zh' : 'en';
           <li><a href={locale === 'en' ? '/docs/deployment' : '/zh/docs/deployment'} class:list={[{ active: currentPath.endsWith('deployment') }]}>
             {locale === 'en' ? 'Deployment' : '部署'}
           </a></li>
+          <li><a href={locale === 'en' ? '/docs/home-network' : '/zh/docs/home-network'} class:list={[{ active: currentPath.endsWith('home-network') }]}>
+            {locale === 'en' ? 'Home Network &amp; NAS' : '家庭网络 &amp; NAS'}
+          </a></li>
         </ul>
       </div>
     </aside>

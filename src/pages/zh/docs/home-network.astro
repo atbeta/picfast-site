@@ -1,0 +1,175 @@
+---
+import DocsLayout from '../../../layouts/DocsLayout.astro';
+---
+
+<DocsLayout title="家庭网络 &amp; NAS 部署" description="在家庭 NAS 上部署 PicFast 并通过内网穿透安全暴露至公网。">
+  <h1>家庭网络与 NAS 部署</h1>
+  <p>
+    将 PicFast 运行在你自己的 NAS 上，图片数据完全由你掌控——没有云服务商、没有月费。本指南涵盖常见 NAS 平台的部署方法，以及在无公网 IP 的情况下将服务暴露至互联网的方案。
+  </p>
+
+  <h2>为什么选择 NAS？</h2>
+  <p>NAS 是图床平台的理想运行环境：</p>
+  <ul>
+    <li>硬盘空间本就充裕，图床的核心价值正是存储</li>
+    <li>现代 NAS 普遍原生支持 Docker</li>
+    <li>低功耗 7×24 小时运行</li>
+    <li>数据就在你的硬盘上、你的局域网内</li>
+  </ul>
+
+  <h2>NAS 平台</h2>
+  <p>PicFast 可在任何支持 Docker 的平台上运行，以下是各平台的部署要点：</p>
+
+  <h3>群晖 Synology</h3>
+  <p>使用 <strong>Container Manager</strong>（原 Docker 套件）。通过 docker-compose 创建项目：</p>
+  <ol>
+    <li>打开 Container Manager → 项目 → 新增</li>
+    <li>粘贴下方的 docker-compose 内容，修改路径和密钥</li>
+    <li>将数据卷映射到 <code>/volume1/docker/picfast/uploads</code>（或你的存储位置）</li>
+  </ol>
+
+  <h3>威联通 QNAP</h3>
+  <p>使用 <strong>Container Station</strong>，从 docker-compose 创建应用，步骤与群晖类似。数据卷需指向 <code>/share/</code> 下的共享文件夹。</p>
+
+  <h3>TrueNAS</h3>
+  <p>通过 <strong>Apps</strong> 界面的 Docker Compose 选项部署，或在 jail/VM 中直接使用 <code>docker compose</code>。ZFS 数据集非常适合作为上传和缩略图的卷挂载。</p>
+
+  <h3>Unraid</h3>
+  <p>在 <strong>Docker</strong> 选项卡中添加容器并使用自定义 compose 文件。数据卷指向 <code>/mnt/user/picfast/</code> 即可享受 parity 保护。</p>
+
+  <h3>通用 Linux / 树莓派</h3>
+  <p>克隆仓库或直接使用 Docker Hub 镜像。树莓派用户使用 <code>xbeta/picfast:latest</code>（多架构镜像，含 ARM64）。</p>
+
+  <h2>NAS 精简 compose 模板</h2>
+  <p>以下是一份适合家庭部署的精简 <code>docker-compose.yml</code>，保存后执行 <code>docker compose up -d</code>：</p>
+  <pre><code>services:
+    db:
+      image: postgres:16-alpine
+      restart: unless-stopped
+      environment:
+        POSTGRES_USER: picfast
+        POSTGRES_PASSWORD: picfast
+        POSTGRES_DB: picfast
+      volumes:
+        - pgdata:/var/lib/postgresql/data
+
+    app:
+      image: xbeta/picfast:latest
+      restart: unless-stopped
+      ports:
+        - "18080:8080"
+      environment:
+        PICFAST_DATABASE_URL: "postgres://picfast:picfast@db:5432/picfast?sslmode=disable"
+        PICFAST_JWT_SECRET: "replace-with-a-strong-random-value"
+        PICFAST_SERVER_BASE_URL: "https://your-domain.com"
+        PICFAST_APP_ADMIN_EMAIL: "admin@example.com"
+        PICFAST_APP_ADMIN_PASSWORD: "change-this-password"
+        PICFAST_STORAGE_LOCAL_ROOT: "/app/data/uploads"
+        PICFAST_STORAGE_THUMBNAIL_DIR: "/app/data/thumbnails"
+      volumes:
+        - uploads:/app/data/uploads
+        - thumbnails:/app/data/thumbnails
+      depends_on:
+        - db
+
+  volumes:
+    pgdata:
+    uploads:
+    thumbnails:</code></pre>
+
+  <h2>内网穿透：暴露服务到公网</h2>
+  <p>
+    多数家庭宽带没有固定公网 IP，即使有，在路由器上直接开端口也意味着安全风险。解决方案是<strong>隧道</strong>——一条加密的对外连接，将公网流量反向代理到你本地的服务，无需开放任何入站端口。
+  </p>
+
+  <h3>方案一：Cloudflare Tunnel（推荐）</h3>
+  <p>免费、稳定，无需开放任何端口。前提是你拥有一个域名，且 DNS 托管在 Cloudflare。</p>
+
+  <h4>配置步骤</h4>
+  <ol>
+    <li>在 NAS 或宿主机上安装 <code>cloudflared</code></li>
+    <li>认证：<code>cloudflared tunnel login</code></li>
+    <li>创建隧道：<code>cloudflared tunnel create picfast</code></li>
+    <li>编写配置文件 <code>config.yml</code>：</li>
+  </ol>
+  <pre><code>tunnel: &lt;tunnel-id&gt;
+  credentials-file: /home/user/.cloudflared/&lt;tunnel-id&gt;.json
+
+  ingress:
+    - hostname: pics.yourdomain.com
+      service: http://localhost:18080
+    - service: http_status:404</code></pre>
+  <ol start="5">
+    <li>创建 DNS 记录：<code>cloudflared tunnel route dns picfast pics.yourdomain.com</code></li>
+    <li>启动隧道：<code>cloudflared tunnel run picfast</code></li>
+  </ol>
+
+  <p>长期运行建议将 cloudflared 加入 compose 作为额外服务：</p>
+  <pre><code>  tunnel:
+    image: cloudflare/cloudflared:latest
+    restart: unless-stopped
+    command: tunnel run
+    environment:
+      TUNNEL_TOKEN: "&lt;your-tunnel-token&gt;"</code></pre>
+
+  <p>Cloudflare Tunnel 提供 DDoS 防护、自动 SSL、全球 CDN 加速。但注意 Cloudflare 在中间解密流量——若对数据隐私有极致要求，可选择 Tailscale。</p>
+
+  <h3>方案二：Tailscale</h3>
+  <p>Tailscale 基于 WireGuard 搭建 Mesh 网络，有两种服务暴露模式：</p>
+
+  <h4>Tailscale Serve（仅局域网/虚拟局域网）</h4>
+  <p>在 tailnet 内部暴露服务，只有你网络中其他 Tailscale 设备可以访问：</p>
+  <pre><code>tailscale serve --bg 18080</code></pre>
+  <p>你的 PicFast 实例将通过 <code>https://&lt;node-name&gt;.tailnet-name.ts.net</code> 访问，仅限 tailnet 内。适合家庭私用。</p>
+
+  <h4>Tailscale Funnel（公网访问）</h4>
+  <p>将 Serve 延伸至公网，互联网上任何设备均可访问：</p>
+  <pre><code>tailscale serve --bg 18080
+tailscale funnel --bg 18080</code></pre>
+  <p>Funnel 有限制：仅 443 端口，免费版有带宽上限。但配置极简，零 DNS 配置，开箱即用。</p>
+
+  <h3>方案三：FRP（内网穿透）</h3>
+  <p>FRP 是国内最常用的内网穿透方案，适用于 Cloudflare 和 Tailscale 速度不佳或不可用的场景。需要一台有公网 IP 的 VPS 作为中继。</p>
+
+  <h4>服务端（VPS，有公网 IP）</h4>
+  <pre><code># frps.toml
+  bindPort = 7000
+  vhostHTTPPort = 8080</code></pre>
+
+  <h4>客户端（你的 NAS，在内网）</h4>
+  <pre><code># frpc.toml
+  serverAddr = "&lt;vps-ip&gt;"
+  serverPort = 7000
+
+  [[proxies]]
+  name = "picfast-web"
+  type = "http"
+  localPort = 18080
+  customDomains = ["pics.yourdomain.com"]</code></pre>
+
+  <p>VPS 收到 8080 端口的流量后，通过隧道转发到你的 NAS。FRP 速度快、灵活可控，但需要自己管理 VPS、用 Nginx 或 Caddy 处理 SSL 终结、付服务器的钱。</p>
+
+  <h2>隧道方案对比</h2>
+  <table>
+    <thead><tr><th></th><th>Cloudflare Tunnel</th><th>Tailscale Funnel</th><th>FRP</th></tr></thead>
+    <tbody>
+      <tr><td>公网访问</td><td>✅</td><td>✅</td><td>✅</td></tr>
+      <tr><td>需要域名</td><td>是</td><td>否</td><td>是（HTTPS 需要）</td></tr>
+      <tr><td>需要 VPS</td><td>否</td><td>否</td><td>是</td></tr>
+      <tr><td>SSL / HTTPS</td><td>自动</td><td>自动</td><td>手动（Nginx/Caddy）</td></tr>
+      <tr><td>带宽</td><td>免费（合理使用）</td><td>免费版有限</td><td>取决于 VPS</td></tr>
+      <tr><td>隐私</td><td>Cloudflare 解密</td><td>端到端加密</td><td>中继服务器可见流量</td></tr>
+      <tr><td>国内网络</td><td>部分可用</td><td>较慢</td><td>✅ 最佳</td></tr>
+      <tr><td>最适合</td><td>全球、生产环境</td><td>个人、私用</td><td>国内、全掌控</td></tr>
+    </tbody>
+  </table>
+
+  <h2>安全提醒</h2>
+  <ul>
+    <li><code>PICFAST_JWT_SECRET</code> 务必设为高强度随机值</li>
+    <li>如非必要，关闭游客上传（<code>PICFAST_APP_ALLOW_GUEST_UPLOAD=false</code>）</li>
+    <li>创建好账号后关闭公开注册（<code>PICFAST_APP_ALLOW_REGISTRATION=false</code>）</li>
+    <li>以上三种隧道方案均默认强制 HTTPS，无需额外配置证书</li>
+    <li>如用 FRP 部署在国内 VPS，建议在反向代理层配置请求频率限制以防范滥用</li>
+  </ul>
+</DocsLayout>
