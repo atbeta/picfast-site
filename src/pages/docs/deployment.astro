@@ -6,13 +6,7 @@ import DocsLayout from '../../layouts/DocsLayout.astro';
   <h1>Deployment</h1>
 
   <h2>Docker Compose (recommended)</h2>
-  <p>The fastest way to deploy PicFast. Spins up PostgreSQL, Mailpit, and the application together:</p>
-  <pre><code>git clone https://github.com/atbeta/picfast.git
-cd picfast
-cp .env.example .env
-cp config.example.yaml config.yaml
-make docker-up</code></pre>
-  <p>The app will be available at <code>http://localhost:18080</code>.</p>
+  <p>Follow the <a href="/docs/getting-started">Quick Start</a> guide to clone and launch with <code>make docker-up</code>. The sections below cover what's different for production.</p>
 
   <h2>Docker Hub image</h2>
   <p>Prebuilt images are published to Docker Hub. This is ideal for production or when you don't need the full source:</p>

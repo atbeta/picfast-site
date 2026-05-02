@@ -2,33 +2,72 @@
 import DocsLayout from '../../layouts/DocsLayout.astro';
 ---
 
-<DocsLayout title="API Reference" description="PicFast REST API and MCP integration documentation.">
+<DocsLayout title="API Reference" description="PicFast REST API reference — authentication, upload, and OpenAPI spec.">
   <h1>API Reference</h1>
   <p>
-    PicFast exposes a REST API at <code>/api/v1</code>. All endpoints require authentication unless marked as public.
+    PicFast exposes a REST API at <code>/api/v1</code>. All endpoints require authentication unless marked as public. The API accepts JWT access tokens or scoped API tokens (prefixed <code>img_</code>) via the <code>Authorization: Bearer</code> header.
   </p>
 
-  <h2>Authentication</h2>
-  <p>Authenticate using a Bearer token in the <code>Authorization</code> header:</p>
-  <pre><code>Authorization: Bearer &lt;access_token&gt;</code></pre>
-  <p>Get a token via <code>POST /api/v1/auth/login</code> or create an API token in the admin panel (tokens start with <code>img_</code>).</p>
+  <h2>System</h2>
+  <table>
+    <thead><tr><th>Method</th><th>Path</th><th>Auth</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr><td>GET</td><td><code>/health</code></td><td>No</td><td>Health check (database + storage)</td></tr>
+      <tr><td>GET</td><td><code>/metrics</code></td><td>No</td><td>Prometheus metrics endpoint</td></tr>
+      <tr><td>GET</td><td><code>/api/v1/config</code></td><td>No</td><td>Public site configuration</td></tr>
+      <tr><td>GET</td><td><code>/api/v1/version</code></td><td>No</td><td>Server version info</td></tr>
+      <tr><td>GET</td><td><code>/openapi.yaml</code></td><td>No</td><td>OpenAPI spec (YAML)</td></tr>
+      <tr><td>GET</td><td><code>/openapi.json</code></td><td>No</td><td>OpenAPI spec (JSON)</td></tr>
+      <tr><td>GET</td><td><code>/docs</code></td><td>No</td><td>Scalar API docs UI (interactive)</td></tr>
+    </tbody>
+  </table>
 
-  <h2>Public endpoints</h2>
-  <ul>
-    <li><code>GET /api/v1/config</code> — Site configuration</li>
-    <li><code>GET /api/v1/version</code> — Version info</li>
-    <li><code>GET /openapi.yaml</code> — OpenAPI spec (YAML)</li>
-    <li><code>GET /openapi.json</code> — OpenAPI spec (JSON)</li>
-    <li><code>GET /docs</code> — Interactive API documentation UI</li>
-    <li><code>POST /api/v1/auth/register</code> — Register a new account</li>
-    <li><code>POST /api/v1/auth/login</code> — Log in</li>
-    <li><code>POST /api/v1/auth/refresh</code> — Refresh access token</li>
-    <li><code>POST /api/v1/upload</code> — Guest upload (if enabled)</li>
-  </ul>
+  <h2>Auth</h2>
+  <table>
+    <thead><tr><th>Method</th><th>Path</th><th>Auth</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr><td>POST</td><td><code>/api/v1/auth/register</code></td><td>No</td><td>Register a new account</td></tr>
+      <tr><td>POST</td><td><code>/api/v1/auth/login</code></td><td>No</td><td>Log in, returns JWT + refresh token</td></tr>
+      <tr><td>POST</td><td><code>/api/v1/auth/refresh</code></td><td>No</td><td>Refresh access token</td></tr>
+      <tr><td>POST</td><td><code>/api/v1/auth/logout</code></td><td>JWT</td><td>Revoke all refresh tokens</td></tr>
+      <tr><td>POST</td><td><code>/api/v1/auth/verify-email</code></td><td>No</td><td>Verify email with token</td></tr>
+      <tr><td>POST</td><td><code>/api/v1/auth/resend-verification</code></td><td>No</td><td>Resend verification email</td></tr>
+    </tbody>
+  </table>
 
-  <h2>Upload</h2>
-  <h3>POST /api/v1/images</h3>
-  <p>Upload an image (authenticated). <code>multipart/form-data</code>:</p>
+  <h2>User</h2>
+  <table>
+    <thead><tr><th>Method</th><th>Path</th><th>Auth</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr><td>GET</td><td><code>/api/v1/users/me</code></td><td>JWT</td><td>Get current user profile</td></tr>
+      <tr><td>PUT</td><td><code>/api/v1/users/me</code></td><td>JWT</td><td>Update profile (name, password, settings)</td></tr>
+    </tbody>
+  </table>
+
+  <h2>API Tokens</h2>
+  <table>
+    <thead><tr><th>Method</th><th>Path</th><th>Auth</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr><td>GET</td><td><code>/api/v1/api-tokens</code></td><td>JWT</td><td>List your API tokens</td></tr>
+      <tr><td>POST</td><td><code>/api/v1/api-tokens</code></td><td>JWT</td><td>Create API token (scopes, expiration)</td></tr>
+      <tr><td>DELETE</td><td><code>/api/v1/api-tokens/&#123;id&#125;</code></td><td>JWT</td><td>Delete an API token</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Images</h2>
+  <table>
+    <thead><tr><th>Method</th><th>Path</th><th>Auth</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr><td>POST</td><td><code>/api/v1/images</code></td><td>JWT / token</td><td>Upload an image (multipart)</td></tr>
+      <tr><td>GET</td><td><code>/api/v1/images</code></td><td>JWT / token</td><td>List your images (paginated, filterable by album_id)</td></tr>
+      <tr><td>GET</td><td><code>/api/v1/images/&#123;key&#125;</code></td><td>JWT / token</td><td>Get image details by key</td></tr>
+      <tr><td>PATCH</td><td><code>/api/v1/images/&#123;key&#125;</code></td><td>JWT / token</td><td>Update image (album_id, permission)</td></tr>
+      <tr><td>DELETE</td><td><code>/api/v1/images/&#123;key&#125;</code></td><td>JWT / token</td><td>Delete an image by key</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Upload fields</h3>
+  <p><code>POST /api/v1/images</code> accepts <code>multipart/form-data</code>:</p>
   <table>
     <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
     <tbody>
@@ -40,49 +79,72 @@ import DocsLayout from '../../layouts/DocsLayout.astro';
     </tbody>
   </table>
 
-  <h2>Guest upload</h2>
-  <h3>POST /api/v1/upload</h3>
-  <p>Same form fields as above, but works without authentication when guest upload is enabled (admin settings).</p>
-
-  <h2>API tokens</h2>
-  <p>For programmatic access, create API tokens via the web UI under Settings. Tokens are prefixed with <code>img_</code> and can be scoped to specific permissions. Use them as Bearer tokens in the Authorization header.</p>
-
-  <h2>MCP Server (AI Agent Integration)</h2>
-  <p>PicFast ships an MCP (Model Context Protocol) server that lets AI agents like Claude and Cursor interact with your image hosting directly. The MCP server is published as <code>@picfast/mcp</code> on npm.</p>
-
-  <h3>Quick setup</h3>
-  <pre><code>npx @picfast/mcp</code></pre>
-  <p>Configure in your MCP client:</p>
-  <pre><code>&#123;
-  "mcpServers": &#123;
-    "picfast": &#123;
-      "command": "npx",
-      "args": ["-y", "@picfast/mcp"],
-      "env": &#123;
-        "PICFAST_BASE_URL": "https://picfast.example.com",
-        "PICFAST_API_TOKEN": "img_xxxxxxxx"
-      &#125;
-    &#125;
-  &#125;
-&#125;</code></pre>
-
-  <h3>Available MCP tools</h3>
+  <h2>Albums</h2>
   <table>
-    <thead><tr><th>Tool</th><th>Auth</th><th>Description</th></tr></thead>
+    <thead><tr><th>Method</th><th>Path</th><th>Auth</th><th>Description</th></tr></thead>
     <tbody>
-      <tr><td><code>upload_image</code></td><td>Optional</td><td>Upload an image from a local file path. Supports guest mode.</td></tr>
-      <tr><td><code>list_images</code></td><td>Required</td><td>List your images with pagination</td></tr>
-      <tr><td><code>get_image</code></td><td>Required</td><td>Get image details and share links (URL, Markdown, HTML, BBCode)</td></tr>
-      <tr><td><code>delete_image</code></td><td>Required</td><td>Delete an image by key</td></tr>
-      <tr><td><code>get_usage_stats</code></td><td>Required</td><td>Check storage quota and usage</td></tr>
+      <tr><td>GET</td><td><code>/api/v1/albums</code></td><td>JWT / token</td><td>List your albums</td></tr>
+      <tr><td>POST</td><td><code>/api/v1/albums</code></td><td>JWT / token</td><td>Create an album</td></tr>
+      <tr><td>PUT</td><td><code>/api/v1/albums/&#123;id&#125;</code></td><td>JWT / token</td><td>Update album (name, intro)</td></tr>
+      <tr><td>DELETE</td><td><code>/api/v1/albums/&#123;id&#125;</code></td><td>JWT / token</td><td>Delete an album</td></tr>
     </tbody>
   </table>
 
+  <h2>Strategies</h2>
+  <table>
+    <thead><tr><th>Method</th><th>Path</th><th>Auth</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr><td>GET</td><td><code>/api/v1/strategies</code></td><td>JWT / token</td><td>List strategies available to your group</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Guest upload</h2>
+  <table>
+    <thead><tr><th>Method</th><th>Path</th><th>Auth</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr><td>POST</td><td><code>/api/v1/upload</code></td><td>Optional</td><td>Guest upload (when enabled in admin settings)</td></tr>
+    </tbody>
+  </table>
+
+  <h2>ShareX</h2>
+  <table>
+    <thead><tr><th>Method</th><th>Path</th><th>Auth</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr><td>GET</td><td><code>/api/v1/sharex/config</code></td><td>No</td><td>Download ShareX <code>.sxcu</code> config file</td></tr>
+      <tr><td>POST</td><td><code>/api/v1/sharex/upload</code></td><td>Optional</td><td>ShareX-compatible upload endpoint</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Admin API</h2>
+  <p>All admin endpoints require a JWT with admin role. Prefix: <code>/api/v1/admin</code>.</p>
+  <table>
+    <thead><tr><th>Method</th><th>Path</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr><td>GET</td><td><code>/admin/users</code></td><td>List users (filter by keyword, status)</td></tr>
+      <tr><td>GET / PUT / DELETE</td><td><code>/admin/users/&#123;id&#125;</code></td><td>View, update, or delete a user</td></tr>
+      <tr><td>GET / POST</td><td><code>/admin/groups</code></td><td>List or create groups</td></tr>
+      <tr><td>GET / PUT / DELETE</td><td><code>/admin/groups/&#123;id&#125;</code></td><td>View, update, or delete a group</td></tr>
+      <tr><td>GET / POST</td><td><code>/admin/strategies</code></td><td>List or create storage strategies</td></tr>
+      <tr><td>GET / PUT / DELETE</td><td><code>/admin/strategies/&#123;id&#125;</code></td><td>View, update, or delete a strategy</td></tr>
+      <tr><td>GET</td><td><code>/admin/images</code></td><td>List all images (filter by keyword, email, extension)</td></tr>
+      <tr><td>DELETE</td><td><code>/admin/images/&#123;id&#125;</code></td><td>Delete any image by ID</td></tr>
+      <tr><td>GET</td><td><code>/admin/moderation/pending</code></td><td>List images pending moderation</td></tr>
+      <tr><td>POST</td><td><code>/admin/moderation/&#123;id&#125;/approve</code></td><td>Approve an image</td></tr>
+      <tr><td>POST</td><td><code>/admin/moderation/&#123;id&#125;/reject</code></td><td>Reject an image (optional reason)</td></tr>
+      <tr><td>GET / PUT</td><td><code>/admin/settings</code></td><td>View or update site settings (runtime hot-reload)</td></tr>
+      <tr><td>GET</td><td><code>/admin/audit-logs</code></td><td>List audit logs (filter by action, resource_type)</td></tr>
+      <tr><td>GET</td><td><code>/admin/observability/summary</code></td><td>System overview (uptime, health, DB pool, usage stats)</td></tr>
+    </tbody>
+  </table>
+
+  <h2>AI agent integration (MCP)</h2>
+  <p>PicFast ships an MCP server for AI agent integration (Claude, Cursor, VS Code Copilot). See the dedicated <a href="/docs/mcp">MCP Integration</a> page for setup instructions, tool reference, and configuration.</p>
+
   <h2>OpenAPI spec</h2>
-  <p>The full API spec is available at:</p>
+  <p>The full machine-readable API spec is available at:</p>
   <ul>
     <li><code>/openapi.yaml</code> — YAML format</li>
     <li><code>/openapi.json</code> — JSON format</li>
-    <li><code>/docs</code> — Interactive Swagger UI for live testing</li>
+    <li><code>/docs</code> — Interactive Scalar UI for live API testing</li>
   </ul>
 </DocsLayout>

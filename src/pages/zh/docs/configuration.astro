@@ -83,7 +83,11 @@ app:
   <table>
     <thead><tr><th>键</th><th>类型</th><th>默认值</th><th>说明</th></tr></thead>
     <tbody>
+      <tr><td><code>name</code></td><td>string</td><td>PicFast</td><td>站点名称，显示在页面标题、邮件和 Web UI 中</td></tr>
+      <tr><td><code>site_description</code></td><td>string</td><td>""</td><td>Web UI 的 Meta 描述</td></tr>
+      <tr><td><code>favicon_url</code></td><td>string</td><td>""</td><td>自定义站点图标 URL；空则使用内置默认图标</td></tr>
       <tr><td><code>allow_guest_upload</code></td><td>bool</td><td>false</td><td>允许不登录上传</td></tr>
+      <tr><td><code>guest_capacity_bytes</code></td><td>int64</td><td>10737418240</td><td>所有游客共享的总存储配额（10 GB）</td></tr>
       <tr><td><code>allow_registration</code></td><td>bool</td><td>false</td><td>允许新用户注册。默认关闭注册。</td></tr>
       <tr><td><code>require_email_verification</code></td><td>bool</td><td>false</td><td>登录前必须验证邮箱。仅在 <code>mail.*</code> 配置正确且 SMTP 可达时生效。</td></tr>
       <tr><td><code>audit_upload_logs</code></td><td>bool</td><td>false</td><td>记录所有上传操作到审计日志</td></tr>
@@ -92,7 +96,25 @@ app:
       <tr><td><code>admin_email</code></td><td>string</td><td>""</td><td>设置后首次启动时自动创建管理员账号（需同时设置 <code>admin_password</code>）</td></tr>
       <tr><td><code>admin_password</code></td><td>string</td><td>""</td><td>自动创建的管理员账号密码</td></tr>
       <tr><td><code>moderation_mode</code></td><td>string</td><td>""</td><td>""（关闭）、<code>"manual"</code>（人工审核）、<code>"auto"</code>（待实现）</td></tr>
-      <tr><td><code>favicon_url</code></td><td>string</td><td>""</td><td>自定义站点图标 URL；空则使用内置默认图标</td></tr>
+      <tr><td><code>icp_number</code></td><td>string</td><td>""</td><td>ICP 备案号（适用于在中国大陆托管服务的站点）</td></tr>
+      <tr><td><code>icp_link</code></td><td>string</td><td>https://beian.miit.gov.cn/</td><td>ICP 备案链接地址</td></tr>
+      <tr><td><code>psb_number</code></td><td>string</td><td>""</td><td>公安备案号</td></tr>
+      <tr><td><code>psb_link</code></td><td>string</td><td>""</td><td>公安备案链接地址</td></tr>
+      <tr><td><code>analytics_provider</code></td><td>string</td><td>""</td><td>""（关闭）、<code>"plausible"</code>、<code>"umami"</code>、<code>"ga4"</code>、<code>"baidu"</code>、<code>"custom"</code></td></tr>
+      <tr><td><code>analytics_config</code></td><td>json</td><td>"{}"</td><td>各服务商的独立配置（详见下方「统计分析」章节）</td></tr>
+    </tbody>
+  </table>
+
+  <h2>统计分析服务</h2>
+  <p>PicFast 支持接入统计服务来追踪 Web UI 的访问情况。通过 <code>app.analytics_provider</code> 和 <code>app.analytics_config</code> 进行配置。</p>
+  <table>
+    <thead><tr><th>服务商</th><th>配置字段</th></tr></thead>
+    <tbody>
+      <tr><td><code>plausible</code></td><td><code>domain</code>（必填），<code>server_url</code>（可选）</td></tr>
+      <tr><td><code>umami</code></td><td><code>website_id</code>（必填），<code>script_url</code>（必填）</td></tr>
+      <tr><td><code>ga4</code></td><td><code>measurement_id</code>（必填）</td></tr>
+      <tr><td><code>baidu</code></td><td><code>site_id</code>（必填）</td></tr>
+      <tr><td><code>custom</code></td><td><code>script_html</code>（原始 HTML/脚本字符串，会注入到每个页面中）</td></tr>
     </tbody>
   </table>
 

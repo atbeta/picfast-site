@@ -37,30 +37,8 @@ cp config.example.yaml config.yaml</code></pre>
   <pre><code># 通过 curl
 curl -X POST http://localhost:18080/api/v1/images \
   -H "Authorization: Bearer YOUR_TOKEN" \
-  -F "file=@image.png"
-
-# 通过 MCP（AI Agent 集成）
-npx @picfast/mcp</code></pre>
-
-  <h2>备选方案：使用 Docker Hub 镜像</h2>
-  <p>你也可以直接使用 Docker Hub 上发布的预构建镜像，无需克隆仓库：</p>
-  <pre><code>docker network create picfast-net
-
-docker run -d --name picfast-db --network picfast-net \
-  -e POSTGRES_USER=picfast -e POSTGRES_PASSWORD=picfast \
-  -e POSTGRES_DB=picfast \
-  -v picfast-pgdata:/var/lib/postgresql/data \
-  postgres:16-alpine
-
-docker run -d --name picfast --network picfast-net -p 18080:8080 \
-  -e PICFAST_DATABASE_URL='postgres://picfast:picfast@picfast-db:5432/picfast?sslmode=disable' \
-  -e PICFAST_JWT_SECRET='replace-with-a-strong-secret' \
-  -e PICFAST_SERVER_BASE_URL='http://localhost:18080' \
-  -e PICFAST_APP_ADMIN_EMAIL='admin@example.com' \
-  -e PICFAST_APP_ADMIN_PASSWORD='change-this-password' \
-  -v picfast-uploads:/app/data/uploads \
-  -v picfast-thumbnails:/app/data/thumbnails \
-  xbeta/picfast:latest</code></pre>
+  -F "file=@image.png"</code></pre>
+  <p>AI Agent 集成请参阅 <a href="/zh/docs/mcp">MCP 集成</a>。如需直接使用 Docker Hub 预构建镜像而非从源码构建，请参阅 <a href="/zh/docs/deployment">部署</a>。</p>
 
   <h2>接下来</h2>
   <ul>

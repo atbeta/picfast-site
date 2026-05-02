@@ -84,7 +84,11 @@ app:
   <table>
     <thead><tr><th>Key</th><th>Type</th><th>Default</th><th>Description</th></tr></thead>
     <tbody>
+      <tr><td><code>name</code></td><td>string</td><td>PicFast</td><td>Site name shown in page titles, emails, and the web UI</td></tr>
+      <tr><td><code>site_description</code></td><td>string</td><td>""</td><td>Meta description for the web UI</td></tr>
+      <tr><td><code>favicon_url</code></td><td>string</td><td>""</td><td>Custom site favicon URL; empty uses the bundled favicon</td></tr>
       <tr><td><code>allow_guest_upload</code></td><td>bool</td><td>false</td><td>Allow uploading without an account</td></tr>
+      <tr><td><code>guest_capacity_bytes</code></td><td>int64</td><td>10737418240</td><td>Total storage quota shared across all guest uploads (10 GB)</td></tr>
       <tr><td><code>allow_registration</code></td><td>bool</td><td>false</td><td>Allow new user sign-ups. Default is closed registration.</td></tr>
       <tr><td><code>require_email_verification</code></td><td>bool</td><td>false</td><td>Require email verification before login. Only takes effect when <code>mail.*</code> is configured and the SMTP server is reachable.</td></tr>
       <tr><td><code>audit_upload_logs</code></td><td>bool</td><td>false</td><td>Log all upload events to the audit log table</td></tr>
@@ -93,7 +97,25 @@ app:
       <tr><td><code>admin_email</code></td><td>string</td><td>""</td><td>If set, an admin account is auto-created on first startup (combined with <code>admin_password</code>)</td></tr>
       <tr><td><code>admin_password</code></td><td>string</td><td>""</td><td>Password for the auto-created admin account</td></tr>
       <tr><td><code>moderation_mode</code></td><td>string</td><td>""</td><td>"" (disabled), <code>"manual"</code> (admin approval queue), <code>"auto"</code> (future)</td></tr>
-      <tr><td><code>favicon_url</code></td><td>string</td><td>""</td><td>Custom site favicon URL; empty uses the bundled favicon</td></tr>
+      <tr><td><code>icp_number</code></td><td>string</td><td>""</td><td>Chinese ICP filing number for sites hosted in China</td></tr>
+      <tr><td><code>icp_link</code></td><td>string</td><td>https://beian.miit.gov.cn/</td><td>ICP filing link target</td></tr>
+      <tr><td><code>psb_number</code></td><td>string</td><td>""</td><td>Chinese PSB filing number</td></tr>
+      <tr><td><code>psb_link</code></td><td>string</td><td>""</td><td>PSB filing link target</td></tr>
+      <tr><td><code>analytics_provider</code></td><td>string</td><td>""</td><td>"" (disabled), <code>"plausible"</code>, <code>"umami"</code>, <code>"ga4"</code>, <code>"baidu"</code>, <code>"custom"</code></td></tr>
+      <tr><td><code>analytics_config</code></td><td>json</td><td>"{}"</td><td>Provider-specific config (see Analytics section below)</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Analytics providers</h2>
+  <p>PicFast supports integrating with analytics services for visitor tracking on the web UI. Configure via <code>app.analytics_provider</code> and <code>app.analytics_config</code>.</p>
+  <table>
+    <thead><tr><th>Provider</th><th>Config fields</th></tr></thead>
+    <tbody>
+      <tr><td><code>plausible</code></td><td><code>domain</code> (required), <code>server_url</code> (optional)</td></tr>
+      <tr><td><code>umami</code></td><td><code>website_id</code> (required), <code>script_url</code> (required)</td></tr>
+      <tr><td><code>ga4</code></td><td><code>measurement_id</code> (required)</td></tr>
+      <tr><td><code>baidu</code></td><td><code>site_id</code> (required)</td></tr>
+      <tr><td><code>custom</code></td><td><code>script_html</code> (raw HTML/script string injected into every page)</td></tr>
     </tbody>
   </table>
 

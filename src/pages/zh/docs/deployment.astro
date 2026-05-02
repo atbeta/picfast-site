@@ -6,13 +6,7 @@ import DocsLayout from '../../../layouts/DocsLayout.astro';
   <h1>部署</h1>
 
   <h2>Docker Compose（推荐）</h2>
-  <p>最快捷的启动方式，同时启动 PostgreSQL、Mailpit 及应用：</p>
-  <pre><code>git clone https://github.com/atbeta/picfast.git
-cd picfast
-cp .env.example .env
-cp config.example.yaml config.yaml
-make docker-up</code></pre>
-  <p>应用将在 <code>http://localhost:18080</code> 可用。</p>
+  <p>按照<a href="/zh/docs/getting-started">快速开始</a>指南克隆项目并通过 <code>make docker-up</code> 启动。以下内容聚焦于生产环境的不同之处。</p>
 
   <h2>Docker Hub 镜像</h2>
   <p>预构建镜像发布在 Docker Hub，适用于生产环境或无需完整源码的场景：</p>

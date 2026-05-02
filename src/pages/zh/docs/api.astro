@@ -2,33 +2,72 @@
 import DocsLayout from '../../../layouts/DocsLayout.astro';
 ---
 
-<DocsLayout title="API 参考" description="PicFast REST API 与 MCP 集成文档。">
+<DocsLayout title="API 参考" description="PicFast REST API 参考 — 认证、上传与 OpenAPI 规范。">
   <h1>API 参考</h1>
   <p>
-    PicFast 在 <code>/api/v1</code> 路径下提供 REST API。除标注为公开的端点外，其余均需认证。
+    PicFast 在 <code>/api/v1</code> 路径下提供 REST API。除标注为公开的端点外，其余均需认证。API 支持 JWT access token 或带权限范围的 API token（以 <code>img_</code> 为前缀），通过 <code>Authorization: Bearer</code> 请求头传递。
   </p>
 
-  <h2>认证方式</h2>
-  <p>在 <code>Authorization</code> 请求头中携带 Bearer token：</p>
-  <pre><code>Authorization: Bearer &lt;access_token&gt;</code></pre>
-  <p>可通过 <code>POST /api/v1/auth/login</code> 获取 token，或在管理面板中创建 API token（以 <code>img_</code> 为前缀）。</p>
+  <h2>系统</h2>
+  <table>
+    <thead><tr><th>方法</th><th>路径</th><th>认证</th><th>说明</th></tr></thead>
+    <tbody>
+      <tr><td>GET</td><td><code>/health</code></td><td>否</td><td>健康检查（数据库 + 存储）</td></tr>
+      <tr><td>GET</td><td><code>/metrics</code></td><td>否</td><td>Prometheus 指标端点</td></tr>
+      <tr><td>GET</td><td><code>/api/v1/config</code></td><td>否</td><td>公开站点配置</td></tr>
+      <tr><td>GET</td><td><code>/api/v1/version</code></td><td>否</td><td>服务器版本信息</td></tr>
+      <tr><td>GET</td><td><code>/openapi.yaml</code></td><td>否</td><td>OpenAPI 规范（YAML）</td></tr>
+      <tr><td>GET</td><td><code>/openapi.json</code></td><td>否</td><td>OpenAPI 规范（JSON）</td></tr>
+      <tr><td>GET</td><td><code>/docs</code></td><td>否</td><td>Scalar API 文档界面（支持在线调试）</td></tr>
+    </tbody>
+  </table>
 
-  <h2>公开端点</h2>
-  <ul>
-    <li><code>GET /api/v1/config</code> — 站点配置</li>
-    <li><code>GET /api/v1/version</code> — 版本信息</li>
-    <li><code>GET /openapi.yaml</code> — OpenAPI 规范（YAML）</li>
-    <li><code>GET /openapi.json</code> — OpenAPI 规范（JSON）</li>
-    <li><code>GET /docs</code> — 交互式 API 文档界面</li>
-    <li><code>POST /api/v1/auth/register</code> — 注册账号</li>
-    <li><code>POST /api/v1/auth/login</code> — 登录</li>
-    <li><code>POST /api/v1/auth/refresh</code> — 刷新 access token</li>
-    <li><code>POST /api/v1/upload</code> — 游客上传（需在管理后台启用）</li>
-  </ul>
+  <h2>认证</h2>
+  <table>
+    <thead><tr><th>方法</th><th>路径</th><th>认证</th><th>说明</th></tr></thead>
+    <tbody>
+      <tr><td>POST</td><td><code>/api/v1/auth/register</code></td><td>否</td><td>注册新账号</td></tr>
+      <tr><td>POST</td><td><code>/api/v1/auth/login</code></td><td>否</td><td>登录，返回 JWT + refresh token</td></tr>
+      <tr><td>POST</td><td><code>/api/v1/auth/refresh</code></td><td>否</td><td>刷新 access token</td></tr>
+      <tr><td>POST</td><td><code>/api/v1/auth/logout</code></td><td>JWT</td><td>注销，作废所有 refresh token</td></tr>
+      <tr><td>POST</td><td><code>/api/v1/auth/verify-email</code></td><td>否</td><td>使用 token 验证邮箱</td></tr>
+      <tr><td>POST</td><td><code>/api/v1/auth/resend-verification</code></td><td>否</td><td>重新发送验证邮件</td></tr>
+    </tbody>
+  </table>
 
-  <h2>上传图片</h2>
-  <h3>POST /api/v1/images</h3>
-  <p>上传图片（需认证），使用 <code>multipart/form-data</code> 格式：</p>
+  <h2>用户</h2>
+  <table>
+    <thead><tr><th>方法</th><th>路径</th><th>认证</th><th>说明</th></tr></thead>
+    <tbody>
+      <tr><td>GET</td><td><code>/api/v1/users/me</code></td><td>JWT</td><td>获取当前用户信息</td></tr>
+      <tr><td>PUT</td><td><code>/api/v1/users/me</code></td><td>JWT</td><td>更新个人信息（名称、密码、设置）</td></tr>
+    </tbody>
+  </table>
+
+  <h2>API Token</h2>
+  <table>
+    <thead><tr><th>方法</th><th>路径</th><th>认证</th><th>说明</th></tr></thead>
+    <tbody>
+      <tr><td>GET</td><td><code>/api/v1/api-tokens</code></td><td>JWT</td><td>列出你的 API token</td></tr>
+      <tr><td>POST</td><td><code>/api/v1/api-tokens</code></td><td>JWT</td><td>创建 API token（可设权限范围、过期时间）</td></tr>
+      <tr><td>DELETE</td><td><code>/api/v1/api-tokens/&#123;id&#125;</code></td><td>JWT</td><td>删除指定 API token</td></tr>
+    </tbody>
+  </table>
+
+  <h2>图片</h2>
+  <table>
+    <thead><tr><th>方法</th><th>路径</th><th>认证</th><th>说明</th></tr></thead>
+    <tbody>
+      <tr><td>POST</td><td><code>/api/v1/images</code></td><td>JWT / token</td><td>上传图片（multipart）</td></tr>
+      <tr><td>GET</td><td><code>/api/v1/images</code></td><td>JWT / token</td><td>分页查看图片列表（可按 album_id 筛选）</td></tr>
+      <tr><td>GET</td><td><code>/api/v1/images/&#123;key&#125;</code></td><td>JWT / token</td><td>按 key 获取图片详情</td></tr>
+      <tr><td>PATCH</td><td><code>/api/v1/images/&#123;key&#125;</code></td><td>JWT / token</td><td>更新图片（album_id、permission）</td></tr>
+      <tr><td>DELETE</td><td><code>/api/v1/images/&#123;key&#125;</code></td><td>JWT / token</td><td>按 key 删除图片</td></tr>
+    </tbody>
+  </table>
+
+  <h3>上传字段</h3>
+  <p><code>POST /api/v1/images</code> 使用 <code>multipart/form-data</code> 格式：</p>
   <table>
     <thead><tr><th>字段</th><th>类型</th><th>说明</th></tr></thead>
     <tbody>
@@ -40,49 +79,72 @@ import DocsLayout from '../../../layouts/DocsLayout.astro';
     </tbody>
   </table>
 
-  <h2>游客上传</h2>
-  <h3>POST /api/v1/upload</h3>
-  <p>表单字段同上，启用游客上传后无需认证即可使用。</p>
-
-  <h2>API Token</h2>
-  <p>在 Web UI 的设置页面创建 API token，用于程序化访问。Token 以 <code>img_</code> 为前缀，可配置权限范围，在 Authorization 头中作为 Bearer token 使用。</p>
-
-  <h2>MCP 服务器（AI Agent 集成）</h2>
-  <p>PicFast 内置 MCP（Model Context Protocol）服务器，使 Claude、Cursor 等 AI 助手可直接与图床交互。MCP 服务器以 <code>@picfast/mcp</code> 发布在 npm。</p>
-
-  <h3>快速接入</h3>
-  <pre><code>npx @picfast/mcp</code></pre>
-  <p>在 MCP 客户端中配置：</p>
-  <pre><code>&#123;
-  "mcpServers": &#123;
-    "picfast": &#123;
-      "command": "npx",
-      "args": ["-y", "@picfast/mcp"],
-      "env": &#123;
-        "PICFAST_BASE_URL": "https://picfast.example.com",
-        "PICFAST_API_TOKEN": "img_xxxxxxxx"
-      &#125;
-    &#125;
-  &#125;
-&#125;</code></pre>
-
-  <h3>可用 MCP 工具</h3>
+  <h2>相册</h2>
   <table>
-    <thead><tr><th>工具</th><th>认证</th><th>说明</th></tr></thead>
+    <thead><tr><th>方法</th><th>路径</th><th>认证</th><th>说明</th></tr></thead>
     <tbody>
-      <tr><td><code>upload_image</code></td><td>可选</td><td>从本地文件路径上传图片，支持游客模式</td></tr>
-      <tr><td><code>list_images</code></td><td>必须</td><td>分页查看图片列表</td></tr>
-      <tr><td><code>get_image</code></td><td>必须</td><td>获取图片详情及分享链接（URL、Markdown、HTML、BBCode）</td></tr>
-      <tr><td><code>delete_image</code></td><td>必须</td><td>按 key 删除图片</td></tr>
-      <tr><td><code>get_usage_stats</code></td><td>必须</td><td>查看存储配额及使用量</td></tr>
+      <tr><td>GET</td><td><code>/api/v1/albums</code></td><td>JWT / token</td><td>列出你的相册</td></tr>
+      <tr><td>POST</td><td><code>/api/v1/albums</code></td><td>JWT / token</td><td>创建相册</td></tr>
+      <tr><td>PUT</td><td><code>/api/v1/albums/&#123;id&#125;</code></td><td>JWT / token</td><td>更新相册（名称、简介）</td></tr>
+      <tr><td>DELETE</td><td><code>/api/v1/albums/&#123;id&#125;</code></td><td>JWT / token</td><td>删除相册</td></tr>
     </tbody>
   </table>
 
+  <h2>存储策略</h2>
+  <table>
+    <thead><tr><th>方法</th><th>路径</th><th>认证</th><th>说明</th></tr></thead>
+    <tbody>
+      <tr><td>GET</td><td><code>/api/v1/strategies</code></td><td>JWT / token</td><td>查看你所在分组可用的存储策略</td></tr>
+    </tbody>
+  </table>
+
+  <h2>游客上传</h2>
+  <table>
+    <thead><tr><th>方法</th><th>路径</th><th>认证</th><th>说明</th></tr></thead>
+    <tbody>
+      <tr><td>POST</td><td><code>/api/v1/upload</code></td><td>可选</td><td>游客上传（需在管理后台启用）</td></tr>
+    </tbody>
+  </table>
+
+  <h2>ShareX</h2>
+  <table>
+    <thead><tr><th>方法</th><th>路径</th><th>认证</th><th>说明</th></tr></thead>
+    <tbody>
+      <tr><td>GET</td><td><code>/api/v1/sharex/config</code></td><td>否</td><td>下载 ShareX <code>.sxcu</code> 配置文件</td></tr>
+      <tr><td>POST</td><td><code>/api/v1/sharex/upload</code></td><td>可选</td><td>ShareX 兼容上传端点</td></tr>
+    </tbody>
+  </table>
+
+  <h2>管理 API</h2>
+  <p>所有管理端点需要具备 admin 角色的 JWT。前缀：<code>/api/v1/admin</code>。</p>
+  <table>
+    <thead><tr><th>方法</th><th>路径</th><th>说明</th></tr></thead>
+    <tbody>
+      <tr><td>GET</td><td><code>/admin/users</code></td><td>列出用户（可按关键词、状态筛选）</td></tr>
+      <tr><td>GET / PUT / DELETE</td><td><code>/admin/users/&#123;id&#125;</code></td><td>查看、更新或删除用户</td></tr>
+      <tr><td>GET / POST</td><td><code>/admin/groups</code></td><td>列出或创建分组</td></tr>
+      <tr><td>GET / PUT / DELETE</td><td><code>/admin/groups/&#123;id&#125;</code></td><td>查看、更新或删除分组</td></tr>
+      <tr><td>GET / POST</td><td><code>/admin/strategies</code></td><td>列出或创建存储策略</td></tr>
+      <tr><td>GET / PUT / DELETE</td><td><code>/admin/strategies/&#123;id&#125;</code></td><td>查看、更新或删除策略</td></tr>
+      <tr><td>GET</td><td><code>/admin/images</code></td><td>列出所有图片（可按关键词、邮箱、扩展名筛选）</td></tr>
+      <tr><td>DELETE</td><td><code>/admin/images/&#123;id&#125;</code></td><td>按 ID 删除任意图片</td></tr>
+      <tr><td>GET</td><td><code>/admin/moderation/pending</code></td><td>列出待审核图片</td></tr>
+      <tr><td>POST</td><td><code>/admin/moderation/&#123;id&#125;/approve</code></td><td>批准图片</td></tr>
+      <tr><td>POST</td><td><code>/admin/moderation/&#123;id&#125;/reject</code></td><td>驳回图片（可选原因）</td></tr>
+      <tr><td>GET / PUT</td><td><code>/admin/settings</code></td><td>查看或更新站点设置（运行时热加载）</td></tr>
+      <tr><td>GET</td><td><code>/admin/audit-logs</code></td><td>查看审计日志（可按操作、资源类型筛选）</td></tr>
+      <tr><td>GET</td><td><code>/admin/observability/summary</code></td><td>系统概览（运行时间、健康状态、数据库连接池、用量统计）</td></tr>
+    </tbody>
+  </table>
+
+  <h2>AI Agent 集成（MCP）</h2>
+  <p>PicFast 内置 MCP 服务器，支持 Claude、Cursor、VS Code Copilot 等 AI Agent 接入。完整的安装说明、工具参考与配置请查看 <a href="/zh/docs/mcp">MCP 集成</a>页面。</p>
+
   <h2>OpenAPI 规范</h2>
-  <p>完整 API 规范文件位于：</p>
+  <p>完整的机器可读 API 规范文件：</p>
   <ul>
     <li><code>/openapi.yaml</code> — YAML 格式</li>
     <li><code>/openapi.json</code> — JSON 格式</li>
-    <li><code>/docs</code> — 交互式 Swagger UI，支持在线调试</li>
+    <li><code>/docs</code> — 交互式 Scalar UI，支持在线调试</li>
   </ul>
 </DocsLayout>
