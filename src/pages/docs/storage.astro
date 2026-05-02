@@ -8,15 +8,15 @@ import DocsLayout from '../../layouts/DocsLayout.astro';
 
   <h2>Local</h2>
   <p>Store files on the local filesystem. Simplest option, good for single-server deployments.</p>
-  <pre><code>{'{'}#123;
+  <pre><code>&#123;
   "type": "local",
   "root": "/data/uploads",
   "url": "https://pics.example.com/uploads"
-{'}'}#125;</code></pre>
+&#125;</code></pre>
 
   <h2>S3-compatible</h2>
   <p>AWS S3, MinIO, Cloudflare R2, and other S3-compatible services.</p>
-  <pre><code>{'{'}#123;
+  <pre><code>&#123;
   "type": "s3",
   "endpoint": "https://s3.us-east-1.amazonaws.com",
   "region": "us-east-1",
@@ -24,45 +24,45 @@ import DocsLayout from '../../layouts/DocsLayout.astro';
   "access_key": "AKIAIOSFODNN7EXAMPLE",
   "secret_key": "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY",
   "url": "https://my-picfast.s3.us-east-1.amazonaws.com"
-{'}'}#125;</code></pre>
+&#125;</code></pre>
 
   <h2>Aliyun OSS</h2>
-  <pre><code>{'{'}#123;
+  <pre><code>&#123;
   "type": "oss",
   "endpoint": "oss-cn-hangzhou.aliyuncs.com",
   "bucket": "my-picfast",
   "access_key": "your-access-key",
   "secret_key": "your-secret-key",
   "url": "https://my-picfast.oss-cn-hangzhou.aliyuncs.com"
-{'}'}#125;</code></pre>
+&#125;</code></pre>
 
   <h2>Tencent COS</h2>
-  <pre><code>{'{'}#123;
+  <pre><code>&#123;
   "type": "cos",
   "bucket_url": "https://my-picfast.cos.ap-guangzhou.myqcloud.com",
   "secret_id": "your-secret-id",
   "secret_key": "your-secret-key",
   "url": "https://my-picfast.cos.ap-guangzhou.myqcloud.com"
-{'}'}#125;</code></pre>
+&#125;</code></pre>
 
   <h2>Qiniu Kodo</h2>
-  <pre><code>{'{'}#123;
+  <pre><code>&#123;
   "type": "kodo",
   "access_key": "your-access-key",
   "secret_key": "your-secret-key",
   "bucket": "my-picfast",
   "domain": "https://pics.example.com",
   "zone": "zone0"
-{'}'}#125;</code></pre>
+&#125;</code></pre>
 
   <h2>WebDAV</h2>
-  <pre><code>{'{'}#123;
+  <pre><code>&#123;
   "type": "webdav",
   "endpoint": "https://dav.example.com",
   "username": "user",
   "password": "password",
   "url": "https://dav.example.com/pics"
-{'}'}#125;</code></pre>
+&#125;</code></pre>
 
   <h2>Switching backends</h2>
   <p>Images already stored in one backend stay there. When you switch the default backend, new uploads go to the new backend. Existing images continue to be served from their original locations.</p>
