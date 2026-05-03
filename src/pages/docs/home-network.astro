@@ -169,6 +169,7 @@ tailscale funnel --bg 18080</code></pre>
     <li>Always set <code>PICFAST_JWT_SECRET</code> to a strong random value</li>
     <li>Disable guest upload (<code>PICFAST_APP_ALLOW_GUEST_UPLOAD=false</code>) unless you specifically need it</li>
     <li>Close registration after creating your accounts (<code>PICFAST_APP_ALLOW_REGISTRATION=false</code>)</li>
+    <li>On first startup, the setup wizard runs at <code>/setup</code>. Set <code>PICFAST_APP_ADMIN_EMAIL</code> and <code>PICFAST_APP_ADMIN_PASSWORD</code> to auto-create the admin and skip the wizard for headless deployments</li>
     <li>Configure your tunnel to enforce HTTPS — all three options above do this by default</li>
     <li>If using FRP on a Chinese VPS, set up file-based rate limiting (your reverse proxy handles this)</li>
   </ul>

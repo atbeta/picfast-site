@@ -9,7 +9,7 @@ import DocsLayout from '../../layouts/DocsLayout.astro';
   <h2>Moderation modes</h2>
 
   <h3>Disabled (default)</h3>
-  <p>All uploads are immediately accessible. No review required. This is the right choice for private or team-internal deployments.</p>
+  <p>All uploads are immediately accessible. No review required. This is the right choice for private or team-internal deployments. When moderation is later disabled, all pending images are automatically approved.</p>
 
   <h3>Manual</h3>
   <p>Uploaded images are marked as <strong>pending</strong> and hidden from public feeds until an admin approves them. Administrators can approve or reject images in the admin panel under <strong>Moderation</strong>.</p>
@@ -17,8 +17,8 @@ import DocsLayout from '../../layouts/DocsLayout.astro';
   <h2>Configuration</h2>
   <p>Set the moderation mode in <code>config.yaml</code> or via the admin panel under Site Settings:</p>
   <pre><code>app:
-  moderation_mode: "manual"  # "" (disabled) | "manual"</code></pre>
-  <p>Set <code>moderation_mode: ""</code> or omit the setting to disable moderation.</p>
+  moderation_mode: "manual"  # "disabled" (default) | "manual"</code></pre>
+  <p>Set <code>moderation_mode: "disabled"</code> or omit the setting to disable moderation.</p>
 
   <h2>Admin review workflow</h2>
   <p>When moderation is enabled:</p>

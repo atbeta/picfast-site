@@ -27,27 +27,33 @@ storage:
   thumbnail_dir: "./data/thumbnails"
 
 mail:
-  host: ""
-  port: 587
+  host: "127.0.0.1"
+  port: 1025
   username: ""
   password: ""
-  from_email: ""
+  from_email: "noreply@picfast.local"
   from_name: "PicFast"
-  encryption: "starttls"
+  encryption: "none"
 
 app:
   name: "PicFast"
   site_description: "PicFast is a modern self-hosted image hosting service."
   favicon_url: ""
   allow_guest_upload: false
-  allow_registration: false
-  require_email_verification: false
+  allow_registration: true
+  require_email_verification: true
   audit_upload_logs: false
   user_initial_capacity: 524288000
+  guest_capacity_bytes: 10737418240
   default_image_ttl: "0"
+  guest_image_ttl: "0"
   admin_email: ""
   admin_password: ""
-  moderation_mode: ""
+  moderation_mode: "disabled"
+  footer_text_1: ""
+  footer_link_1: ""
+  footer_text_2: ""
+  footer_link_2: ""
   icp_number: ""
   icp_link: "https://beian.miit.gov.cn/"
   psb_number: ""
@@ -89,14 +95,20 @@ app:
       <tr><td><code>favicon_url</code></td><td>string</td><td>""</td><td>Custom site favicon URL; empty uses the bundled favicon</td></tr>
       <tr><td><code>allow_guest_upload</code></td><td>bool</td><td>false</td><td>Allow uploading without an account</td></tr>
       <tr><td><code>guest_capacity_bytes</code></td><td>int64</td><td>10737418240</td><td>Total storage quota shared across all guest uploads (10 GB)</td></tr>
-      <tr><td><code>allow_registration</code></td><td>bool</td><td>false</td><td>Allow new user sign-ups. Default is closed registration.</td></tr>
-      <tr><td><code>require_email_verification</code></td><td>bool</td><td>false</td><td>Require email verification before login. Only takes effect when <code>mail.*</code> is configured and the SMTP server is reachable.</td></tr>
+      <tr><td><code>allow_registration</code></td><td>bool</td><td>true</td><td>Allow new user sign-ups. Set to false once you have your accounts.</td></tr>
+      <tr><td><code>require_email_verification</code></td><td>bool</td><td>true</td><td>Require email verification before login. Only takes effect when <code>mail.*</code> is configured and the SMTP server is reachable.</td></tr>
       <tr><td><code>audit_upload_logs</code></td><td>bool</td><td>false</td><td>Log all upload events to the audit log table</td></tr>
       <tr><td><code>user_initial_capacity</code></td><td>int64</td><td>524288000</td><td>Default storage quota per user in bytes (500 MB)</td></tr>
+      <tr><td><code>guest_capacity_bytes</code></td><td>int64</td><td>10737418240</td><td>Total storage quota shared across all guest uploads (10 GB)</td></tr>
       <tr><td><code>default_image_ttl</code></td><td>duration</td><td>0 (never)</td><td>Default expiry for uploaded images (0 = never expire, e.g. <code>24h</code>, <code>168h</code>)</td></tr>
-      <tr><td><code>admin_email</code></td><td>string</td><td>""</td><td>If set, an admin account is auto-created on first startup (combined with <code>admin_password</code>)</td></tr>
+      <tr><td><code>guest_image_ttl</code></td><td>duration</td><td>0 (never)</td><td>Separate expiry for guest uploads (0 = use <code>default_image_ttl</code>, e.g. <code>24h</code> for shorter guest retention)</td></tr>
+      <tr><td><code>admin_email</code></td><td>string</td><td>""</td><td>If set with <code>admin_password</code>, auto-creates admin on first startup and skips the setup wizard</td></tr>
       <tr><td><code>admin_password</code></td><td>string</td><td>""</td><td>Password for the auto-created admin account</td></tr>
-      <tr><td><code>moderation_mode</code></td><td>string</td><td>""</td><td>"" (disabled), <code>"manual"</code> (admin approval queue), <code>"auto"</code> (future)</td></tr>
+      <tr><td><code>moderation_mode</code></td><td>string</td><td>disabled</td><td><code>"disabled"</code> (default), <code>"manual"</code> (admin approval queue)</td></tr>
+      <tr><td><code>footer_text_1</code></td><td>string</td><td>""</td><td>Optional footer text line 1; hidden if empty</td></tr>
+      <tr><td><code>footer_link_1</code></td><td>string</td><td>""</td><td>Optional link for footer text line 1</td></tr>
+      <tr><td><code>footer_text_2</code></td><td>string</td><td>""</td><td>Optional footer text line 2; hidden if empty</td></tr>
+      <tr><td><code>footer_link_2</code></td><td>string</td><td>""</td><td>Optional link for footer text line 2</td></tr>
       <tr><td><code>icp_number</code></td><td>string</td><td>""</td><td>Chinese ICP filing number for sites hosted in China</td></tr>
       <tr><td><code>icp_link</code></td><td>string</td><td>https://beian.miit.gov.cn/</td><td>ICP filing link target</td></tr>
       <tr><td><code>psb_number</code></td><td>string</td><td>""</td><td>Chinese PSB filing number</td></tr>
@@ -124,9 +136,10 @@ app:
     <thead><tr><th>Key</th><th>Type</th><th>Default</th><th>Description</th></tr></thead>
     <tbody>
       <tr><td><code>host</code></td><td>string</td><td>""</td><td>SMTP server hostname</td></tr>
-      <tr><td><code>port</code></td><td>int</td><td>587</td><td>SMTP port (587 for STARTTLS, 465 for TLS, 25 for unencrypted)</td></tr>
-      <tr><td><code>encryption</code></td><td>string</td><td>starttls</td><td><code>"starttls"</code>, <code>"tls"</code>, or <code>"none"</code></td></tr>
-      <tr><td><code>from_email</code></td><td>string</td><td>""</td><td>Sender address; must be set when SMTP is configured</td></tr>
+      <tr><td><code>port</code></td><td>int</td><td>1025</td><td>SMTP port (587 for STARTTLS, 465 for TLS, 1025 for local Mailpit)</td></tr>
+      <tr><td><code>encryption</code></td><td>string</td><td>none</td><td><code>"starttls"</code>, <code>"tls"</code>, or <code>"none"</code></td></tr>
+      <tr><td><code>from_email</code></td><td>string</td><td>noreply@picfast.local</td><td>Sender address; must be set when SMTP is configured</td></tr>
+      <tr><td><code>from_name</code></td><td>string</td><td>PicFast</td><td>Sender display name</td></tr>
     </tbody>
   </table>
 

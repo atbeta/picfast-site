@@ -27,6 +27,9 @@ curl -X POST http://localhost:18080/api/v1/upload \
   <h2>ShareX</h2>
   <p>PicFast provides a built-in ShareX config endpoint. See the <a href="/docs/sharex">ShareX Integration</a> page for full setup instructions.</p>
 
+  <h2>Other tools</h2>
+  <p>PicFast also supports PicGo, PicList, uPic, Dropshare, and any tool compatible with a standard REST upload endpoint. The built-in <strong>Connections</strong> page in the admin console provides step-by-step setup instructions for each tool, including Obsidian (via Image auto upload + PicGo).</p>
+
   <h2>MCP (AI agents)</h2>
   <p>AI assistants can upload images through PicFast's MCP server. See the <a href="/docs/mcp">MCP Integration</a> page for setup and the full tool reference.</p>
 
@@ -68,4 +71,5 @@ console.log(data.links.markdown);</code></pre>
   <h2>Formats &amp; limits</h2>
   <p>Accepted formats: <code>jpg</code>, <code>png</code>, <code>gif</code>, <code>webp</code>, <code>svg</code>, <code>bmp</code>, <code>ico</code>.</p>
   <p>Maximum file size is configured per group. Default is 50 MB per file.</p>
+  <p>Guest upload TTL can be configured separately via <code>app.guest_image_ttl</code> — useful for giving guest uploads a shorter lifespan than authenticated ones. See <a href="/docs/configuration">Configuration</a> for details.</p>
 </DocsLayout>

@@ -9,7 +9,7 @@ import DocsLayout from '../../../layouts/DocsLayout.astro';
   <h2>审核模式</h2>
 
   <h3>关闭（默认）</h3>
-  <p>所有上传的图片立即可见，无需审核。适合私有或团队内部部署。</p>
+  <p>所有上传的图片立即可见，无需审核。适合私有或团队内部部署。当从审核模式切换回关闭模式时，所有待审核图片将自动通过审批。</p>
 
   <h3>手动审核</h3>
   <p>上传的图片标记为<strong>待审核</strong>，仅在管理员批准后才对外公开。管理员可在后台的<strong>审核</strong>页面中进行审查。</p>
@@ -17,8 +17,8 @@ import DocsLayout from '../../../layouts/DocsLayout.astro';
   <h2>配置方式</h2>
   <p>在 <code>config.yaml</code> 中设置审核模式，或通过管理后台的站点设置修改：</p>
   <pre><code>app:
-  moderation_mode: "manual"  # ""（关闭）| "manual"（手动审核）</code></pre>
-  <p>设置为 <code>""</code> 或不填写该字段即为关闭。</p>
+  moderation_mode: "manual"  # "disabled"（默认关闭）| "manual"（手动审核）</code></pre>
+  <p>设置为 <code>"disabled"</code> 或不填写该字段即为关闭。</p>
 
   <h2>审核流程</h2>
   <p>启用审核后：</p>

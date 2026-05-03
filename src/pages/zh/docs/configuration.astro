@@ -27,27 +27,33 @@ storage:
   thumbnail_dir: "./data/thumbnails"
 
 mail:
-  host: ""
-  port: 587
+  host: "127.0.0.1"
+  port: 1025
   username: ""
   password: ""
-  from_email: ""
+  from_email: "noreply@picfast.local"
   from_name: "PicFast"
-  encryption: "starttls"
+  encryption: "none"
 
 app:
   name: "PicFast"
   site_description: "PicFast is a modern self-hosted image hosting service."
   favicon_url: ""
   allow_guest_upload: false
-  allow_registration: false
-  require_email_verification: false
+  allow_registration: true
+  require_email_verification: true
   audit_upload_logs: false
   user_initial_capacity: 524288000
+  guest_capacity_bytes: 10737418240
   default_image_ttl: "0"
+  guest_image_ttl: "0"
   admin_email: ""
   admin_password: ""
-  moderation_mode: ""
+  moderation_mode: "disabled"
+  footer_text_1: ""
+  footer_link_1: ""
+  footer_text_2: ""
+  footer_link_2: ""
   icp_number: ""
   icp_link: "https://beian.miit.gov.cn/"
   psb_number: ""
@@ -88,14 +94,20 @@ app:
       <tr><td><code>favicon_url</code></td><td>string</td><td>""</td><td>自定义站点图标 URL；空则使用内置默认图标</td></tr>
       <tr><td><code>allow_guest_upload</code></td><td>bool</td><td>false</td><td>允许不登录上传</td></tr>
       <tr><td><code>guest_capacity_bytes</code></td><td>int64</td><td>10737418240</td><td>所有游客共享的总存储配额（10 GB）</td></tr>
-      <tr><td><code>allow_registration</code></td><td>bool</td><td>false</td><td>允许新用户注册。默认关闭注册。</td></tr>
-      <tr><td><code>require_email_verification</code></td><td>bool</td><td>false</td><td>登录前必须验证邮箱。仅在 <code>mail.*</code> 配置正确且 SMTP 可达时生效。</td></tr>
+      <tr><td><code>allow_registration</code></td><td>bool</td><td>true</td><td>允许新用户注册。建议创建账号后关闭。</td></tr>
+      <tr><td><code>require_email_verification</code></td><td>bool</td><td>true</td><td>登录前必须验证邮箱。仅在 <code>mail.*</code> 配置正确且 SMTP 可达时生效。</td></tr>
       <tr><td><code>audit_upload_logs</code></td><td>bool</td><td>false</td><td>记录所有上传操作到审计日志</td></tr>
       <tr><td><code>user_initial_capacity</code></td><td>int64</td><td>524288000</td><td>新用户默认存储配额（500 MB）</td></tr>
+      <tr><td><code>guest_capacity_bytes</code></td><td>int64</td><td>10737418240</td><td>所有游客共享的总存储配额（10 GB）</td></tr>
       <tr><td><code>default_image_ttl</code></td><td>duration</td><td>0（永不过期）</td><td>图片默认过期时间（如 <code>24h</code>、<code>168h</code>；0 = 永不过期）</td></tr>
-      <tr><td><code>admin_email</code></td><td>string</td><td>""</td><td>设置后首次启动时自动创建管理员账号（需同时设置 <code>admin_password</code>）</td></tr>
+      <tr><td><code>guest_image_ttl</code></td><td>duration</td><td>0（永不过期）</td><td>游客上传图片的独立过期时间（0 = 使用 <code>default_image_ttl</code>；可设为 <code>24h</code> 等较短时间）</td></tr>
+      <tr><td><code>admin_email</code></td><td>string</td><td>""</td><td>与 <code>admin_password</code> 同时设置后，首次启动自动创建管理员并跳过初始化向导</td></tr>
       <tr><td><code>admin_password</code></td><td>string</td><td>""</td><td>自动创建的管理员账号密码</td></tr>
-      <tr><td><code>moderation_mode</code></td><td>string</td><td>""</td><td>""（关闭）、<code>"manual"</code>（人工审核）、<code>"auto"</code>（待实现）</td></tr>
+      <tr><td><code>moderation_mode</code></td><td>string</td><td>disabled</td><td><code>"disabled"</code>（默认关闭）、<code>"manual"</code>（人工审核）</td></tr>
+      <tr><td><code>footer_text_1</code></td><td>string</td><td>""</td><td>可选页脚文字行 1；空则不显示</td></tr>
+      <tr><td><code>footer_link_1</code></td><td>string</td><td>""</td><td>可选页脚文字行 1 的链接</td></tr>
+      <tr><td><code>footer_text_2</code></td><td>string</td><td>""</td><td>可选页脚文字行 2；空则不显示</td></tr>
+      <tr><td><code>footer_link_2</code></td><td>string</td><td>""</td><td>可选页脚文字行 2 的链接</td></tr>
       <tr><td><code>icp_number</code></td><td>string</td><td>""</td><td>ICP 备案号（适用于在中国大陆托管服务的站点）</td></tr>
       <tr><td><code>icp_link</code></td><td>string</td><td>https://beian.miit.gov.cn/</td><td>ICP 备案链接地址</td></tr>
       <tr><td><code>psb_number</code></td><td>string</td><td>""</td><td>公安备案号</td></tr>
@@ -123,9 +135,10 @@ app:
     <thead><tr><th>键</th><th>类型</th><th>默认值</th><th>说明</th></tr></thead>
     <tbody>
       <tr><td><code>host</code></td><td>string</td><td>""</td><td>SMTP 服务器地址</td></tr>
-      <tr><td><code>port</code></td><td>int</td><td>587</td><td>SMTP 端口（587 = STARTTLS，465 = TLS，25 = 无加密）</td></tr>
-      <tr><td><code>encryption</code></td><td>string</td><td>starttls</td><td><code>"starttls"</code>、<code>"tls"</code> 或 <code>"none"</code></td></tr>
-      <tr><td><code>from_email</code></td><td>string</td><td>""</td><td>发件人地址；配置 SMTP 时必须填写</td></tr>
+      <tr><td><code>port</code></td><td>int</td><td>1025</td><td>SMTP 端口（587 = STARTTLS，465 = TLS，1025 = 本地 Mailpit）</td></tr>
+      <tr><td><code>encryption</code></td><td>string</td><td>none</td><td><code>"starttls"</code>、<code>"tls"</code> 或 <code>"none"</code></td></tr>
+      <tr><td><code>from_email</code></td><td>string</td><td>noreply@picfast.local</td><td>发件人地址；配置 SMTP 时必须填写</td></tr>
+      <tr><td><code>from_name</code></td><td>string</td><td>PicFast</td><td>发件人显示名称</td></tr>
     </tbody>
   </table>
 

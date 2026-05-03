@@ -14,8 +14,8 @@ import '../../styles/home.css';
       </div>
       <h1>一行命令，部署完整的<br />自托管图床平台。</h1>
       <p class="hero-sub">
-        执行 <code>make docker-up</code> 即可启动全部服务。
-        内置 Web 管理面板、6 种存储后端、API 优先架构。
+        拉取预构建镜像，一条 <code>docker run</code> 即可完成部署 —— PostgreSQL 加 PicFast，数秒启动。
+        首次访问提供引导式初始化向导。内置 React 管理面板、6 种存储后端、API 优先架构。
         原生支持 MCP 协议供 AI 工作流集成，同时提供 ShareX 等客户端工具接入。
       </p>
       <div class="hero-code">
@@ -25,10 +25,18 @@ import '../../styles/home.css';
           <span class="dot green"></span>
           <span class="code-filename">terminal</span>
         </div>
-        <pre><code><span class="prompt">$</span> git clone https://github.com/atbeta/picfast.git
-<span class="prompt">$</span> cd picfast
-<span class="prompt">$</span> cp .env.example .env
-<span class="prompt">$</span> make docker-up</code></pre>
+        <pre><code><span class="prompt">$</span> docker network create picfast-net
+<span class="prompt">$</span> docker run -d --name picfast-db --network picfast-net \
+    -e POSTGRES_PASSWORD=devonly \
+    -v picfast-pgdata:/var/lib/postgresql/data \
+    postgres:16-alpine
+<span class="prompt">$</span> docker run -d --name picfast --network picfast-net -p 18080:8080 \
+    -e PICFAST_DATABASE_URL='postgres://postgres:devonly@picfast-db:5432/postgres?sslmode=disable' \
+    -e PICFAST_JWT_SECRET='change-me-in-production' \
+    -e PICFAST_SERVER_BASE_URL='http://localhost:18080' \
+    -v picfast-uploads:/app/data/uploads \
+    -v picfast-thumbnails:/app/data/thumbnails \
+    xbeta/picfast:latest</code></pre>
       </div>
       <div class="hero-actions">
         <a href="/zh/docs/getting-started" class="btn btn-primary">快速开始</a>
@@ -55,7 +63,7 @@ import '../../styles/home.css';
             </svg>
           </div>
           <h3>一键 Docker 部署</h3>
-          <p>克隆仓库、填写配置、执行 <code>make docker-up</code> 即可启动全部服务（PostgreSQL、应用、Mailpit）。Docker Hub 提供预构建镜像，生产部署同样便捷。</p>
+          <p>拉取预构建镜像，一条 <code>docker run</code> 命令即可完成部署，无需从源码构建。同时提供完整的 Docker Compose 模板，支持 Traefik 和 Let's Encrypt 自动证书。</p>
         </div>
         <div class="feature-card">
           <div class="feature-icon">
@@ -87,7 +95,7 @@ import '../../styles/home.css';
             </svg>
           </div>
           <h3>原生工具集成</h3>
-          <p>ShareX 配置文件一键下载导入，支持多格式链接输出（URL、Markdown、BBCode、HTML）。兼容任意 HTTP 客户端，无供应商锁定风险。</p>
+          <p>内置 ShareX、PicGo、PicList、uPic、Dropshare 等工具的一键配置支持。多格式链接输出（URL、Markdown、BBCode、HTML）。兼容任意 HTTP 客户端，无供应商锁定风险。</p>
         </div>
         <div class="feature-card">
           <div class="feature-icon">
@@ -143,33 +151,37 @@ import '../../styles/home.css';
         <div class="qs-step">
           <div class="qs-num">1</div>
           <div class="qs-content">
-            <h3>克隆并配置</h3>
-            <p>克隆仓库，复制示例配置文件，按需修改。</p>
-            <div class="hero-code small"><pre><code>git clone https://github.com/atbeta/picfast.git
-cd picfast
-cp .env.example .env
-cp config.example.yaml config.yaml
-$EDITOR config.yaml</code></pre></div>
+            <h3>启动服务栈</h3>
+            <p>创建 Docker 网络，启动 PostgreSQL 和 PicFast —— 三条命令，一步到位。</p>
+            <div class="hero-code small"><pre><code>docker network create picfast-net
+
+docker run -d --name picfast-db --network picfast-net \
+  -e POSTGRES_PASSWORD=devonly \
+  -v picfast-pgdata:/var/lib/postgresql/data \
+  postgres:16-alpine
+
+docker run -d --name picfast --network picfast-net -p 18080:8080 \
+  -e PICFAST_DATABASE_URL='postgres://postgres:devonly@picfast-db:5432/postgres?sslmode=disable' \
+  -e PICFAST_JWT_SECRET='change-me-in-production' \
+  -e PICFAST_SERVER_BASE_URL='http://localhost:18080' \
+  -v picfast-uploads:/app/data/uploads \
+  -v picfast-thumbnails:/app/data/thumbnails \
+  xbeta/picfast:latest</code></pre></div>
           </div>
         </div>
         <div class="qs-step">
           <div class="qs-num">2</div>
           <div class="qs-content">
-            <h3>启动服务</h3>
-            <p>一行命令启动 PostgreSQL、Mailpit（本地邮件测试）及应用。</p>
-            <div class="hero-code small"><pre><code>make docker-up</code></pre></div>
+            <h3>完成初始化</h3>
+            <p>打开 <code>http://localhost:18080</code>，引导式向导将创建首个管理员账号。无头部署可设置 <code>PICFAST_APP_ADMIN_EMAIL</code> 和 <code>PICFAST_APP_ADMIN_PASSWORD</code> 跳过向导。</p>
           </div>
         </div>
         <div class="qs-step">
           <div class="qs-num">3</div>
           <div class="qs-content">
-            <h3>上传第一张图片</h3>
-            <p>注册账号、获取 token，通过 curl 上传 —— 也可使用 Web UI、ShareX 或 MCP。</p>
-            <div class="hero-code small"><pre><code>curl -X POST http://localhost:18080/api/v1/auth/register \
-  -H "Content-Type: application/json" \
-  -d '&#123;"email":"you@example.com","password":"hunter2","name":"You"&#125;'
-
-curl -X POST http://localhost:18080/api/v1/images \
+            <h3>开始上传</h3>
+            <p>通过 Web UI、ShareX、curl 或任意 HTTP 客户端上传，每次上传返回即用链接。</p>
+            <div class="hero-code small"><pre><code>curl -X POST http://localhost:18080/api/v1/images \
   -H "Authorization: Bearer YOUR_TOKEN" \
   -F "file=@image.png"</code></pre></div>
           </div>

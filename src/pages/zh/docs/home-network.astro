@@ -169,6 +169,7 @@ tailscale funnel --bg 18080</code></pre>
     <li><code>PICFAST_JWT_SECRET</code> 务必设为高强度随机值</li>
     <li>如非必要，关闭游客上传（<code>PICFAST_APP_ALLOW_GUEST_UPLOAD=false</code>）</li>
     <li>创建好账号后关闭公开注册（<code>PICFAST_APP_ALLOW_REGISTRATION=false</code>）</li>
+    <li>首次启动时，初始化向导可在 <code>/setup</code> 路径访问；设置 <code>PICFAST_APP_ADMIN_EMAIL</code> 和 <code>PICFAST_APP_ADMIN_PASSWORD</code> 可在无头部署时自动创建管理员并跳过向导</li>
     <li>以上三种隧道方案均默认强制 HTTPS，无需额外配置证书</li>
     <li>如用 FRP 部署在国内 VPS，建议在反向代理层配置请求频率限制以防范滥用</li>
   </ul>

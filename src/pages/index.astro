@@ -14,8 +14,8 @@ import '../styles/home.css';
       </div>
       <h1>Self-hosted image hosting,<br />deployed in one command.</h1>
       <p class="hero-sub">
-        A complete image hosting platform, launched with a single <code>make docker-up</code>.
-        Features a full admin panel, 6 storage backends, and an API-first architecture.
+        Pull the prebuilt image and deploy with a single <code>docker run</code> — PostgreSQL and PicFast, up in seconds.
+        Guided first-run setup creates your admin account. Full React dashboard, 6 storage backends, and an API-first architecture.
         Natively integrates with AI agents via MCP, ShareX for quick captures, and any HTTP client.
       </p>
       <div class="hero-code">
@@ -25,10 +25,18 @@ import '../styles/home.css';
           <span class="dot green"></span>
           <span class="code-filename">terminal</span>
         </div>
-        <pre><code><span class="prompt">$</span> git clone https://github.com/atbeta/picfast.git
-<span class="prompt">$</span> cd picfast
-<span class="prompt">$</span> cp .env.example .env
-<span class="prompt">$</span> make docker-up</code></pre>
+        <pre><code><span class="prompt">$</span> docker network create picfast-net
+<span class="prompt">$</span> docker run -d --name picfast-db --network picfast-net \
+    -e POSTGRES_PASSWORD=devonly \
+    -v picfast-pgdata:/var/lib/postgresql/data \
+    postgres:16-alpine
+<span class="prompt">$</span> docker run -d --name picfast --network picfast-net -p 18080:8080 \
+    -e PICFAST_DATABASE_URL='postgres://postgres:devonly@picfast-db:5432/postgres?sslmode=disable' \
+    -e PICFAST_JWT_SECRET='change-me-in-production' \
+    -e PICFAST_SERVER_BASE_URL='http://localhost:18080' \
+    -v picfast-uploads:/app/data/uploads \
+    -v picfast-thumbnails:/app/data/thumbnails \
+    xbeta/picfast:latest</code></pre>
       </div>
       <div class="hero-actions">
         <a href="/docs/getting-started" class="btn btn-primary">Get Started</a>
@@ -55,7 +63,7 @@ import '../styles/home.css';
             </svg>
           </div>
           <h3>One-Command Deploy</h3>
-          <p>Clone, configure, run <code>make docker-up</code> — the full stack starts in one go. PostgreSQL, the application, and Mailpit launch together. Prebuilt images on Docker Hub make production deployment equally straightforward.</p>
+          <p>Pull the prebuilt image and deploy with a single <code>docker run</code> command — no building from source required. Full Docker Compose templates with Traefik and Let's Encrypt available for production.</p>
         </div>
         <div class="feature-card">
           <div class="feature-icon">
@@ -87,7 +95,7 @@ import '../styles/home.css';
             </svg>
           </div>
           <h3>Native Tool Integrations</h3>
-          <p>One-click ShareX setup via a dedicated config endpoint. Multi-format output — URL, Markdown, BBCode, HTML. Works with curl, Python, JavaScript, or any HTTP client. No vendor lock-in.</p>
+          <p>One-click config for ShareX, PicGo, PicList, uPic, Dropshare, and more. Multi-format output — URL, Markdown, BBCode, HTML. Works with curl, Python, JavaScript, or any HTTP client. No vendor lock-in.</p>
         </div>
         <div class="feature-card">
           <div class="feature-icon">
@@ -145,33 +153,37 @@ import '../styles/home.css';
         <div class="qs-step">
           <div class="qs-num">1</div>
           <div class="qs-content">
-            <h3>Clone and configure</h3>
-            <p>Clone the repo, copy the example config files, and adjust to your needs.</p>
-            <div class="hero-code small"><pre><code>git clone https://github.com/atbeta/picfast.git
-cd picfast
-cp .env.example .env
-cp config.example.yaml config.yaml
-$EDITOR config.yaml</code></pre></div>
+            <h3>Start the stack</h3>
+            <p>Create a Docker network, launch PostgreSQL and PicFast — three commands, done.</p>
+            <div class="hero-code small"><pre><code>docker network create picfast-net
+
+docker run -d --name picfast-db --network picfast-net \
+  -e POSTGRES_PASSWORD=devonly \
+  -v picfast-pgdata:/var/lib/postgresql/data \
+  postgres:16-alpine
+
+docker run -d --name picfast --network picfast-net -p 18080:8080 \
+  -e PICFAST_DATABASE_URL='postgres://postgres:devonly@picfast-db:5432/postgres?sslmode=disable' \
+  -e PICFAST_JWT_SECRET='change-me-in-production' \
+  -e PICFAST_SERVER_BASE_URL='http://localhost:18080' \
+  -v picfast-uploads:/app/data/uploads \
+  -v picfast-thumbnails:/app/data/thumbnails \
+  xbeta/picfast:latest</code></pre></div>
           </div>
         </div>
         <div class="qs-step">
           <div class="qs-num">2</div>
           <div class="qs-content">
-            <h3>Start everything</h3>
-            <p>One command launches PostgreSQL, Mailpit (local email testing), and the application.</p>
-            <div class="hero-code small"><pre><code>make docker-up</code></pre></div>
+            <h3>Complete setup</h3>
+            <p>Open <code>http://localhost:18080</code>. The guided setup wizard creates your first admin account. For headless deployments, set <code>PICFAST_APP_ADMIN_EMAIL</code> and <code>PICFAST_APP_ADMIN_PASSWORD</code> to skip the wizard.</p>
           </div>
         </div>
         <div class="qs-step">
           <div class="qs-num">3</div>
           <div class="qs-content">
-            <h3>Upload your first image</h3>
-            <p>Register a user, obtain a token, and upload via curl — or use the web UI, ShareX, or MCP.</p>
-            <div class="hero-code small"><pre><code>curl -X POST http://localhost:18080/api/v1/auth/register \
-  -H "Content-Type: application/json" \
-  -d '&#123;"email":"you@example.com","password":"hunter2","name":"You"&#125;'
-
-curl -X POST http://localhost:18080/api/v1/images \
+            <h3>Start uploading</h3>
+            <p>Upload via the web UI, ShareX, curl, or any HTTP client. Each upload returns ready-to-use links.</p>
+            <div class="hero-code small"><pre><code>curl -X POST http://localhost:18080/api/v1/images \
   -H "Authorization: Bearer YOUR_TOKEN" \
   -F "file=@image.png"</code></pre></div>
           </div>

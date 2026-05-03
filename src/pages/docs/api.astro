@@ -22,6 +22,15 @@ import DocsLayout from '../../layouts/DocsLayout.astro';
     </tbody>
   </table>
 
+  <h2>Setup</h2>
+  <table>
+    <thead><tr><th>Method</th><th>Path</th><th>Auth</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr><td>GET</td><td><code>/api/v1/setup/status</code></td><td>No</td><td>Check if first-run setup is needed (no admin exists)</td></tr>
+      <tr><td>POST</td><td><code>/api/v1/setup</code></td><td>No</td><td>Create the first admin account (only available when no users exist)</td></tr>
+    </tbody>
+  </table>
+
   <h2>Auth</h2>
   <table>
     <thead><tr><th>Method</th><th>Path</th><th>Auth</th><th>Description</th></tr></thead>

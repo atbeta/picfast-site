@@ -22,6 +22,15 @@ import DocsLayout from '../../../layouts/DocsLayout.astro';
     </tbody>
   </table>
 
+  <h2>初始化</h2>
+  <table>
+    <thead><tr><th>方法</th><th>路径</th><th>认证</th><th>说明</th></tr></thead>
+    <tbody>
+      <tr><td>GET</td><td><code>/api/v1/setup/status</code></td><td>否</td><td>检查是否需要进行首次初始化（无管理员账号）</td></tr>
+      <tr><td>POST</td><td><code>/api/v1/setup</code></td><td>否</td><td>创建首个管理员账号（仅在没有任何用户时可用）</td></tr>
+    </tbody>
+  </table>
+
   <h2>认证</h2>
   <table>
     <thead><tr><th>方法</th><th>路径</th><th>认证</th><th>说明</th></tr></thead>

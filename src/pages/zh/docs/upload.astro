@@ -27,6 +27,9 @@ curl -X POST http://localhost:18080/api/v1/upload \
   <h2>ShareX</h2>
   <p>PicFast 内置 ShareX 配置端点。详细设置请参阅 <a href="/zh/docs/sharex">ShareX 集成</a>页面。</p>
 
+  <h2>其他工具</h2>
+  <p>PicFast 同时支持 PicGo、PicList、uPic、Dropshare，以及任何兼容标准 REST 上传端点的工具。管理后台的 <strong>接入方式</strong> 页面为每款工具提供了分步设置指南，还包含 Obsidian（通过 Image auto upload + PicGo）的配置说明。</p>
+
   <h2>MCP（AI Agent）</h2>
   <p>AI 助手可通过 PicFast 的 MCP 服务器上传图片。完整的安装与配置说明请参阅 <a href="/zh/docs/mcp">MCP 集成</a>页面。</p>
 
@@ -68,4 +71,5 @@ console.log(data.links.markdown);</code></pre>
   <h2>支持的格式与限制</h2>
   <p>支持的格式：<code>jpg</code>、<code>png</code>、<code>gif</code>、<code>webp</code>、<code>svg</code>、<code>bmp</code>、<code>ico</code>。</p>
   <p>单文件最大体积按分组配置，默认 50 MB。</p>
+  <p>游客上传的过期时间可通过 <code>app.guest_image_ttl</code> 单独设置，适合给游客上传设置比登录用户更短的生命周期。详见 <a href="/zh/docs/configuration">配置参考</a>。</p>
 </DocsLayout>

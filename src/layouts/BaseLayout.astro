@@ -53,20 +53,25 @@ const docsLink = locale === 'en' ? '/docs/getting-started' : '/zh/docs/getting-s
           <a href={docsLink} class:list={["nav-link", { active: isDocs }]}>
             {locale === 'en' ? 'Docs' : '文档'}
           </a>
-          <a href="https://github.com/atbeta/picfast" class="nav-link" target="_blank" rel="noopener">
-            GitHub
-          </a>
-          <button id="theme-toggle" class="theme-btn" aria-label="Toggle theme">
-            <svg class="icon-sun" width="16" height="16" viewBox="0 0 16 16" fill="none">
-              <circle cx="8" cy="8" r="3" stroke="currentColor" stroke-width="1.75"/>
-              <path d="M8 1v1.5M8 13.5V15M15 8h-1.5M2.5 8H1M12.95 3.05l-1.06 1.06M4.11 11.89l-1.06 1.06M12.95 12.95l-1.06-1.06M4.11 4.11L3.05 3.05" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          <a href="https://github.com/atbeta/picfast" class="nav-link nav-icon-link" target="_blank" rel="noopener" title="GitHub" aria-label="GitHub">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
             </svg>
-            <svg class="icon-moon" width="16" height="16" viewBox="0 0 16 16" fill="none">
-              <path d="M13 10.5A6 6 0 015.5 3 5 5 0 1013 10.5z" stroke="currentColor" stroke-width="1.75" stroke-linejoin="round"/>
+          </a>
+          <button id="theme-toggle" class="theme-btn nav-icon-btn" aria-label="Toggle theme">
+            <svg class="icon-sun" width="18" height="18" viewBox="0 0 24 24" fill="none">
+              <circle cx="12" cy="12" r="5" stroke="currentColor" stroke-width="2"/>
+              <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+            <svg class="icon-moon" width="18" height="18" viewBox="0 0 24 24" fill="none">
+              <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
             </svg>
           </button>
-          <a href={switchLocale} class="nav-link lang-switch">
-            {switchLocaleLabel}
+          <a href={switchLocale} class="nav-link nav-icon-link" title={switchLocaleLabel} aria-label={switchLocaleLabel}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"/>
+              <path d="M2 12h20M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/>
+            </svg>
           </a>
         </nav>
       </div>
@@ -124,48 +129,98 @@ const docsLink = locale === 'en' ? '/docs/getting-started' : '/zh/docs/getting-s
         });
       })();
     </script>
+
+    <script is:inline>
+      (function() {
+        document.querySelectorAll('pre').forEach(function(pre) {
+          var parent = pre.parentNode;
+          if (parent.classList.contains('hero-code')) return;
+
+          var wrapper = document.createElement('div');
+          wrapper.className = 'code-block-wrapper';
+          parent.replaceChild(wrapper, pre);
+          wrapper.appendChild(pre);
+
+          var btn = document.createElement('button');
+          btn.className = 'copy-btn';
+          btn.setAttribute('aria-label', 'Copy code');
+          btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>';
+          wrapper.appendChild(btn);
+
+          btn.addEventListener('click', function() {
+            var code = pre.querySelector('code');
+            var text = code ? code.textContent : pre.textContent;
+            navigator.clipboard.writeText(text).then(function() {
+              btn.classList.add('copied');
+              btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
+              setTimeout(function() {
+                btn.classList.remove('copied');
+                btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>';
+              }, 2000);
+            });
+          });
+        });
+      })();
+    </script>
   </body>
 </html>
 
 <style is:global>
   :root {
-    --bg: #ffffff;
-    --bg-alt: #f7f8fa;
-    --text: #111827;
-    --text-muted: #6b7280;
-    --border: #e5e7eb;
-    --accent: #2563eb;
-    --accent-hover: #1d4ed8;
-    --code-bg: #f3f4f6;
-    --code-text: #111827;
+    --bg: #fbfbfb;
+    --bg-alt: #f2f2f5;
+    --bg-card: #ffffff;
+    --text: #1a1a1c;
+    --text-muted: #6b6e77;
+    --text-dim: #9b9ea8;
+    --border: #e4e4e8;
+    --accent: #3d5dd4;
+    --accent-hover: #3450c3;
+    --accent-subtle: #edf0fa;
+    --code-bg: #f0f0f3;
+    --code-text: #1a1a1c;
+    --shadow-sm: 0 1px 2px rgba(0,0,0,0.04);
+    --shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
     --radius: 8px;
-    --font-sans: 'Inter', system-ui, sans-serif;
+    --radius-sm: 6px;
+    --radius-lg: 12px;
+    --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
     --font-mono: 'JetBrains Mono', monospace;
   }
 
   :root[data-theme="dark"] {
-    --bg: #0f1117;
-    --bg-alt: #1a1d27;
-    --text: #e5e7eb;
-    --text-muted: #9ca3af;
-    --border: #2d3140;
-    --accent: #3b82f6;
-    --accent-hover: #60a5fa;
-    --code-bg: #1e2330;
-    --code-text: #e5e7eb;
+    --bg: #121318;
+    --bg-alt: #181a21;
+    --bg-card: #1a1d27;
+    --text: #f1f1f4;
+    --text-muted: #8f92a0;
+    --text-dim: #5e616e;
+    --border: #262833;
+    --accent: #5d7af0;
+    --accent-hover: #7b92f4;
+    --accent-subtle: #1c2138;
+    --code-bg: #1a1d27;
+    --code-text: #f1f1f4;
+    --shadow-sm: 0 1px 2px rgba(0,0,0,0.15);
+    --shadow: 0 1px 3px rgba(0,0,0,0.2), 0 1px 2px rgba(0,0,0,0.1);
   }
 
   @media (prefers-color-scheme: dark) {
     :root:not([data-theme="light"]) {
-      --bg: #0f1117;
-      --bg-alt: #1a1d27;
-      --text: #e5e7eb;
-      --text-muted: #9ca3af;
-      --border: #2d3140;
-      --accent: #3b82f6;
-      --accent-hover: #60a5fa;
-      --code-bg: #1e2330;
-      --code-text: #e5e7eb;
+      --bg: #121318;
+      --bg-alt: #181a21;
+      --bg-card: #1a1d27;
+      --text: #f1f1f4;
+      --text-muted: #8f92a0;
+      --text-dim: #5e616e;
+      --border: #262833;
+      --accent: #5d7af0;
+      --accent-hover: #7b92f4;
+      --accent-subtle: #1c2138;
+      --code-bg: #1a1d27;
+      --code-text: #f1f1f4;
+      --shadow-sm: 0 1px 2px rgba(0,0,0,0.15);
+      --shadow: 0 1px 3px rgba(0,0,0,0.2), 0 1px 2px rgba(0,0,0,0.1);
     }
   }
 
@@ -184,10 +239,12 @@ const docsLink = locale === 'en' ? '/docs/getting-started' : '/zh/docs/getting-s
     font-family: var(--font-sans);
     background: var(--bg);
     color: var(--text);
-    line-height: 1.6;
+    line-height: 1.65;
     min-height: 100vh;
     display: flex;
     flex-direction: column;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 
   main {
@@ -209,9 +266,10 @@ const docsLink = locale === 'en' ? '/docs/getting-started' : '/zh/docs/getting-s
   code {
     font-family: var(--font-mono);
     font-size: 0.875em;
+    font-weight: 450;
     background: var(--code-bg);
     color: var(--code-text);
-    padding: 0.125em 0.375em;
+    padding: 0.15em 0.4em;
     border-radius: 4px;
   }
 
@@ -219,17 +277,18 @@ const docsLink = locale === 'en' ? '/docs/getting-started' : '/zh/docs/getting-s
     font-family: var(--font-mono);
     background: var(--code-bg);
     color: var(--code-text);
-    padding: 1.25rem;
+    padding: 1rem 1.25rem;
     border-radius: var(--radius);
-    border-left: 3px solid var(--accent);
+    border: 1px solid var(--border);
     overflow-x: auto;
-    line-height: 1.7;
+    line-height: 1.6;
+    font-size: 0.8125rem;
   }
 
   pre code {
     background: none;
     padding: 0;
-    font-size: 0.875rem;
+    font-size: inherit;
   }
 
   .container {
@@ -242,18 +301,20 @@ const docsLink = locale === 'en' ? '/docs/getting-started' : '/zh/docs/getting-s
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
-    padding: 0.625rem 1.25rem;
-    border-radius: var(--radius);
+    padding: 0.5rem 1.125rem;
+    border-radius: var(--radius-sm);
     font-size: 0.875rem;
     font-weight: 500;
     cursor: pointer;
     border: none;
     transition: all 0.15s;
+    letter-spacing: -0.01em;
   }
 
   .btn-primary {
     background: var(--accent);
     color: #fff;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
   }
   .btn-primary:hover {
     background: var(--accent-hover);
@@ -261,13 +322,60 @@ const docsLink = locale === 'en' ? '/docs/getting-started' : '/zh/docs/getting-s
   }
 
   .btn-secondary {
-    background: var(--bg-alt);
+    background: var(--bg-card);
     color: var(--text);
     border: 1px solid var(--border);
   }
   .btn-secondary:hover {
     border-color: var(--accent);
     color: var(--accent);
+    background: var(--accent-subtle);
+  }
+
+  .code-block-wrapper {
+    position: relative;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+
+  .code-block-wrapper pre {
+    border: none;
+    border-radius: 0;
+    padding-right: 2.75rem;
+    margin: 0;
+  }
+
+  .copy-btn {
+    position: absolute;
+    top: 0.375rem;
+    right: 0.375rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 4px;
+    border: none;
+    background: transparent;
+    color: var(--text-dim);
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.15s, color 0.15s, background 0.15s;
+  }
+
+  .code-block-wrapper:hover .copy-btn {
+    opacity: 1;
+  }
+
+  .copy-btn:hover {
+    color: var(--text);
+    background: var(--bg);
+  }
+
+  .copy-btn.copied {
+    opacity: 1;
+    color: #16a34a;
   }
 </style>
 
@@ -276,16 +384,27 @@ const docsLink = locale === 'en' ? '/docs/getting-started' : '/zh/docs/getting-s
     position: sticky;
     top: 0;
     z-index: 100;
-    background: var(--bg);
+    background: rgba(251, 251, 251, 0.82);
     border-bottom: 1px solid var(--border);
-    backdrop-filter: blur(8px);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+
+  :root[data-theme="dark"] .site-header {
+    background: rgba(18, 19, 24, 0.82);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) .site-header {
+      background: rgba(18, 19, 24, 0.82);
+    }
   }
 
   .header-inner {
     max-width: 1120px;
     margin: 0 auto;
     padding: 0 1.5rem;
-    height: 60px;
+    height: 56px;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -297,7 +416,8 @@ const docsLink = locale === 'en' ? '/docs/getting-started' : '/zh/docs/getting-s
     gap: 0.5rem;
     color: var(--text);
     font-weight: 700;
-    font-size: 1.125rem;
+    font-size: 1.0625rem;
+    letter-spacing: -0.02em;
   }
   .logo:hover {
     color: var(--text);
@@ -306,16 +426,17 @@ const docsLink = locale === 'en' ? '/docs/getting-started' : '/zh/docs/getting-s
   .nav-links {
     display: flex;
     align-items: center;
-    gap: 0.25rem;
+    gap: 0.125rem;
   }
 
   .nav-link {
-    padding: 0.375rem 0.75rem;
-    border-radius: 6px;
-    font-size: 0.875rem;
+    padding: 0.375rem 0.625rem;
+    border-radius: var(--radius-sm);
+    font-size: 0.8125rem;
     font-weight: 500;
     color: var(--text-muted);
     transition: color 0.15s, background 0.15s;
+    letter-spacing: -0.01em;
   }
   .nav-link:hover {
     color: var(--text);
@@ -323,30 +444,44 @@ const docsLink = locale === 'en' ? '/docs/getting-started' : '/zh/docs/getting-s
   }
   .nav-link.active {
     color: var(--accent);
+    background: var(--accent-subtle);
   }
 
   .lang-switch {
-    margin-left: 0.5rem;
-    padding: 0.25rem 0.625rem;
-    font-size: 0.75rem;
-    border: 1px solid var(--border);
-    border-radius: 4px;
+    display: none;
   }
 
-  .theme-btn {
+  .nav-icon-link {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 34px;
-    height: 34px;
-    border-radius: 6px;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    border-radius: var(--radius-sm);
+    color: var(--text-muted);
+  }
+  .nav-icon-link:hover {
+    color: var(--text);
+    background: var(--bg-alt);
+  }
+
+  .theme-btn,
+  .nav-icon-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: var(--radius-sm);
     border: none;
     background: transparent;
     color: var(--text-muted);
     cursor: pointer;
     transition: color 0.15s, background 0.15s;
   }
-  .theme-btn:hover {
+  .theme-btn:hover,
+  .nav-icon-btn:hover {
     color: var(--text);
     background: var(--bg-alt);
   }
@@ -374,35 +509,32 @@ const docsLink = locale === 'en' ? '/docs/getting-started' : '/zh/docs/getting-s
     padding: 2rem 1.5rem;
     display: flex;
     flex-direction: column;
-    gap: 1rem;
+    gap: 0.75rem;
   }
 
   .footer-brand .logo {
-    font-size: 1rem;
+    font-size: 0.9375rem;
   }
 
   .footer-tagline {
     color: var(--text-muted);
-    font-size: 0.875rem;
-    margin-top: 0.375rem;
+    font-size: 0.8125rem;
+    margin-top: 0.25rem;
   }
 
   .footer-links {
     display: flex;
-    gap: 1.5rem;
+    gap: 1.25rem;
     flex-wrap: wrap;
   }
 
   .footer-links a {
     color: var(--text-muted);
-    font-size: 0.875rem;
-  }
-  .footer-links a:hover {
-    color: var(--text);
+    font-size: 0.8125rem;
   }
 
   .footer-copy {
-    color: var(--text-muted);
+    color: var(--text-dim);
     font-size: 0.75rem;
   }
 </style>

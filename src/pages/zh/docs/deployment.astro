@@ -2,43 +2,65 @@
 import DocsLayout from '../../../layouts/DocsLayout.astro';
 ---
 
-<DocsLayout title="部署" description="通过 Docker Compose 或裸机部署 PicFast。">
+<DocsLayout title="部署" description="PicFast 生产环境部署指南 — Docker Compose、反向代理等。">
   <h1>部署</h1>
+  <p>本指南涵盖使用 Docker Compose、反向代理及生产级配置进行 PicFast 的生产部署。</p>
 
   <h2>Docker Compose（推荐）</h2>
-  <p>按照<a href="/zh/docs/getting-started">快速开始</a>指南克隆项目并通过 <code>make docker-up</code> 启动。以下内容聚焦于生产环境的不同之处。</p>
-  <p>家庭网络或 NAS 部署（含 Tailscale、Cloudflare Tunnel、FRP 内网穿透），请参阅 <a href="/zh/docs/home-network">家庭网络 &amp; NAS</a>。</p>
+  <p>使用单一 compose 文件部署完整生产栈（PostgreSQL + PicFast + Traefik 反向代理）：</p>
+  <pre><code>cd docker
+cp .env.traefik.example .env
+# 编辑 .env，填入你的域名、密钥和凭据
+docker compose -f docker-compose.traefik.yml up -d</code></pre>
+
+  <p>首次启动时，会在浏览器中显示初始化向导来创建管理员账号。设置 <code>PICFAST_APP_ADMIN_EMAIL</code> 和 <code>PICFAST_APP_ADMIN_PASSWORD</code> 可在无头部署时自动创建管理员并跳过向导。</p>
+
+  <p>Traefik compose 文件包含：</p>
+  <ul>
+    <li>带持久化卷的 PostgreSQL 16</li>
+    <li>PicFast 应用，通过 Traefik 自动获取 Let's Encrypt SSL 证书</li>
+    <li>Traefik 反向代理，证书自动续期</li>
+  </ul>
 
   <h2>Docker Hub 镜像</h2>
-  <p>预构建镜像发布在 Docker Hub，适用于生产环境或无需完整源码的场景：</p>
-  <pre><code>docker pull xbeta/picfast:latest</code></pre>
+  <p>预构建镜像发布在 Docker Hub：<code>xbeta/picfast</code>。这是推荐的部署方式——无需克隆、无需编译。</p>
+
+  <h3>用 docker run 快速体验</h3>
+  <pre><code>docker network create picfast-net
+
+docker run -d --name picfast-db --network picfast-net \
+  -e POSTGRES_PASSWORD=devonly \
+  -v picfast-pgdata:/var/lib/postgresql/data \
+  postgres:16-alpine
+
+docker run -d --name picfast --network picfast-net -p 18080:8080 \
+  -e PICFAST_DATABASE_URL='postgres://postgres:devonly@picfast-db:5432/postgres?sslmode=disable' \
+  -e PICFAST_JWT_SECRET='change-me-in-production' \
+  -e PICFAST_SERVER_BASE_URL='http://localhost:18080' \
+  -v picfast-uploads:/app/data/uploads \
+  -v picfast-thumbnails:/app/data/thumbnails \
+  xbeta/picfast:latest</code></pre>
+
   <p>可用标签：</p>
   <ul>
     <li><code>latest</code> — main 分支最新稳定构建</li>
-    <li><code>vX.Y.Z</code> — 语义化版本标签</li>
+    <li><code>vX.Y.Z</code> — 特定发布版本</li>
     <li><code>sha-&lt;commit&gt;</code> — 按提交追踪的构建标签</li>
   </ul>
 
-  <h2>生产环境 Compose 模板</h2>
-  <p>适用于配合 Traefik 反向代理的生产部署：</p>
-  <pre><code>cd docker
-cp .env.traefik.example .env
-docker compose -f docker-compose.traefik.yml up -d</code></pre>
-  <p>此模板包含 PostgreSQL、PicFast 及 Traefik 标签。首次启动时，若设置了 <code>PICFAST_APP_ADMIN_EMAIL</code> 与 <code>PICFAST_APP_ADMIN_PASSWORD</code>，将自动创建管理员账号。</p>
-
   <h2>上线前检查清单</h2>
-  <p>部署至生产环境前，请确认以下配置已替换为实际值：</p>
+  <p>部署至生产环境前，请确认以下配置：</p>
   <ul>
-    <li><code>PICFAST_JWT_SECRET</code> — 使用高强度随机密钥</li>
-    <li><code>PICFAST_SERVER_BASE_URL</code> — 设置为实际访问域名（如 <code>https://img.example.com</code>）</li>
-    <li><code>PICFAST_APP_ADMIN_EMAIL</code> / <code>PICFAST_APP_ADMIN_PASSWORD</code> — 使用强密码</li>
-    <li><code>POSTGRES_PASSWORD</code> — 勿使用示例密码</li>
+    <li><strong><code>PICFAST_JWT_SECRET</code></strong> — 使用强随机值（<code>openssl rand -hex 32</code>）</li>
+    <li><strong><code>PICFAST_SERVER_BASE_URL</code></strong> — 设置为实际 HTTPS 域名</li>
+    <li><strong><code>PICFAST_APP_ADMIN_EMAIL</code> / <code>PICFAST_APP_ADMIN_PASSWORD</code></strong> — 无头部署时设置</li>
+    <li><strong><code>POSTGRES_PASSWORD</code></strong> — 勿使用示例密码</li>
     <li>反向代理正确透传 <code>Host</code> 与 <code>X-Forwarded-Proto</code> 请求头</li>
     <li>反向代理的上传体积限制与实际需求匹配</li>
   </ul>
 
   <h2>环境变量</h2>
-  <p>所有配置项均可通过 <code>PICFAST_</code> 前缀的环境变量进行设置：</p>
+  <p>所有配置项均可通过 <code>PICFAST_</code> 前缀的环境变量进行设置，环境变量优先级高于 <code>config.yaml</code>。完整参考：<a href="/zh/docs/configuration">配置参考</a>。</p>
   <pre><code>PICFAST_SERVER_PORT=8080
 PICFAST_SERVER_BASE_URL=https://pics.example.com
 PICFAST_JWT_SECRET=your-strong-secret
@@ -86,7 +108,25 @@ PICFAST_STORAGE_THUMBNAIL_DIR=./data/thumbnails</code></pre>
   <pre><code>docker exec picfast-db pg_dump -U picfast picfast > backup.sql</code></pre>
 
   <h2>更新</h2>
-  <pre><code>git pull
-make docker-up</code></pre>
-  <p>若使用 Docker Hub 镜像，拉取新标签后重建容器即可。数据库迁移会在启动时自动执行。</p>
+  <p>使用 Docker Hub 镜像时：</p>
+  <pre><code>docker pull xbeta/picfast:latest
+docker stop picfast && docker rm picfast
+# 使用相同的卷重新运行 docker run 命令</code></pre>
+  <p>使用 docker-compose 时：</p>
+  <pre><code>docker compose pull
+docker compose up -d</code></pre>
+  <p>数据库迁移在启动时自动执行。</p>
+
+  <h2>家庭网络 &amp; NAS</h2>
+  <p>如需在家庭设备（Synology、QNAP、树莓派等）上部署，并通过隧道（Cloudflare、Tailscale、FRP）将服务开放至公网，请参阅 <a href="/zh/docs/home-network">家庭网络 &amp; NAS</a>。</p>
+
+  <h2>开发环境部署</h2>
+  <p>如需从源码构建（需要 Go 1.26+、Node 20+、pnpm）：</p>
+  <pre><code>git clone https://github.com/atbeta/picfast.git
+cd picfast
+make docker-up          # PostgreSQL + Mailpit
+cp .env.example .env
+go run ./cmd/picfast    # 后端
+cd web && pnpm install && pnpm dev  # 前端</code></pre>
+  <p>更多开发详情请参阅 <a href="https://github.com/atbeta/picfast/blob/main/README.md#local-development" target="_blank" rel="noopener">GitHub README 开发部分</a>。</p>
 </DocsLayout>
