@@ -27,7 +27,7 @@ wget https://raw.githubusercontent.com/atbeta/picfast/main/docker/.env.example -
   </ul>
 
   <h2>Traefik (auto-SSL)</h2>
-  <p>If you already run Traefik and want automatic Let's Encrypt certificates:</p>
+  <p>If you already run a Traefik instance with pre-configured TLS certificates, use this variant:</p>
   <pre><code>mkdir picfast && cd picfast
 wget https://raw.githubusercontent.com/atbeta/picfast/main/docker/docker-compose.traefik.yml
 wget https://raw.githubusercontent.com/atbeta/picfast/main/docker/.env.traefik.example -O .env

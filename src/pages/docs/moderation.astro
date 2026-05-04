@@ -26,7 +26,7 @@ import DocsLayout from '../../layouts/DocsLayout.astro';
     <li>Users upload images as usual</li>
     <li>Images appear as "pending" and are only visible to the uploader and admins</li>
     <li>Admins review pending images in <strong>Admin &rarr; Moderation</strong></li>
-    <li>Approved images become publicly accessible; rejected images are deleted</li>
+    <li>Approved images become publicly accessible; rejected images are hidden from public view but remain accessible to the uploader and admins</li>
   </ol>
-  <p>Rejection is permanent — the image file is deleted from storage. Use this feature carefully for borderline cases.</p>
+  <p>Rejection does not delete the image file from storage — it only changes the visibility. Rejected images can be re-approved later if needed.</p>
 </DocsLayout>

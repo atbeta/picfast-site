@@ -26,8 +26,8 @@ wget https://raw.githubusercontent.com/atbeta/picfast/main/docker/.env.example -
     <li>缩略图：<code>./data/thumbnails</code></li>
   </ul>
 
-  <h2>Traefik（自动 SSL 证书）</h2>
-  <p>如果已有运行中的 Traefik，希望自动申请 Let's Encrypt 证书：</p>
+  <h2>Traefik（需已有 Traefik 及证书）</h2>
+  <p>如果已有运行中的 Traefik 实例并配置了 TLS 证书，可使用此方案：</p>
   <pre><code>mkdir picfast && cd picfast
 wget https://raw.githubusercontent.com/atbeta/picfast/main/docker/docker-compose.traefik.yml
 wget https://raw.githubusercontent.com/atbeta/picfast/main/docker/.env.traefik.example -O .env
