@@ -1,0 +1,67 @@
+---
+import DocsLayout from '../../layouts/DocsLayout.astro';
+
+const picgoConfig = `{
+  "picBed": {
+    "uploader": "picgo-plugin-web-uploader",
+    "picgo-plugin-web-uploader": {
+      "url": "https://picfast.example.com/api/v1/flat/upload",
+      "paramName": "file",
+      "jsonPath": "url",
+      "customHeader": "{\\"Authorization\\": \\"Bearer <YOUR_API_TOKEN>\\"}"
+    }
+  }
+}`;
+
+const dropshareHeader = '{"Authorization": "Bearer <YOUR_API_TOKEN>"}';
+const uPicUrlPath = '[\\"url\\"]';
+---
+
+<DocsLayout title="Client Tools" description="Connect PicGo, PicList, uPic, Dropshare, and Obsidian to PicFast.">
+  <h1>Client Tools</h1>
+  <p>
+    PicFast provides a flat upload endpoint at <code>/api/v1/flat/upload</code> that returns a clean JSON response — ideal for third-party upload clients. All tools below use this same endpoint.
+  </p>
+
+  <h2>PicGo / PicList</h2>
+  <ol>
+    <li>Install PicGo or PicList, then install the <strong>web-uploader</strong> plugin from the plugin settings.</li>
+    <li>In image host settings, choose <strong>Custom Web Image Host</strong> and paste the config below.</li>
+  </ol>
+  <pre><code>{picgoConfig}</code></pre>
+
+  <h2>uPic</h2>
+  <p>In uPic, choose <strong>Custom</strong> as the image host and fill in:</p>
+  <table>
+    <thead><tr><th>Field</th><th>Value</th></tr></thead>
+    <tbody>
+      <tr><td>URL</td><td><code>https://picfast.example.com/api/v1/flat/upload</code></td></tr>
+      <tr><td>Method</td><td><code>POST</code></td></tr>
+      <tr><td>File Field</td><td><code>file</code></td></tr>
+      <tr><td>Header</td><td><code>Authorization: Bearer &lt;YOUR_API_TOKEN&gt;</code></td></tr>
+      <tr><td>URL Path</td><td><code>["url"]</code></td></tr>
+      <tr><td>Domain</td><td><code>https://picfast.example.com</code></td></tr>
+    </tbody>
+  </table>
+
+  <h2>Dropshare</h2>
+  <p>In Dropshare, choose <strong>Custom API</strong> connection:</p>
+  <table>
+    <thead><tr><th>Field</th><th>Value</th></tr></thead>
+    <tbody>
+      <tr><td>Upload URL</td><td><code>https://picfast.example.com/api/v1/flat/upload</code></td></tr>
+      <tr><td>Method</td><td><code>POST</code></td></tr>
+      <tr><td>Content Type</td><td><code>multipart/form-data</code></td></tr>
+      <tr><td>Form Field</td><td><code>file</code></td></tr>
+      <tr><td>Header</td><td><code>{dropshareHeader}</code></td></tr>
+      <tr><td>Response Content Type</td><td><code>JSON</code></td></tr>
+      <tr><td>URL to file</td><td><code>%url%</code></td></tr>
+    </tbody>
+  </table>
+
+  <h2>Obsidian</h2>
+  <p>Install the community plugin <strong>Image auto upload</strong> and select PicGo as the upload service. Images pasted into notes are automatically uploaded to PicFast and replaced with the returned URL.</p>
+
+  <h2>API token</h2>
+  <p>Create an API token in the PicFast admin console under <strong>Settings → API Tokens</strong>. Tokens are prefixed <code>img_</code> and support scoped permissions (e.g. upload-only). Use the token in the <code>Authorization: Bearer</code> header for all tools above.</p>
+</DocsLayout>

@@ -7,8 +7,8 @@ import DocsLayout from '../../layouts/DocsLayout.astro';
   <p>PicFast provides built-in ShareX support. ShareX is a free, open-source screenshot and file upload tool for Windows.</p>
 
   <h2>One-click setup</h2>
-  <p>Log in to PicFast, go to <strong>Settings &rarr; ShareX</strong>, and download your personalized configuration file. Then in ShareX: <strong>Destinations &rarr; Import &rarr; from file</strong>.</p>
-  <p>The downloaded config includes your API token and server URL, so no manual setup is required.</p>
+  <p>First, create an API token in <strong>Settings → API Tokens</strong> (or use an existing one — tokens are shown only once when created, so save it). Then go to <strong>Connections</strong>, fill in or select your token, and download the personalized ShareX config file. In ShareX: <strong>Destinations → Import → from file</strong>.</p>
+  <p>The downloaded config includes your API token and server URL — no manual setup required. The same token also works for copying configs of other tools on the Connections page.</p>
 
   <h2>Manual setup</h2>
   <p>If you prefer to configure manually, create a new <strong>Custom uploader</strong> in ShareX:</p>
@@ -16,7 +16,7 @@ import DocsLayout from '../../layouts/DocsLayout.astro';
   <table>
     <thead><tr><th>Field</th><th>Value</th></tr></thead>
     <tbody>
-      <tr><td>Request URL</td><td><code>https://your-picfast.com/api/v1/sharex/upload</code></td></tr>
+      <tr><td>Request URL</td><td><code>https://picfast.example.com/api/v1/sharex/upload</code></td></tr>
       <tr><td>Request method</td><td><code>POST</code></td></tr>
       <tr><td>Body</td><td><code>multipart/form-data</code></td></tr>
       <tr><td>File form name</td><td><code>file</code></td></tr>

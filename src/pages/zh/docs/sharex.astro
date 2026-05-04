@@ -7,8 +7,8 @@ import DocsLayout from '../../../layouts/DocsLayout.astro';
   <p>PicFast 提供完整的 ShareX 支持。ShareX 是 Windows 平台免费开源的截图与文件上传工具。</p>
 
   <h2>一键配置</h2>
-  <p>登录 PicFast，进入 <strong>设置 &rarr; ShareX</strong>，点击下载个性化配置文件。然后在 ShareX 中通过 <strong>目标 &rarr; 导入 &rarr; 从文件导入</strong> 即可完成配置。</p>
-  <p>下载的配置文件已包含你的 API token 与服务器地址，无需任何手动填写。</p>
+  <p>先在 <strong>设置 → API Token</strong> 中创建一个 API 令牌（或使用已有的 — 令牌仅在创建时显示一次，请妥善保存）。然后进入 <strong>接入方式</strong> 页面，填入或选择你的令牌，下载个性化 ShareX 配置文件。在 ShareX 中通过 <strong>目标 → 导入 → 从文件导入</strong> 完成配置。</p>
+  <p>下载的配置文件已包含你的 API 令牌与服务器地址，无需手动填写。接入方式页面中其他工具的配置复制也遵循同样的流程。</p>
 
   <h2>手动设置</h2>
   <p>也可在 ShareX 中创建<strong>自定义上传器</strong>手动配置：</p>
@@ -16,7 +16,7 @@ import DocsLayout from '../../../layouts/DocsLayout.astro';
   <table>
     <thead><tr><th>字段</th><th>值</th></tr></thead>
     <tbody>
-      <tr><td>请求 URL</td><td><code>https://your-picfast.com/api/v1/sharex/upload</code></td></tr>
+      <tr><td>请求 URL</td><td><code>https://picfast.example.com/api/v1/sharex/upload</code></td></tr>
       <tr><td>请求方法</td><td><code>POST</code></td></tr>
       <tr><td>请求体</td><td><code>multipart/form-data</code></td></tr>
       <tr><td>文件表单名</td><td><code>file</code></td></tr>

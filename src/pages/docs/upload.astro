@@ -36,7 +36,7 @@ curl -X POST http://localhost:18080/api/v1/upload \
   <h2>Python</h2>
   <pre><code>import requests
 
-url = "https://pics.example.com/api/v1/images"
+url = "https://picfast.example.com/api/v1/images"
 headers = &#123;"Authorization": "Bearer YOUR_TOKEN"&#125;
 with open("image.png", "rb") as f:
     files = &#123;"file": f&#125;
@@ -48,7 +48,7 @@ with open("image.png", "rb") as f:
 const file = await fs.openAsBlob("image.png");
 form.append("file", file);
 
-const res = await fetch("https://pics.example.com/api/v1/images", &#123;
+const res = await fetch("https://picfast.example.com/api/v1/images", &#123;
   method: "POST",
   headers: &#123; "Authorization": "Bearer YOUR_TOKEN" &#125;,
   body: form,
@@ -61,11 +61,11 @@ console.log(data.links.markdown);</code></pre>
   <pre><code>&#123;"id": 1,"key": "abc123","origin_name": "image.png",
   "size_bytes": 204800,"mimetype": "image/png","extension": "png",
   "width": 1920,"height": 1080,
-  "links": &#123;"url": "https://pics.example.com/i/abc123.png",
-    "html": "&lt;img src=\"https://pics.example.com/i/abc123.png\" /&gt;",
-    "markdown": "![](https://pics.example.com/i/abc123.png)",
-    "bbcode": "[img]https://pics.example.com/i/abc123.png[/img]",
-    "thumbnail_url": "https://pics.example.com/t/abc123.png"&#125;,
+  "links": &#123;"url": "https://picfast.example.com/i/abc123.png",
+    "html": "&lt;img src=\"https://picfast.example.com/i/abc123.png\" /&gt;",
+    "markdown": "![](https://picfast.example.com/i/abc123.png)",
+    "bbcode": "[img]https://picfast.example.com/i/abc123.png[/img]",
+    "thumbnail_url": "https://picfast.example.com/t/abc123.png"&#125;,
   "created_at": "2026-05-02T00:00:00Z"&#125;</code></pre>
 
   <h2>Formats &amp; limits</h2>

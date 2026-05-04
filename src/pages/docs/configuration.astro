@@ -2,11 +2,11 @@
 import DocsLayout from '../../layouts/DocsLayout.astro';
 ---
 
-<DocsLayout title="Configuration" description="Full configuration reference for PicFast.">
+<DocsLayout title="Configuration" description="Full configuration reference for PicFast — YAML keys and environment variables.">
   <h1>Configuration</h1>
-  <p>PicFast supports two config modes: <code>config.yaml</code> or environment variables. Environment variables always take precedence over YAML values.</p>
+  <p>PicFast supports two config modes: <code>config.yaml</code> or <code>PICFAST_</code> prefixed environment variables. Env vars always take precedence over YAML values.</p>
 
-  <h2>Full example</h2>
+  <h2>Full example (config.yaml)</h2>
   <pre><code>server:
   port: 8080
   base_url: "http://localhost:8080"
@@ -61,60 +61,76 @@ app:
   analytics_provider: ""
   analytics_config: "&#123;&#125;"</code></pre>
 
-  <h2>Defaults</h2>
-  <p>Only values that differ from defaults or are commonly overridden are shown in the reference tables below.</p>
+  <h2>Reference</h2>
+
+  <h3>database</h3>
+  <table>
+    <thead><tr><th>Key</th><th>Env Variable</th><th>Type</th><th>Default</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr><td><code>url</code></td><td><code>PICFAST_DATABASE_URL</code></td><td>string</td><td>—</td><td>PostgreSQL connection string (required)</td></tr>
+    </tbody>
+  </table>
 
   <h3>server</h3>
   <table>
-    <thead><tr><th>Key</th><th>Type</th><th>Default</th><th>Description</th></tr></thead>
+    <thead><tr><th>Key</th><th>Env Variable</th><th>Type</th><th>Default</th><th>Description</th></tr></thead>
     <tbody>
-      <tr><td><code>port</code></td><td>int</td><td>8080</td><td>HTTP port to listen on</td></tr>
-      <tr><td><code>base_url</code></td><td>string</td><td>http://localhost:8080</td><td>Public URL of the service. Must be set for email verification links and ShareX config to work correctly.</td></tr>
-      <tr><td><code>web_dir</code></td><td>string</td><td>""</td><td>Path to frontend dist for self-hosted frontend (optional; auto-detects <code>web-dist/</code> and <code>web/dist/</code>)</td></tr>
-      <tr><td><code>pprof_enabled</code></td><td>bool</td><td>false</td><td>Enable Go pprof endpoints at <code>/api/v1/admin/debug/pprof/*</code> (admin only)</td></tr>
+      <tr><td><code>port</code></td><td><code>PICFAST_SERVER_PORT</code></td><td>int</td><td>8080</td><td>HTTP port to listen on</td></tr>
+      <tr><td><code>base_url</code></td><td><code>PICFAST_SERVER_BASE_URL</code></td><td>string</td><td>http://localhost:8080</td><td>Public URL of the service. Must be set for email verification links and ShareX config to work correctly.</td></tr>
+      <tr><td><code>web_dir</code></td><td><code>PICFAST_SERVER_WEB_DIR</code></td><td>string</td><td>""</td><td>Path to frontend dist (optional; auto-detects <code>web-dist/</code> and <code>web/dist/</code>)</td></tr>
+      <tr><td><code>pprof_enabled</code></td><td><code>PICFAST_SERVER_PPROF_ENABLED</code></td><td>bool</td><td>false</td><td>Enable Go pprof endpoints at <code>/api/v1/admin/debug/pprof/*</code> (admin only)</td></tr>
+    </tbody>
+  </table>
+
+  <h3>storage</h3>
+  <table>
+    <thead><tr><th>Key</th><th>Env Variable</th><th>Type</th><th>Default</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr><td><code>local_root</code></td><td><code>PICFAST_STORAGE_LOCAL_ROOT</code></td><td>string</td><td>"./data/uploads"</td><td>Root directory for file storage when using the local backend</td></tr>
+      <tr><td><code>thumbnail_dir</code></td><td><code>PICFAST_STORAGE_THUMBNAIL_DIR</code></td><td>string</td><td>"./data/thumbnails"</td><td>Directory for generated thumbnail files</td></tr>
     </tbody>
   </table>
 
   <h3>jwt</h3>
   <table>
-    <thead><tr><th>Key</th><th>Type</th><th>Default</th><th>Description</th></tr></thead>
+    <thead><tr><th>Key</th><th>Env Variable</th><th>Type</th><th>Default</th><th>Description</th></tr></thead>
     <tbody>
-      <tr><td><code>secret</code></td><td>string</td><td>change-me-in-production</td><td><strong>Required. Must be changed.</strong> Using the default value causes a startup error. Generate a strong random value in production.</td></tr>
-      <tr><td><code>access_ttl</code></td><td>duration</td><td>15m</td><td>Access token lifetime</td></tr>
-      <tr><td><code>refresh_ttl</code></td><td>duration</td><td>168h</td><td>Refresh token lifetime (7 days)</td></tr>
-      <tr><td><code>signing_method</code></td><td>string</td><td>HS256</td><td>HS256, HS384, or HS512</td></tr>
+      <tr><td><code>secret</code></td><td><code>PICFAST_JWT_SECRET</code></td><td>string</td><td>change-me-in-production</td><td><strong>Required. Must be changed.</strong> Using the default causes a startup error.</td></tr>
+      <tr><td><code>access_ttl</code></td><td><code>PICFAST_JWT_ACCESS_TTL</code></td><td>duration</td><td>15m</td><td>Access token lifetime</td></tr>
+      <tr><td><code>refresh_ttl</code></td><td><code>PICFAST_JWT_REFRESH_TTL</code></td><td>duration</td><td>168h</td><td>Refresh token lifetime (7 days)</td></tr>
+      <tr><td><code>signing_method</code></td><td><code>PICFAST_JWT_SIGNING_METHOD</code></td><td>string</td><td>HS256</td><td>HS256, HS384, or HS512</td></tr>
     </tbody>
   </table>
 
   <h3>app</h3>
   <table>
-    <thead><tr><th>Key</th><th>Type</th><th>Default</th><th>Description</th></tr></thead>
+    <thead><tr><th>Key</th><th>Env Variable</th><th>Type</th><th>Default</th><th>Description</th></tr></thead>
     <tbody>
-      <tr><td><code>name</code></td><td>string</td><td>PicFast</td><td>Site name shown in page titles, emails, and the web UI</td></tr>
-      <tr><td><code>site_description</code></td><td>string</td><td>""</td><td>Meta description for the web UI</td></tr>
-      <tr><td><code>favicon_url</code></td><td>string</td><td>""</td><td>Custom site favicon URL; empty uses the bundled favicon</td></tr>
-      <tr><td><code>allow_guest_upload</code></td><td>bool</td><td>false</td><td>Allow uploading without an account</td></tr>
-      <tr><td><code>guest_capacity_bytes</code></td><td>int64</td><td>10737418240</td><td>Total storage quota shared across all guest uploads (10 GB)</td></tr>
-      <tr><td><code>allow_registration</code></td><td>bool</td><td>true</td><td>Allow new user sign-ups. Set to false once you have your accounts.</td></tr>
-      <tr><td><code>require_email_verification</code></td><td>bool</td><td>true</td><td>Require email verification before login. Only takes effect when <code>mail.*</code> is configured and the SMTP server is reachable.</td></tr>
-      <tr><td><code>audit_upload_logs</code></td><td>bool</td><td>false</td><td>Log all upload events to the audit log table</td></tr>
-      <tr><td><code>user_initial_capacity</code></td><td>int64</td><td>524288000</td><td>Default storage quota per user in bytes (500 MB)</td></tr>
-      <tr><td><code>guest_capacity_bytes</code></td><td>int64</td><td>10737418240</td><td>Total storage quota shared across all guest uploads (10 GB)</td></tr>
-      <tr><td><code>default_image_ttl</code></td><td>duration</td><td>0 (never)</td><td>Default expiry for uploaded images (0 = never expire, e.g. <code>24h</code>, <code>168h</code>)</td></tr>
-      <tr><td><code>guest_image_ttl</code></td><td>duration</td><td>0 (never)</td><td>Separate expiry for guest uploads (0 = use <code>default_image_ttl</code>, e.g. <code>24h</code> for shorter guest retention)</td></tr>
-      <tr><td><code>admin_email</code></td><td>string</td><td>""</td><td>If set with <code>admin_password</code>, auto-creates admin on first startup and skips the setup wizard</td></tr>
-      <tr><td><code>admin_password</code></td><td>string</td><td>""</td><td>Password for the auto-created admin account</td></tr>
-      <tr><td><code>moderation_mode</code></td><td>string</td><td>disabled</td><td><code>"disabled"</code> (default), <code>"manual"</code> (admin approval queue)</td></tr>
-      <tr><td><code>footer_text_1</code></td><td>string</td><td>""</td><td>Optional footer text line 1; hidden if empty</td></tr>
-      <tr><td><code>footer_link_1</code></td><td>string</td><td>""</td><td>Optional link for footer text line 1</td></tr>
-      <tr><td><code>footer_text_2</code></td><td>string</td><td>""</td><td>Optional footer text line 2; hidden if empty</td></tr>
-      <tr><td><code>footer_link_2</code></td><td>string</td><td>""</td><td>Optional link for footer text line 2</td></tr>
-      <tr><td><code>icp_number</code></td><td>string</td><td>""</td><td>Chinese ICP filing number for sites hosted in China</td></tr>
-      <tr><td><code>icp_link</code></td><td>string</td><td>https://beian.miit.gov.cn/</td><td>ICP filing link target</td></tr>
-      <tr><td><code>psb_number</code></td><td>string</td><td>""</td><td>Chinese PSB filing number</td></tr>
-      <tr><td><code>psb_link</code></td><td>string</td><td>""</td><td>PSB filing link target</td></tr>
-      <tr><td><code>analytics_provider</code></td><td>string</td><td>""</td><td>"" (disabled), <code>"plausible"</code>, <code>"umami"</code>, <code>"ga4"</code>, <code>"baidu"</code>, <code>"custom"</code></td></tr>
-      <tr><td><code>analytics_config</code></td><td>json</td><td>"{}"</td><td>Provider-specific config (see Analytics section below)</td></tr>
+      <tr><td><code>name</code></td><td><code>PICFAST_APP_NAME</code></td><td>string</td><td>PicFast</td><td>Site name shown in page titles, emails, and the web UI</td></tr>
+      <tr><td><code>site_description</code></td><td><code>PICFAST_APP_SITE_DESCRIPTION</code></td><td>string</td><td>""</td><td>Meta description for the web UI</td></tr>
+      <tr><td><code>favicon_url</code></td><td><code>PICFAST_APP_FAVICON_URL</code></td><td>string</td><td>""</td><td>Custom site favicon URL; empty uses the bundled favicon</td></tr>
+      <tr><td><code>allow_guest_upload</code></td><td><code>PICFAST_APP_ALLOW_GUEST_UPLOAD</code></td><td>bool</td><td>false</td><td>Allow uploading without an account</td></tr>
+      <tr><td><code>guest_capacity_bytes</code></td><td><code>PICFAST_APP_GUEST_CAPACITY_BYTES</code></td><td>int64</td><td>10737418240</td><td>Total storage quota shared across all guest uploads (10 GB)</td></tr>
+      <tr><td><code>allow_registration</code></td><td><code>PICFAST_APP_ALLOW_REGISTRATION</code></td><td>bool</td><td>true</td><td>Allow new user sign-ups. Set to false once you have your accounts.</td></tr>
+      <tr><td><code>require_email_verification</code></td><td><code>PICFAST_APP_REQUIRE_EMAIL_VERIFICATION</code></td><td>bool</td><td>true</td><td>Require email verification before login. Only takes effect when SMTP is configured and reachable.</td></tr>
+      <tr><td><code>audit_upload_logs</code></td><td><code>PICFAST_APP_AUDIT_UPLOAD_LOGS</code></td><td>bool</td><td>false</td><td>Log all upload events to the audit log table</td></tr>
+      <tr><td><code>user_initial_capacity</code></td><td><code>PICFAST_APP_USER_INITIAL_CAPACITY</code></td><td>int64</td><td>524288000</td><td>Default storage quota per user in bytes (500 MB)</td></tr>
+      <tr><td><code>guest_capacity_bytes</code></td><td><code>PICFAST_APP_GUEST_CAPACITY_BYTES</code></td><td>int64</td><td>10737418240</td><td>Total storage quota shared across all guest uploads (10 GB)</td></tr>
+      <tr><td><code>default_image_ttl</code></td><td><code>PICFAST_APP_DEFAULT_IMAGE_TTL</code></td><td>duration</td><td>0 (never)</td><td>Default expiry for uploaded images (0 = never, e.g. <code>24h</code>, <code>168h</code>)</td></tr>
+      <tr><td><code>guest_image_ttl</code></td><td><code>PICFAST_APP_GUEST_IMAGE_TTL</code></td><td>duration</td><td>0 (never)</td><td>Separate expiry for guest uploads (0 = use <code>default_image_ttl</code>)</td></tr>
+      <tr><td><code>admin_email</code></td><td><code>PICFAST_APP_ADMIN_EMAIL</code></td><td>string</td><td>""</td><td>If set with <code>admin_password</code>, auto-creates admin and skips the setup wizard</td></tr>
+      <tr><td><code>admin_password</code></td><td><code>PICFAST_APP_ADMIN_PASSWORD</code></td><td>string</td><td>""</td><td>Password for the auto-created admin account</td></tr>
+      <tr><td><code>moderation_mode</code></td><td><code>PICFAST_APP_MODERATION_MODE</code></td><td>string</td><td>disabled</td><td><code>"disabled"</code> (default), <code>"manual"</code> (admin approval queue)</td></tr>
+      <tr><td><code>footer_text_1</code></td><td><code>PICFAST_APP_FOOTER_TEXT_1</code></td><td>string</td><td>""</td><td>Optional footer text line 1; hidden if empty</td></tr>
+      <tr><td><code>footer_link_1</code></td><td><code>PICFAST_APP_FOOTER_LINK_1</code></td><td>string</td><td>""</td><td>Optional link for footer text line 1</td></tr>
+      <tr><td><code>footer_text_2</code></td><td><code>PICFAST_APP_FOOTER_TEXT_2</code></td><td>string</td><td>""</td><td>Optional footer text line 2; hidden if empty</td></tr>
+      <tr><td><code>footer_link_2</code></td><td><code>PICFAST_APP_FOOTER_LINK_2</code></td><td>string</td><td>""</td><td>Optional link for footer text line 2</td></tr>
+      <tr><td><code>icp_number</code></td><td><code>PICFAST_APP_ICP_NUMBER</code></td><td>string</td><td>""</td><td>Chinese ICP filing number for sites hosted in China</td></tr>
+      <tr><td><code>icp_link</code></td><td><code>PICFAST_APP_ICP_LINK</code></td><td>string</td><td>https://beian.miit.gov.cn/</td><td>ICP filing link target</td></tr>
+      <tr><td><code>psb_number</code></td><td><code>PICFAST_APP_PSB_NUMBER</code></td><td>string</td><td>""</td><td>Chinese PSB filing number</td></tr>
+      <tr><td><code>psb_link</code></td><td><code>PICFAST_APP_PSB_LINK</code></td><td>string</td><td>""</td><td>PSB filing link target</td></tr>
+      <tr><td><code>analytics_provider</code></td><td><code>PICFAST_APP_ANALYTICS_PROVIDER</code></td><td>string</td><td>""</td><td>"" (disabled), <code>"plausible"</code>, <code>"umami"</code>, <code>"ga4"</code>, <code>"baidu"</code>, <code>"custom"</code></td></tr>
+      <tr><td><code>analytics_config</code></td><td><code>PICFAST_APP_ANALYTICS_CONFIG</code></td><td>json</td><td>"{}"</td><td>Provider-specific config (see Analytics section)</td></tr>
     </tbody>
   </table>
 
@@ -133,13 +149,15 @@ app:
 
   <h3>mail</h3>
   <table>
-    <thead><tr><th>Key</th><th>Type</th><th>Default</th><th>Description</th></tr></thead>
+    <thead><tr><th>Key</th><th>Env Variable</th><th>Type</th><th>Default</th><th>Description</th></tr></thead>
     <tbody>
-      <tr><td><code>host</code></td><td>string</td><td>""</td><td>SMTP server hostname</td></tr>
-      <tr><td><code>port</code></td><td>int</td><td>1025</td><td>SMTP port (587 for STARTTLS, 465 for TLS, 1025 for local Mailpit)</td></tr>
-      <tr><td><code>encryption</code></td><td>string</td><td>none</td><td><code>"starttls"</code>, <code>"tls"</code>, or <code>"none"</code></td></tr>
-      <tr><td><code>from_email</code></td><td>string</td><td>noreply@picfast.local</td><td>Sender address; must be set when SMTP is configured</td></tr>
-      <tr><td><code>from_name</code></td><td>string</td><td>PicFast</td><td>Sender display name</td></tr>
+      <tr><td><code>host</code></td><td><code>PICFAST_MAIL_HOST</code></td><td>string</td><td>""</td><td>SMTP server hostname</td></tr>
+      <tr><td><code>port</code></td><td><code>PICFAST_MAIL_PORT</code></td><td>int</td><td>1025</td><td>SMTP port (587 for STARTTLS, 465 for TLS, 1025 for local Mailpit)</td></tr>
+      <tr><td><code>username</code></td><td><code>PICFAST_MAIL_USERNAME</code></td><td>string</td><td>""</td><td>SMTP username</td></tr>
+      <tr><td><code>password</code></td><td><code>PICFAST_MAIL_PASSWORD</code></td><td>string</td><td>""</td><td>SMTP password</td></tr>
+      <tr><td><code>encryption</code></td><td><code>PICFAST_MAIL_ENCRYPTION</code></td><td>string</td><td>none</td><td><code>"starttls"</code>, <code>"tls"</code>, or <code>"none"</code></td></tr>
+      <tr><td><code>from_email</code></td><td><code>PICFAST_MAIL_FROM_EMAIL</code></td><td>string</td><td>noreply@picfast.local</td><td>Sender address; must be set when SMTP is configured</td></tr>
+      <tr><td><code>from_name</code></td><td><code>PICFAST_MAIL_FROM_NAME</code></td><td>string</td><td>PicFast</td><td>Sender display name</td></tr>
     </tbody>
   </table>
 

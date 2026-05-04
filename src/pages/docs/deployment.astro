@@ -69,7 +69,7 @@ docker run -d --name picfast --network picfast-net -p 18080:8080 \
   <h2>Environment variables</h2>
   <p>All configuration can be set via <code>PICFAST_</code> prefixed environment variables (they take precedence over <code>config.yaml</code>). See <a href="/docs/configuration">Configuration</a> for the full reference.</p>
   <pre><code>PICFAST_SERVER_PORT=8080
-PICFAST_SERVER_BASE_URL=https://pics.example.com
+PICFAST_SERVER_BASE_URL=https://picfast.example.com
 PICFAST_JWT_SECRET=your-strong-secret
 PICFAST_DATABASE_URL=postgres://picfast:picfast@localhost:5432/picfast?sslmode=disable
 PICFAST_STORAGE_LOCAL_ROOT=./data/uploads
@@ -79,7 +79,7 @@ PICFAST_STORAGE_THUMBNAIL_DIR=./data/thumbnails</code></pre>
   <h3>Nginx</h3>
   <pre><code>server &#123;
     listen 443 ssl;
-    server_name pics.example.com;
+    server_name picfast.example.com;
 
     ssl_certificate /etc/ssl/certs/pics.crt;
     ssl_certificate_key /etc/ssl/private/pics.key;
@@ -96,7 +96,7 @@ PICFAST_STORAGE_THUMBNAIL_DIR=./data/thumbnails</code></pre>
 &#125;</code></pre>
 
   <h3>Caddy</h3>
-  <pre><code>pics.example.com &#123;
+  <pre><code>picfast.example.com &#123;
     reverse_proxy 127.0.0.1:18080
     request_body &#123;
         max_size 100MB

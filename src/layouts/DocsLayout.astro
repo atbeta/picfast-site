@@ -53,6 +53,9 @@ const locale = currentPath.startsWith('/zh') ? 'zh' : 'en';
           <li><a href={locale === 'en' ? '/docs/sharex' : '/zh/docs/sharex'} class:list={[{ active: currentPath.endsWith('sharex') }]}>
             {locale === 'en' ? 'ShareX Integration' : 'ShareX 集成'}
           </a></li>
+          <li><a href={locale === 'en' ? '/docs/client-tools' : '/zh/docs/client-tools'} class:list={[{ active: currentPath.endsWith('client-tools') }]}>
+            {locale === 'en' ? 'Client Tools' : '客户端工具'}
+          </a></li>
           <li><a href={locale === 'en' ? '/docs/mcp' : '/zh/docs/mcp'} class:list={[{ active: currentPath.endsWith('mcp') }]}>
             {locale === 'en' ? 'MCP Integration' : 'MCP 集成'}
           </a></li>
@@ -84,8 +87,8 @@ const locale = currentPath.startsWith('/zh') ? 'zh' : 'en';
     margin: 0 auto;
     padding: 2.5rem 2rem;
     display: grid;
-    grid-template-columns: 220px 1fr;
-    gap: 3rem;
+    grid-template-columns: 190px 1fr;
+    gap: 2.5rem;
     align-items: start;
   }
 
@@ -154,7 +157,6 @@ const locale = currentPath.startsWith('/zh') ? 'zh' : 'en';
 
   .docs-content {
     min-width: 0;
-    max-width: 720px;
   }
 
   .docs-content :global(h1) {
