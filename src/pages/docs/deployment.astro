@@ -32,7 +32,7 @@ wget https://raw.githubusercontent.com/atbeta/picfast/main/docker/.env.example -
 wget https://raw.githubusercontent.com/atbeta/picfast/main/docker/docker-compose.traefik.yml
 wget https://raw.githubusercontent.com/atbeta/picfast/main/docker/.env.traefik.example -O .env
 
-vim .env  # set domain, cert email, passwords, JWT secret
+vim .env  # set domain, database password, JWT secret
 docker compose -f docker-compose.traefik.yml up -d</code></pre>
 
   <p>Make sure <code>TRAEFIK_DOCKER_NETWORK</code> in <code>.env</code> matches your Traefik's network.</p>
@@ -102,6 +102,15 @@ PICFAST_STORAGE_THUMBNAIL_DIR=./data/thumbnails</code></pre>
         max_size 100MB
     &#125;
 &#125;</code></pre>
+
+  <h2>Observability (Prometheus)</h2>
+  <p>PicFast exposes Prometheus metrics on a dedicated internal port (<code>:9190</code>). In Docker Compose, this port is not published to the host — Prometheus scrapes it within the Docker network:</p>
+  <pre><code>scrape_configs:
+  - job_name: picfast
+    metrics_path: /metrics
+    static_configs:
+      - targets: ["app:9190"]</code></pre>
+  <p>The <code>/health</code> endpoint returns 200 when the database and storage are reachable. Metrics include HTTP request counts, upload throughput, database pool stats, and more.</p>
 
   <h2>Database backup</h2>
   <pre><code>docker exec picfast-db pg_dump -U picfast picfast > backup.sql</code></pre>

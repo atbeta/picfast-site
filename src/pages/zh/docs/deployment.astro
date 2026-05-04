@@ -32,7 +32,7 @@ wget https://raw.githubusercontent.com/atbeta/picfast/main/docker/.env.example -
 wget https://raw.githubusercontent.com/atbeta/picfast/main/docker/docker-compose.traefik.yml
 wget https://raw.githubusercontent.com/atbeta/picfast/main/docker/.env.traefik.example -O .env
 
-vim .env  # 设置域名、证书邮箱、数据库密码、JWT 密钥
+vim .env  # 设置域名、数据库密码、JWT 密钥
 docker compose -f docker-compose.traefik.yml up -d</code></pre>
 
   <p>确保 <code>.env</code> 中 <code>TRAEFIK_DOCKER_NETWORK</code> 与 Traefik 所在网络一致。</p>
@@ -102,6 +102,15 @@ PICFAST_STORAGE_THUMBNAIL_DIR=./data/thumbnails</code></pre>
         max_size 100MB
     &#125;
 &#125;</code></pre>
+
+  <h2>可观测性（Prometheus）</h2>
+  <p>PicFast 在独立内部端口（<code>:9190</code>）暴露 Prometheus 指标。Docker Compose 不会将此端口发布到宿主机，Prometheus 通过 Docker 网络抓取：</p>
+  <pre><code>scrape_configs:
+  - job_name: picfast
+    metrics_path: /metrics
+    static_configs:
+      - targets: ["app:9190"]</code></pre>
+  <p><code>/health</code> 端点在数据库和存储可达时返回 200。指标涵盖 HTTP 请求数、上传吞吐量、数据库连接池状态等。</p>
 
   <h2>数据库备份</h2>
   <pre><code>docker exec picfast-db pg_dump -U picfast picfast > backup.sql</code></pre>
