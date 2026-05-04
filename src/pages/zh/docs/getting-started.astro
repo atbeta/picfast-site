@@ -2,68 +2,64 @@
 import DocsLayout from '../../../layouts/DocsLayout.astro';
 ---
 
-<DocsLayout title="快速开始" description="数分钟内通过 Docker 完成 PicFast 生产部署。">
+<DocsLayout title="快速开始" description="通过 Docker Compose 数分钟内完成 PicFast 部署。">
   <h1>快速开始</h1>
   <p>
-    PicFast 运行在单个 Docker 容器中。你只需要一个 PostgreSQL 实例和 Docker Hub 上的预构建镜像即可开始。
+    PicFast 提供生产可用的 Docker Compose 文件，无需克隆仓库。下载文件、编辑几个变量，即可上线。
   </p>
 
-  <h2>环境要求</h2>
-  <ul>
-    <li><a href="https://docs.docker.com/get-docker/" target="_blank" rel="noopener">Docker</a></li>
-    <li>一个可用的 PostgreSQL 实例（本地、远程或 Docker 均可）</li>
-    <li>一个域名（生产环境）或直接使用 localhost 测试</li>
-  </ul>
+  <h2>1. 下载 Compose 文件</h2>
+  <pre><code>mkdir picfast && cd picfast
 
-  <h2>1. 启动服务栈</h2>
-  <p>三条命令：创建 Docker 网络，启动 PostgreSQL，启动 PicFast。</p>
-  <pre><code>docker network create picfast-net
+# 下载 Compose 文件和环境变量模板
+wget https://raw.githubusercontent.com/atbeta/picfast/main/docker/docker-compose.yml
+wget https://raw.githubusercontent.com/atbeta/picfast/main/docker/.env.example -O .env</code></pre>
 
-docker run -d --name picfast-db --network picfast-net \
-  -e POSTGRES_PASSWORD=devonly \
-  -v picfast-pgdata:/var/lib/postgresql/data \
-  postgres:16-alpine
+  <h2>2. 编辑配置</h2>
+  <p>编辑 <code>.env</code>，至少需要设置以下内容：</p>
+  <pre><code># 域名与访问地址
+PICFAST_DOMAIN=pics.example.com
+PICFAST_SERVER_BASE_URL=https://pics.example.com
 
-docker run -d --name picfast --network picfast-net -p 18080:8080 \
-  -e PICFAST_DATABASE_URL='postgres://postgres:devonly@picfast-db:5432/postgres?sslmode=disable' \
-  -e PICFAST_JWT_SECRET='change-me-in-production' \
-  -e PICFAST_SERVER_BASE_URL='http://localhost:18080' \
-  -v picfast-uploads:/app/data/uploads \
-  -v picfast-thumbnails:/app/data/thumbnails \
-  xbeta/picfast:latest</code></pre>
+# 安全
+PICFAST_JWT_SECRET=your-strong-random-secret
+POSTGRES_PASSWORD=your-db-password
 
-  <p>可用镜像标签：<code>latest</code>、版本标签（<code>vX.Y.Z</code>）、按提交追踪标签（<code>sha-&lt;commit&gt;</code>）。完整列表见 <a href="https://hub.docker.com/r/xbeta/picfast" target="_blank" rel="noopener">Docker Hub</a>。</p>
-
-  <h2>2. 初始化设置</h2>
-  <p>在浏览器打开 <code>http://localhost:18080</code>，引导式初始化向导将协助你创建第一个管理员账号。</p>
-  <p>对于无头（非浏览器）部署，设置以下环境变量可在启动时自动创建管理员并跳过向导：</p>
-  <pre><code>PICFAST_APP_ADMIN_EMAIL=admin@example.com
+# 可选：跳过初始化向导（无头部署）
+PICFAST_APP_ADMIN_EMAIL=admin@example.com
 PICFAST_APP_ADMIN_PASSWORD=your-admin-password</code></pre>
 
-  <h2>3. 上传第一张图片</h2>
-  <p>登录 Web UI 拖拽文件上传，或通过 API 操作：</p>
+  <h2>3. 启动</h2>
+  <pre><code>docker compose up -d</code></pre>
+  <p>同时启动 PostgreSQL 和 PicFast。打开 <code>http://localhost:18080</code>，跟随引导向导创建管理员账号。</p>
+  <p>数据存储在当前目录下：<code>./data/postgres</code>、<code>./data/uploads</code>、<code>./data/thumbnails</code>。</p>
+
+  <h2>4. 上传第一张图片</h2>
+  <p>登录 Web UI 拖拽文件上传，或通过 API：</p>
   <pre><code>curl -X POST http://localhost:18080/api/v1/images \
   -H "Authorization: Bearer YOUR_TOKEN" \
   -F "file=@image.png"</code></pre>
-  <p>AI Agent 集成请参阅 <a href="/zh/docs/mcp">MCP 集成</a>。ShareX 一键配置请参阅 <a href="/zh/docs/sharex">ShareX 集成</a>。</p>
+
+  <h2>反向代理</h2>
+  <p>默认 Compose 将 PicFast 绑定到 <code>127.0.0.1:18080</code>。建议在前置 Nginx、Caddy 或 NPM 等反代后提供 HTTPS。如需直接暴露，在 <code>.env</code> 中设置 <code>PICFAST_HTTP_BIND=0.0.0.0</code>。</p>
+  <p>完整的反向代理配置（Nginx、Caddy、Traefik）见 <a href="/zh/docs/deployment">部署</a> 页面。</p>
 
   <h2>下一步</h2>
   <ul>
     <li><a href="/zh/docs/configuration">完整配置参考 &rarr;</a></li>
     <li><a href="/zh/docs/storage">配置云存储后端 &rarr;</a></li>
     <li><a href="/zh/docs/api">API 文档 &rarr;</a></li>
-    <li><a href="/zh/docs/deployment">包含 Traefik + Compose 的生产部署 &rarr;</a></li>
+    <li><a href="/zh/docs/deployment">Traefik + 自动 SSL、docker run 快速测试 &rarr;</a></li>
     <li><a href="/zh/docs/home-network">家庭网络 &amp; NAS 部署 &rarr;</a></li>
   </ul>
 
-  <h2>开发环境部署</h2>
-  <p>如需从源码构建或参与 PicFast 开发：</p>
+  <h2>开发环境</h2>
+  <p>如需从源码构建或参与开发：</p>
   <ul>
-    <li><strong>环境要求：</strong>Go 1.26+、Node 20+、pnpm、PostgreSQL 16、Git</li>
-    <li><strong>启动服务：</strong><code>make docker-up</code>（启动 PostgreSQL + Mailpit）</li>
-    <li><strong>运行后端：</strong><code>go run ./cmd/picfast</code></li>
+    <li><strong>环境要求：</strong>Go 1.26+、Node 20+、pnpm、Docker</li>
+    <li><strong>启动服务：</strong><code>make docker-up</code>（或 <code>docker compose -f docker/docker-compose.dev.yml up --build -d</code>）</li>
+    <li><strong>运行后端：</strong><code>go run ./cmd/picfast</code>（需先执行 <code>cp .env.example .env</code>）</li>
     <li><strong>运行前端：</strong><code>cd web && pnpm install && pnpm dev</code></li>
   </ul>
-  <p>数据库迁移在启动时自动执行。打包运行：<code>cd web && pnpm build && go run ./cmd/picfast</code>。</p>
-  <p>完整开发说明请参阅 <a href="https://github.com/atbeta/picfast/blob/main/README.md" target="_blank" rel="noopener">GitHub README</a>。</p>
+  <p>数据库迁移在启动时自动执行。完整说明见 <a href="https://github.com/atbeta/picfast/blob/main/README.md" target="_blank" rel="noopener">README</a>。</p>
 </DocsLayout>

@@ -3,7 +3,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import '../styles/home.css';
 ---
 
-<BaseLayout title="PicFast — Self-hosted Image Hosting Platform">
+<BaseLayout title="PicFast — Self-hosted Image Hosting">
   <section class="hero">
     <div class="container">
       <div class="hero-badge">
@@ -14,9 +14,8 @@ import '../styles/home.css';
       </div>
       <h1>Self-hosted image hosting,<br />deployed in one command.</h1>
       <p class="hero-sub">
-        Pull the prebuilt image and deploy with a single <code>docker run</code> — PostgreSQL and PicFast, up in seconds.
-        Guided first-run setup creates your admin account. Full React dashboard, 6 storage backends, and an API-first architecture.
-        Natively integrates with AI agents via MCP, ShareX for quick captures, and any HTTP client.
+        Pull and run with a single <code>docker run</code> — PostgreSQL, PicFast, and a guided setup wizard in minutes.
+        ShareX, MCP for AI agents, and any HTTP client work natively.
       </p>
       <div class="hero-code">
         <div class="code-label">
@@ -56,21 +55,22 @@ import '../styles/home.css';
       <div class="features-grid">
         <div class="feature-card">
           <div class="feature-icon">
-            <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
-              <rect x="2" y="3" width="18" height="16" rx="3" stroke="currentColor" stroke-width="1.75"/>
-              <path d="M7 10h8M7 14h5" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/>
-              <rect x="4" y="2" width="6" height="4" rx="1" fill="currentColor"/>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+              <polyline points="7 10 12 15 17 10"/>
+              <line x1="12" y1="15" x2="12" y2="3"/>
             </svg>
           </div>
           <h3>One-Command Deploy</h3>
-          <p>Pull the prebuilt image and deploy with a single <code>docker run</code> command — no building from source required. Full Docker Compose templates with Traefik and Let's Encrypt available for production.</p>
+          <p>Pull the prebuilt image and deploy with a single <code>docker run</code> — no building from source required. Full Docker Compose template included, production-ready with a few lines of config.</p>
         </div>
         <div class="feature-card">
           <div class="feature-icon">
-            <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
-              <rect x="3" y="3" width="16" height="16" rx="3" stroke="currentColor" stroke-width="1.75"/>
-              <path d="M3 8h16M7 8v11" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/>
-              <rect x="7" y="1" width="8" height="3" rx="1" fill="currentColor"/>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="3" width="7" height="7" rx="1"/>
+              <rect x="14" y="3" width="7" height="7" rx="1"/>
+              <rect x="3" y="14" width="7" height="7" rx="1"/>
+              <rect x="14" y="14" width="7" height="7" rx="1"/>
             </svg>
           </div>
           <h3>Full Admin Panel</h3>
@@ -78,10 +78,9 @@ import '../styles/home.css';
         </div>
         <div class="feature-card">
           <div class="feature-icon">
-            <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
-              <rect x="2" y="4" width="18" height="14" rx="2.5" stroke="currentColor" stroke-width="1.75"/>
-              <path d="M2 8l6 4 4-3 8 5" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
-              <circle cx="7" cy="7" r="1.5" fill="currentColor"/>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="16 18 22 12 16 6"/>
+              <polyline points="8 6 2 12 8 18"/>
             </svg>
           </div>
           <h3>API-First, AI-Ready</h3>
@@ -89,9 +88,11 @@ import '../styles/home.css';
         </div>
         <div class="feature-card">
           <div class="feature-icon">
-            <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
-              <path d="M11 2L3 6v6c0 5.25 3.4 10.15 8 11.4 4.6-1.25 8-6.15 8-11.4V6L11 2z" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
-              <path d="M7 10l3 3 5-5" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="2" width="20" height="8" rx="2" ry="2"/>
+              <rect x="2" y="14" width="20" height="8" rx="2" ry="2"/>
+              <line x1="6" y1="6" x2="6.01" y2="6"/>
+              <line x1="6" y1="18" x2="6.01" y2="18"/>
             </svg>
           </div>
           <h3>Native Tool Integrations</h3>
@@ -99,9 +100,10 @@ import '../styles/home.css';
         </div>
         <div class="feature-card">
           <div class="feature-icon">
-            <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
-              <path d="M4 4h14v14H4z" stroke="currentColor" stroke-width="1.75" stroke-linejoin="round"/>
-              <path d="M4 8h14M8 8v10" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+              <ellipse cx="12" cy="5" rx="9" ry="3"/>
+              <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/>
+              <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/>
             </svg>
           </div>
           <h3>6 Storage Backends</h3>
@@ -109,13 +111,14 @@ import '../styles/home.css';
         </div>
         <div class="feature-card">
           <div class="feature-icon">
-            <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
-              <path d="M11 3v4M11 15v4M3 11H7M15 11h4" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/>
-              <circle cx="11" cy="11" r="3" stroke="currentColor" stroke-width="1.75"/>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+              <circle cx="8.5" cy="8.5" r="1.5"/>
+              <polyline points="21 15 16 10 5 21"/>
             </svg>
           </div>
-          <h3>Image Processing & Safety</h3>
-          <p>Automatic thumbnail generation, configurable compression, and watermark support. Optional content moderation with an admin approval queue.</p>
+          <h3>Image Processing &amp; Safety</h3>
+          <p>Automatic thumbnail generation, configurable compression, and watermark support. Manual admin moderation with a pre-built interface ready for third-party moderation services.</p>
         </div>
       </div>
     </div>
@@ -153,39 +156,26 @@ import '../styles/home.css';
         <div class="qs-step">
           <div class="qs-num">1</div>
           <div class="qs-content">
-            <h3>Start the stack</h3>
-            <p>Create a Docker network, launch PostgreSQL and PicFast — three commands, done.</p>
-            <div class="hero-code small"><pre><code>docker network create picfast-net
-
-docker run -d --name picfast-db --network picfast-net \
-  -e POSTGRES_PASSWORD=devonly \
-  -v picfast-pgdata:/var/lib/postgresql/data \
-  postgres:16-alpine
-
-docker run -d --name picfast --network picfast-net -p 18080:8080 \
-  -e PICFAST_DATABASE_URL='postgres://postgres:devonly@picfast-db:5432/postgres?sslmode=disable' \
-  -e PICFAST_JWT_SECRET='change-me-in-production' \
-  -e PICFAST_SERVER_BASE_URL='http://localhost:18080' \
-  -v picfast-uploads:/app/data/uploads \
-  -v picfast-thumbnails:/app/data/thumbnails \
-  xbeta/picfast:latest</code></pre></div>
+            <h3>Download</h3>
+            <p>Grab the Compose file and environment template — no need to clone the repo.</p>
+            <div class="hero-code small"><pre><code>mkdir picfast && cd picfast
+wget https://raw.githubusercontent.com/atbeta/picfast/main/docker/docker-compose.yml
+wget https://raw.githubusercontent.com/atbeta/picfast/main/docker/.env.example -O .env</code></pre></div>
           </div>
         </div>
         <div class="qs-step">
           <div class="qs-num">2</div>
           <div class="qs-content">
-            <h3>Complete setup</h3>
-            <p>Open <code>http://localhost:18080</code>. The guided setup wizard creates your first admin account. For headless deployments, set <code>PICFAST_APP_ADMIN_EMAIL</code> and <code>PICFAST_APP_ADMIN_PASSWORD</code> to skip the wizard.</p>
+            <h3>Configure</h3>
+            <p>Edit <code>.env</code> — set your domain, database password, and JWT secret. For headless setups, add admin credentials to skip the setup wizard.</p>
           </div>
         </div>
         <div class="qs-step">
           <div class="qs-num">3</div>
           <div class="qs-content">
-            <h3>Start uploading</h3>
-            <p>Upload via the web UI, ShareX, curl, or any HTTP client. Each upload returns ready-to-use links.</p>
-            <div class="hero-code small"><pre><code>curl -X POST http://localhost:18080/api/v1/images \
-  -H "Authorization: Bearer YOUR_TOKEN" \
-  -F "file=@image.png"</code></pre></div>
+            <h3>Launch</h3>
+            <p>One command starts PostgreSQL and PicFast. Open <code>http://localhost:18080</code> and follow the setup wizard.</p>
+            <div class="hero-code small"><pre><code>docker compose up -d</code></pre></div>
           </div>
         </div>
       </div>

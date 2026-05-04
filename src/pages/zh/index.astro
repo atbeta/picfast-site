@@ -3,7 +3,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import '../../styles/home.css';
 ---
 
-<BaseLayout title="PicFast — 自托管图床平台" lang="zh">
+<BaseLayout title="PicFast — 自托管图床应用" lang="zh">
   <section class="hero">
     <div class="container">
       <div class="hero-badge">
@@ -12,11 +12,9 @@ import '../../styles/home.css';
         </svg>
         开源 · GNU GPL v3
       </div>
-      <h1>一行命令，部署完整的<br />自托管图床平台。</h1>
+      <h1>一行命令，部署完整的<br />自托管图床。</h1>
       <p class="hero-sub">
-        拉取预构建镜像，一条 <code>docker run</code> 即可完成部署 —— PostgreSQL 加 PicFast，数秒启动。
-        首次访问提供引导式初始化向导。内置 React 管理面板、6 种存储后端、API 优先架构。
-        原生支持 MCP 协议供 AI 工作流集成，同时提供 ShareX 等客户端工具接入。
+        一条 <code>docker run</code> 即可启动，数分钟内完成部署。原生支持 ShareX、MCP（AI Agent）及任意 HTTP 客户端。
       </p>
       <div class="hero-code">
         <div class="code-label">
@@ -56,21 +54,22 @@ import '../../styles/home.css';
       <div class="features-grid">
         <div class="feature-card">
           <div class="feature-icon">
-            <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
-              <rect x="2" y="3" width="18" height="16" rx="3" stroke="currentColor" stroke-width="1.75"/>
-              <path d="M7 10h8M7 14h5" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/>
-              <rect x="4" y="2" width="6" height="4" rx="1" fill="currentColor"/>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+              <polyline points="7 10 12 15 17 10"/>
+              <line x1="12" y1="15" x2="12" y2="3"/>
             </svg>
           </div>
           <h3>一键 Docker 部署</h3>
-          <p>拉取预构建镜像，一条 <code>docker run</code> 命令即可完成部署，无需从源码构建。同时提供完整的 Docker Compose 模板，支持 Traefik 和 Let's Encrypt 自动证书。</p>
+          <p>拉取预构建镜像，一条 <code>docker run</code> 命令即可完成部署，无需从源码构建。同时提供完整的 Docker Compose 模板，几行配置即可部署生产级实例。</p>
         </div>
         <div class="feature-card">
           <div class="feature-icon">
-            <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
-              <rect x="3" y="3" width="16" height="16" rx="3" stroke="currentColor" stroke-width="1.75"/>
-              <path d="M3 8h16M7 8v11" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/>
-              <rect x="7" y="1" width="8" height="3" rx="1" fill="currentColor"/>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="3" width="7" height="7" rx="1"/>
+              <rect x="14" y="3" width="7" height="7" rx="1"/>
+              <rect x="3" y="14" width="7" height="7" rx="1"/>
+              <rect x="14" y="14" width="7" height="7" rx="1"/>
             </svg>
           </div>
           <h3>完整管理面板</h3>
@@ -78,10 +77,9 @@ import '../../styles/home.css';
         </div>
         <div class="feature-card">
           <div class="feature-icon">
-            <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
-              <rect x="2" y="4" width="18" height="14" rx="2.5" stroke="currentColor" stroke-width="1.75"/>
-              <path d="M2 8l6 4 4-3 8 5" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
-              <circle cx="7" cy="7" r="1.5" fill="currentColor"/>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="16 18 22 12 16 6"/>
+              <polyline points="8 6 2 12 8 18"/>
             </svg>
           </div>
           <h3>API 优先，AI 就绪</h3>
@@ -89,9 +87,11 @@ import '../../styles/home.css';
         </div>
         <div class="feature-card">
           <div class="feature-icon">
-            <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
-              <path d="M11 2L3 6v6c0 5.25 3.4 10.15 8 11.4 4.6-1.25 8-6.15 8-11.4V6L11 2z" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
-              <path d="M7 10l3 3 5-5" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="2" width="20" height="8" rx="2" ry="2"/>
+              <rect x="2" y="14" width="20" height="8" rx="2" ry="2"/>
+              <line x1="6" y1="6" x2="6.01" y2="6"/>
+              <line x1="6" y1="18" x2="6.01" y2="18"/>
             </svg>
           </div>
           <h3>原生工具集成</h3>
@@ -99,9 +99,10 @@ import '../../styles/home.css';
         </div>
         <div class="feature-card">
           <div class="feature-icon">
-            <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
-              <path d="M4 4h14v14H4z" stroke="currentColor" stroke-width="1.75" stroke-linejoin="round"/>
-              <path d="M4 8h14M8 8v10" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+              <ellipse cx="12" cy="5" rx="9" ry="3"/>
+              <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/>
+              <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/>
             </svg>
           </div>
           <h3>6 种存储后端</h3>
@@ -109,13 +110,14 @@ import '../../styles/home.css';
         </div>
         <div class="feature-card">
           <div class="feature-icon">
-            <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
-              <path d="M11 3v4M11 15v4M3 11H7M15 11h4" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/>
-              <circle cx="11" cy="11" r="3" stroke="currentColor" stroke-width="1.75"/>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+              <circle cx="8.5" cy="8.5" r="1.5"/>
+              <polyline points="21 15 16 10 5 21"/>
             </svg>
           </div>
           <h3>图片处理与安全</h3>
-          <p>自动生成缩略图，支持可配置的图片压缩与水印。可选内容审核功能，通过管理员审批队列保障公开内容的合规性。</p>
+          <p>自动生成缩略图，支持可配置的图片压缩与水印。支持管理员手动审核，同时预置自动审核接口，后续可接入第三方审核服务。</p>
         </div>
       </div>
     </div>
@@ -151,39 +153,26 @@ import '../../styles/home.css';
         <div class="qs-step">
           <div class="qs-num">1</div>
           <div class="qs-content">
-            <h3>启动服务栈</h3>
-            <p>创建 Docker 网络，启动 PostgreSQL 和 PicFast —— 三条命令，一步到位。</p>
-            <div class="hero-code small"><pre><code>docker network create picfast-net
-
-docker run -d --name picfast-db --network picfast-net \
-  -e POSTGRES_PASSWORD=devonly \
-  -v picfast-pgdata:/var/lib/postgresql/data \
-  postgres:16-alpine
-
-docker run -d --name picfast --network picfast-net -p 18080:8080 \
-  -e PICFAST_DATABASE_URL='postgres://postgres:devonly@picfast-db:5432/postgres?sslmode=disable' \
-  -e PICFAST_JWT_SECRET='change-me-in-production' \
-  -e PICFAST_SERVER_BASE_URL='http://localhost:18080' \
-  -v picfast-uploads:/app/data/uploads \
-  -v picfast-thumbnails:/app/data/thumbnails \
-  xbeta/picfast:latest</code></pre></div>
+            <h3>下载编排文件</h3>
+            <p>获取 Compose 文件和环境变量模板，无需克隆整个仓库。</p>
+            <div class="hero-code small"><pre><code>mkdir picfast && cd picfast
+wget https://raw.githubusercontent.com/atbeta/picfast/main/docker/docker-compose.yml
+wget https://raw.githubusercontent.com/atbeta/picfast/main/docker/.env.example -O .env</code></pre></div>
           </div>
         </div>
         <div class="qs-step">
           <div class="qs-num">2</div>
           <div class="qs-content">
-            <h3>完成初始化</h3>
-            <p>打开 <code>http://localhost:18080</code>，引导式向导将创建首个管理员账号。无头部署可设置 <code>PICFAST_APP_ADMIN_EMAIL</code> 和 <code>PICFAST_APP_ADMIN_PASSWORD</code> 跳过向导。</p>
+            <h3>编辑配置</h3>
+            <p>编辑 <code>.env</code> — 设置域名、数据库密码和 JWT 密钥。无头部署可添加管理员凭据跳过向导。</p>
           </div>
         </div>
         <div class="qs-step">
           <div class="qs-num">3</div>
           <div class="qs-content">
-            <h3>开始上传</h3>
-            <p>通过 Web UI、ShareX、curl 或任意 HTTP 客户端上传，每次上传返回即用链接。</p>
-            <div class="hero-code small"><pre><code>curl -X POST http://localhost:18080/api/v1/images \
-  -H "Authorization: Bearer YOUR_TOKEN" \
-  -F "file=@image.png"</code></pre></div>
+            <h3>启动服务</h3>
+            <p>一行命令同时启动 PostgreSQL 和 PicFast。打开 <code>http://localhost:18080</code> 完成初始化向导。</p>
+            <div class="hero-code small"><pre><code>docker compose up -d</code></pre></div>
           </div>
         </div>
       </div>

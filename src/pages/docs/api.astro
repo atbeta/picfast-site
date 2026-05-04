@@ -8,6 +8,12 @@ import DocsLayout from '../../layouts/DocsLayout.astro';
     PicFast exposes a REST API at <code>/api/v1</code>. All endpoints require authentication unless marked as public. The API accepts JWT access tokens or scoped API tokens (prefixed <code>img_</code>) via the <code>Authorization: Bearer</code> header.
   </p>
 
+  <h2>Interactive API docs</h2>
+  <p>
+    When your PicFast instance is running, visit <code>/docs</code> for the full interactive <strong>Scalar API reference</strong> — browse every endpoint, fill in parameters, and send live requests directly from your browser.
+  </p>
+  <p>The machine-readable OpenAPI spec is also available at <code>/openapi.yaml</code> and <code>/openapi.json</code>.</p>
+
   <h2>System</h2>
   <table>
     <thead><tr><th>Method</th><th>Path</th><th>Auth</th><th>Description</th></tr></thead>
@@ -148,12 +154,4 @@ import DocsLayout from '../../layouts/DocsLayout.astro';
 
   <h2>AI agent integration (MCP)</h2>
   <p>PicFast ships an MCP server for AI agent integration (Claude, Cursor, VS Code Copilot). See the dedicated <a href="/docs/mcp">MCP Integration</a> page for setup instructions, tool reference, and configuration.</p>
-
-  <h2>OpenAPI spec</h2>
-  <p>The full machine-readable API spec is available at:</p>
-  <ul>
-    <li><code>/openapi.yaml</code> — YAML format</li>
-    <li><code>/openapi.json</code> — JSON format</li>
-    <li><code>/docs</code> — Interactive Scalar UI for live API testing</li>
-  </ul>
 </DocsLayout>

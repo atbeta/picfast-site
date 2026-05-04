@@ -8,6 +8,12 @@ import DocsLayout from '../../../layouts/DocsLayout.astro';
     PicFast 在 <code>/api/v1</code> 路径下提供 REST API。除标注为公开的端点外，其余均需认证。API 支持 JWT access token 或带权限范围的 API token（以 <code>img_</code> 为前缀），通过 <code>Authorization: Bearer</code> 请求头传递。
   </p>
 
+  <h2>交互式 API 文档</h2>
+  <p>
+    启动 PicFast 后，访问 <code>/docs</code> 即可查看完整的 <strong>Scalar 交互式 API 参考</strong> — 可浏览所有端点、填写参数并在浏览器中直接发送请求。
+  </p>
+  <p>机器可读的 OpenAPI 规范也可通过 <code>/openapi.yaml</code> 和 <code>/openapi.json</code> 获取。</p>
+
   <h2>系统</h2>
   <table>
     <thead><tr><th>方法</th><th>路径</th><th>认证</th><th>说明</th></tr></thead>
@@ -148,12 +154,4 @@ import DocsLayout from '../../../layouts/DocsLayout.astro';
 
   <h2>AI Agent 集成（MCP）</h2>
   <p>PicFast 内置 MCP 服务器，支持 Claude、Cursor、VS Code Copilot 等 AI Agent 接入。完整的安装说明、工具参考与配置请查看 <a href="/zh/docs/mcp">MCP 集成</a>页面。</p>
-
-  <h2>OpenAPI 规范</h2>
-  <p>完整的机器可读 API 规范文件：</p>
-  <ul>
-    <li><code>/openapi.yaml</code> — YAML 格式</li>
-    <li><code>/openapi.json</code> — JSON 格式</li>
-    <li><code>/docs</code> — 交互式 Scalar UI，支持在线调试</li>
-  </ul>
 </DocsLayout>

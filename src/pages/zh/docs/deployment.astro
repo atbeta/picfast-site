@@ -2,30 +2,43 @@
 import DocsLayout from '../../../layouts/DocsLayout.astro';
 ---
 
-<DocsLayout title="部署" description="PicFast 生产环境部署指南 — Docker Compose、反向代理等。">
+<DocsLayout title="部署" description="PicFast 生产部署指南 — Docker Compose、反向代理、Traefik。">
   <h1>部署</h1>
-  <p>本指南涵盖使用 Docker Compose、反向代理及生产级配置进行 PicFast 的生产部署。</p>
+  <p>PicFast 提供多种部署方式。对于大多数用户，Docker Compose + 反向代理是兼顾简便与生产就绪的最佳选择。</p>
 
   <h2>Docker Compose（推荐）</h2>
-  <p>使用单一 compose 文件部署完整生产栈（PostgreSQL + PicFast + Traefik 反向代理）：</p>
-  <pre><code>cd docker
-cp .env.traefik.example .env
-# 编辑 .env，填入你的域名、密钥和凭据
-docker compose -f docker-compose.traefik.yml up -d</code></pre>
+  <p>下载 Compose 文件和环境变量模板，无需克隆仓库：</p>
+  <pre><code>mkdir picfast && cd picfast
+wget https://raw.githubusercontent.com/atbeta/picfast/main/docker/docker-compose.yml
+wget https://raw.githubusercontent.com/atbeta/picfast/main/docker/.env.example -O .env</code></pre>
 
-  <p>首次启动时，会在浏览器中显示初始化向导来创建管理员账号。设置 <code>PICFAST_APP_ADMIN_EMAIL</code> 和 <code>PICFAST_APP_ADMIN_PASSWORD</code> 可在无头部署时自动创建管理员并跳过向导。</p>
+  <p>编辑 <code>.env</code>，填入你的域名、密钥和凭据，然后：</p>
+  <pre><code>docker compose up -d</code></pre>
 
-  <p>Traefik compose 文件包含：</p>
+  <p>Compose 文件包含 PostgreSQL 16 和 PicFast。默认 PicFast 绑定到 <code>127.0.0.1:18080</code> — 前置 Nginx、Caddy 或 NPM 即可提供 HTTPS。如需直接暴露到网络，在 <code>.env</code> 中设置 <code>PICFAST_HTTP_BIND=0.0.0.0</code>。</p>
+
+  <p>首次启动后打开站点，跟随引导向导创建管理员。在 <code>.env</code> 中设置 <code>PICFAST_APP_ADMIN_EMAIL</code> 和 <code>PICFAST_APP_ADMIN_PASSWORD</code> 可自动创建管理员并跳过向导。</p>
+
+  <p>数据存储在当前目录下：</p>
   <ul>
-    <li>带持久化卷的 PostgreSQL 16</li>
-    <li>PicFast 应用，通过 Traefik 自动获取 Let's Encrypt SSL 证书</li>
-    <li>Traefik 反向代理，证书自动续期</li>
+    <li>Postgres：<code>./data/postgres</code></li>
+    <li>上传文件：<code>./data/uploads</code></li>
+    <li>缩略图：<code>./data/thumbnails</code></li>
   </ul>
 
-  <h2>Docker Hub 镜像</h2>
-  <p>预构建镜像发布在 Docker Hub：<code>xbeta/picfast</code>。这是推荐的部署方式——无需克隆、无需编译。</p>
+  <h2>Traefik（自动 SSL 证书）</h2>
+  <p>如果已有运行中的 Traefik，希望自动申请 Let's Encrypt 证书：</p>
+  <pre><code>mkdir picfast && cd picfast
+wget https://raw.githubusercontent.com/atbeta/picfast/main/docker/docker-compose.traefik.yml
+wget https://raw.githubusercontent.com/atbeta/picfast/main/docker/.env.traefik.example -O .env
 
-  <h3>用 docker run 快速体验</h3>
+vim .env  # 设置域名、证书邮箱、数据库密码、JWT 密钥
+docker compose -f docker-compose.traefik.yml up -d</code></pre>
+
+  <p>确保 <code>.env</code> 中 <code>TRAEFIK_DOCKER_NETWORK</code> 与 Traefik 所在网络一致。</p>
+
+  <h2>Docker Hub 镜像（docker run）</h2>
+  <p>预构建镜像在 <a href="https://hub.docker.com/r/xbeta/picfast" target="_blank" rel="noopener">Docker Hub</a>，适用于快速测试或自定义部署：</p>
   <pre><code>docker network create picfast-net
 
 docker run -d --name picfast-db --network picfast-net \
@@ -41,26 +54,20 @@ docker run -d --name picfast --network picfast-net -p 18080:8080 \
   -v picfast-thumbnails:/app/data/thumbnails \
   xbeta/picfast:latest</code></pre>
 
-  <p>可用标签：</p>
-  <ul>
-    <li><code>latest</code> — main 分支最新稳定构建</li>
-    <li><code>vX.Y.Z</code> — 特定发布版本</li>
-    <li><code>sha-&lt;commit&gt;</code> — 按提交追踪的构建标签</li>
-  </ul>
+  <p>可用镜像标签见 <a href="https://hub.docker.com/r/xbeta/picfast" target="_blank" rel="noopener">Docker Hub</a>。</p>
 
   <h2>上线前检查清单</h2>
-  <p>部署至生产环境前，请确认以下配置：</p>
   <ul>
-    <li><strong><code>PICFAST_JWT_SECRET</code></strong> — 使用强随机值（<code>openssl rand -hex 32</code>）</li>
-    <li><strong><code>PICFAST_SERVER_BASE_URL</code></strong> — 设置为实际 HTTPS 域名</li>
-    <li><strong><code>PICFAST_APP_ADMIN_EMAIL</code> / <code>PICFAST_APP_ADMIN_PASSWORD</code></strong> — 无头部署时设置</li>
-    <li><strong><code>POSTGRES_PASSWORD</code></strong> — 勿使用示例密码</li>
-    <li>反向代理正确透传 <code>Host</code> 与 <code>X-Forwarded-Proto</code> 请求头</li>
-    <li>反向代理的上传体积限制与实际需求匹配</li>
+    <li><strong>JWT 密钥：</strong>设为高强度随机值（<code>openssl rand -hex 32</code>）</li>
+    <li><strong>站点地址：</strong>设置为实际 HTTPS 域名</li>
+    <li><strong>管理员凭据：</strong>无头部署时设置，或使用初始化向导</li>
+    <li><strong>数据库密码：</strong>生产环境勿使用示例值</li>
+    <li>反向代理正确透传 <code>Host</code> 和 <code>X-Forwarded-Proto</code> 请求头</li>
+    <li>反向代理的上传体积限制与实际需求匹配（默认每文件 50 MB）</li>
   </ul>
 
   <h2>环境变量</h2>
-  <p>所有配置项均可通过 <code>PICFAST_</code> 前缀的环境变量进行设置，环境变量优先级高于 <code>config.yaml</code>。完整参考：<a href="/zh/docs/configuration">配置参考</a>。</p>
+  <p>所有配置均可通过 <code>PICFAST_</code> 前缀的环境变量设置，优先级高于 <code>config.yaml</code>。完整参考见 <a href="/zh/docs/configuration">配置参考</a>。</p>
   <pre><code>PICFAST_SERVER_PORT=8080
 PICFAST_SERVER_BASE_URL=https://pics.example.com
 PICFAST_JWT_SECRET=your-strong-secret
@@ -96,37 +103,14 @@ PICFAST_STORAGE_THUMBNAIL_DIR=./data/thumbnails</code></pre>
     &#125;
 &#125;</code></pre>
 
-  <h3>Traefik</h3>
-  <p>在 Docker Compose 服务中添加以下标签：</p>
-  <pre><code>labels:
-  - "traefik.enable=true"
-  - "traefik.http.routers.picfast.rule=Host&#96;pics.example.com&#96;"
-  - "traefik.http.routers.picfast.tls=true"
-  - "traefik.http.services.picfast.loadbalancer.server.port=8080"</code></pre>
-
   <h2>数据库备份</h2>
   <pre><code>docker exec picfast-db pg_dump -U picfast picfast > backup.sql</code></pre>
 
   <h2>更新</h2>
-  <p>使用 Docker Hub 镜像时：</p>
-  <pre><code>docker pull xbeta/picfast:latest
-docker stop picfast && docker rm picfast
-# 使用相同的卷重新运行 docker run 命令</code></pre>
-  <p>使用 docker-compose 时：</p>
   <pre><code>docker compose pull
 docker compose up -d</code></pre>
   <p>数据库迁移在启动时自动执行。</p>
 
   <h2>家庭网络 &amp; NAS</h2>
-  <p>如需在家庭设备（Synology、QNAP、树莓派等）上部署，并通过隧道（Cloudflare、Tailscale、FRP）将服务开放至公网，请参阅 <a href="/zh/docs/home-network">家庭网络 &amp; NAS</a>。</p>
-
-  <h2>开发环境部署</h2>
-  <p>如需从源码构建（需要 Go 1.26+、Node 20+、pnpm）：</p>
-  <pre><code>git clone https://github.com/atbeta/picfast.git
-cd picfast
-make docker-up          # PostgreSQL + Mailpit
-cp .env.example .env
-go run ./cmd/picfast    # 后端
-cd web && pnpm install && pnpm dev  # 前端</code></pre>
-  <p>更多开发详情请参阅 <a href="https://github.com/atbeta/picfast/blob/main/README.md#local-development" target="_blank" rel="noopener">GitHub README 开发部分</a>。</p>
+  <p>如需在 Synology、QNAP、TrueNAS、Unraid 或树莓派上部署，并通过 Cloudflare/Tailscale/FRP 隧道暴露到公网，见 <a href="/zh/docs/home-network">家庭网络 &amp; NAS</a>。</p>
 </DocsLayout>

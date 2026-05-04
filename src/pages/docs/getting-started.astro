@@ -2,68 +2,64 @@
 import DocsLayout from '../../layouts/DocsLayout.astro';
 ---
 
-<DocsLayout title="Quick Start" description="Get PicFast running in minutes with Docker.">
+<DocsLayout title="Quick Start" description="Get PicFast running in minutes with Docker Compose.">
   <h1>Quick Start</h1>
   <p>
-    PicFast runs in a single Docker container. You just need a PostgreSQL database and the prebuilt image from Docker Hub.
+    PicFast ships with a production-ready Docker Compose file — no source cloning required. Download the file, edit a few variables, and you're online.
   </p>
 
-  <h2>Prerequisites</h2>
-  <ul>
-    <li><a href="https://docs.docker.com/get-docker/" target="_blank" rel="noopener">Docker</a></li>
-    <li>A PostgreSQL instance (local, remote, or Docker)</li>
-    <li>A domain name (for production) or just use localhost for testing</li>
-  </ul>
+  <h2>1. Download the Compose file</h2>
+  <pre><code>mkdir picfast && cd picfast
 
-  <h2>1. Start everything</h2>
-  <p>Three commands: create a Docker network, start PostgreSQL, start PicFast.</p>
-  <pre><code>docker network create picfast-net
+# Download the Compose file and environment template
+wget https://raw.githubusercontent.com/atbeta/picfast/main/docker/docker-compose.yml
+wget https://raw.githubusercontent.com/atbeta/picfast/main/docker/.env.example -O .env</code></pre>
 
-docker run -d --name picfast-db --network picfast-net \
-  -e POSTGRES_PASSWORD=devonly \
-  -v picfast-pgdata:/var/lib/postgresql/data \
-  postgres:16-alpine
+  <h2>2. Configure</h2>
+  <p>Edit <code>.env</code> with your settings. At minimum:</p>
+  <pre><code># Domain and access
+PICFAST_DOMAIN=pics.example.com
+PICFAST_SERVER_BASE_URL=https://pics.example.com
 
-docker run -d --name picfast --network picfast-net -p 18080:8080 \
-  -e PICFAST_DATABASE_URL='postgres://postgres:devonly@picfast-db:5432/postgres?sslmode=disable' \
-  -e PICFAST_JWT_SECRET='change-me-in-production' \
-  -e PICFAST_SERVER_BASE_URL='http://localhost:18080' \
-  -v picfast-uploads:/app/data/uploads \
-  -v picfast-thumbnails:/app/data/thumbnails \
-  xbeta/picfast:latest</code></pre>
+# Security
+PICFAST_JWT_SECRET=your-strong-random-secret
+POSTGRES_PASSWORD=your-db-password
 
-  <p>Available image tags: <code>latest</code>, version tags (<code>vX.Y.Z</code>), and commit-traceable tags (<code>sha-&lt;commit&gt;</code>). See <a href="https://hub.docker.com/r/xbeta/picfast" target="_blank" rel="noopener">Docker Hub</a> for the full list.</p>
-
-  <h2>2. Initial setup</h2>
-  <p>Open <code>http://localhost:18080</code> in your browser. A guided setup wizard helps you create your first admin account.</p>
-  <p>For headless (non-browser) deployments, set these additional environment variables to auto-create the admin and skip the wizard:</p>
-  <pre><code>PICFAST_APP_ADMIN_EMAIL=admin@example.com
+# Optional: skip setup wizard (headless)
+PICFAST_APP_ADMIN_EMAIL=admin@example.com
 PICFAST_APP_ADMIN_PASSWORD=your-admin-password</code></pre>
 
-  <h2>3. Upload your first image</h2>
+  <h2>3. Start</h2>
+  <pre><code>docker compose up -d</code></pre>
+  <p>This launches PostgreSQL and PicFast. Open <code>http://localhost:18080</code> and follow the guided setup wizard to create your admin account.</p>
+  <p>Data is stored in the current directory: <code>./data/postgres</code>, <code>./data/uploads</code>, <code>./data/thumbnails</code>.</p>
+
+  <h2>4. Upload your first image</h2>
   <p>Log into the web UI and drag-drop a file, or use the API:</p>
   <pre><code>curl -X POST http://localhost:18080/api/v1/images \
   -H "Authorization: Bearer YOUR_TOKEN" \
   -F "file=@image.png"</code></pre>
-  <p>For AI agent integration, see <a href="/docs/mcp">MCP Integration</a>. For ShareX one-click setup, see <a href="/docs/sharex">ShareX Integration</a>.</p>
+
+  <h2>Reverse proxy</h2>
+  <p>The default compose binds PicFast to <code>127.0.0.1:18080</code>. Place Nginx, Caddy, or NPM in front for HTTPS. Set <code>PICFAST_HTTP_BIND=0.0.0.0</code> in <code>.env</code> to expose directly on your network.</p>
+  <p>Full reverse proxy configs — Nginx, Caddy, Traefik — are on the <a href="/docs/deployment">Deployment</a> page.</p>
 
   <h2>Next steps</h2>
   <ul>
     <li><a href="/docs/configuration">Full configuration reference &rarr;</a></li>
     <li><a href="/docs/storage">Set up cloud storage backends &rarr;</a></li>
     <li><a href="/docs/api">API documentation &rarr;</a></li>
-    <li><a href="/docs/deployment">Production deployment with Traefik + Compose &rarr;</a></li>
+    <li><a href="/docs/deployment">Traefik + auto-SSL, docker run quick test &rarr;</a></li>
     <li><a href="/docs/home-network">Home network &amp; NAS deployment &rarr;</a></li>
   </ul>
 
   <h2>Development setup</h2>
-  <p>If you want to build from source or contribute to PicFast:</p>
+  <p>For building from source or contributing:</p>
   <ul>
-    <li><strong>Prerequisites:</strong> Go 1.26+, Node 20+, pnpm, PostgreSQL 16, Git</li>
-    <li><strong>Start services:</strong> <code>make docker-up</code> (launches PostgreSQL + Mailpit)</li>
-    <li><strong>Run backend:</strong> <code>go run ./cmd/picfast</code></li>
+    <li><strong>Prerequisites:</strong> Go 1.26+, Node 20+, pnpm, Docker</li>
+    <li><strong>Start services:</strong> <code>make docker-up</code> (or <code>docker compose -f docker/docker-compose.dev.yml up --build -d</code>)</li>
+    <li><strong>Run backend:</strong> <code>go run ./cmd/picfast</code> (after running <code>cp .env.example .env</code>)</li>
     <li><strong>Run frontend:</strong> <code>cd web && pnpm install && pnpm dev</code></li>
   </ul>
-  <p>Database migrations run automatically on startup. For bundled serving: <code>cd web && pnpm build && go run ./cmd/picfast</code>.</p>
-  <p>See the <a href="https://github.com/atbeta/picfast/blob/main/README.en.md" target="_blank" rel="noopener">GitHub README</a> for full development instructions.</p>
+  <p>Migrations run automatically at startup. See the <a href="https://github.com/atbeta/picfast/blob/main/README.en.md" target="_blank" rel="noopener">README</a> for full instructions.</p>
 </DocsLayout>

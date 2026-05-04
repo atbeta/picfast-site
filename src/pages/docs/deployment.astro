@@ -2,30 +2,43 @@
 import DocsLayout from '../../layouts/DocsLayout.astro';
 ---
 
-<DocsLayout title="Deployment" description="Production deployment guide for PicFast — Docker Compose, reverse proxy, and more.">
+<DocsLayout title="Deployment" description="Production deployment guide for PicFast — Docker Compose, reverse proxies, and Traefik.">
   <h1>Deployment</h1>
-  <p>This guide covers production deployment of PicFast with Docker Compose, reverse proxy, and production-grade configuration.</p>
+  <p>PicFast provides several deployment paths. For most users, Docker Compose with a reverse proxy is the best balance of simplicity and production readiness.</p>
 
   <h2>Docker Compose (recommended)</h2>
-  <p>For a full production stack with PostgreSQL, PicFast, and Traefik reverse proxy in a single compose file:</p>
-  <pre><code>cd docker
-cp .env.traefik.example .env
-# Edit .env with your domain, secrets, and credentials
-docker compose -f docker-compose.traefik.yml up -d</code></pre>
+  <p>Download the compose file and environment template, no cloning needed:</p>
+  <pre><code>mkdir picfast && cd picfast
+wget https://raw.githubusercontent.com/atbeta/picfast/main/docker/docker-compose.yml
+wget https://raw.githubusercontent.com/atbeta/picfast/main/docker/.env.example -O .env</code></pre>
 
-  <p>On first startup, the setup wizard runs in your browser to create your first admin account. Set <code>PICFAST_APP_ADMIN_EMAIL</code> and <code>PICFAST_APP_ADMIN_PASSWORD</code> to auto-create the admin and skip the wizard for headless deployments.</p>
+  <p>Edit <code>.env</code> with your domain, secrets, and configuration, then:</p>
+  <pre><code>docker compose up -d</code></pre>
 
-  <p>The Traefik compose file includes:</p>
+  <p>The compose file includes PostgreSQL 16 and PicFast. By default PicFast binds to <code>127.0.0.1:18080</code> — put a reverse proxy (Nginx, Caddy, NPM) in front for HTTPS. Set <code>PICFAST_HTTP_BIND=0.0.0.0</code> in <code>.env</code> to bind to all interfaces.</p>
+
+  <p>On first startup, open your site and follow the setup wizard. Set <code>PICFAST_APP_ADMIN_EMAIL</code> and <code>PICFAST_APP_ADMIN_PASSWORD</code> in <code>.env</code> to auto-create the admin and skip the wizard.</p>
+
+  <p>Data is stored under the current directory:</p>
   <ul>
-    <li>PostgreSQL 16 with persistent volume</li>
-    <li>PicFast application with automatic Let's Encrypt SSL via Traefik</li>
-    <li>Traefik configured as the reverse proxy with auto-renewing certificates</li>
+    <li>Postgres: <code>./data/postgres</code></li>
+    <li>Uploads: <code>./data/uploads</code></li>
+    <li>Thumbnails: <code>./data/thumbnails</code></li>
   </ul>
 
-  <h2>Docker Hub image</h2>
-  <p>Prebuilt images are published to Docker Hub at <code>xbeta/picfast</code>. This is the recommended way to deploy — no cloning, no building.</p>
+  <h2>Traefik (auto-SSL)</h2>
+  <p>If you already run Traefik and want automatic Let's Encrypt certificates:</p>
+  <pre><code>mkdir picfast && cd picfast
+wget https://raw.githubusercontent.com/atbeta/picfast/main/docker/docker-compose.traefik.yml
+wget https://raw.githubusercontent.com/atbeta/picfast/main/docker/.env.traefik.example -O .env
 
-  <h3>Quick test with docker run</h3>
+vim .env  # set domain, cert email, passwords, JWT secret
+docker compose -f docker-compose.traefik.yml up -d</code></pre>
+
+  <p>Make sure <code>TRAEFIK_DOCKER_NETWORK</code> in <code>.env</code> matches your Traefik's network.</p>
+
+  <h2>Docker Hub image (docker run)</h2>
+  <p>Prebuilt images are on <a href="https://hub.docker.com/r/xbeta/picfast" target="_blank" rel="noopener">Docker Hub</a>. Useful for quick testing or custom setups:</p>
   <pre><code>docker network create picfast-net
 
 docker run -d --name picfast-db --network picfast-net \
@@ -41,26 +54,20 @@ docker run -d --name picfast --network picfast-net -p 18080:8080 \
   -v picfast-thumbnails:/app/data/thumbnails \
   xbeta/picfast:latest</code></pre>
 
-  <p>Available tags:</p>
-  <ul>
-    <li><code>latest</code> — latest stable build from main</li>
-    <li><code>vX.Y.Z</code> — specific release version</li>
-    <li><code>sha-&lt;commit&gt;</code> — commit-traceable build</li>
-  </ul>
+  <p>See <a href="https://hub.docker.com/r/xbeta/picfast" target="_blank" rel="noopener">Docker Hub</a> for available tags.</p>
 
   <h2>Pre-flight checklist</h2>
-  <p>Before going to production, verify these settings:</p>
   <ul>
-    <li><strong><code>PICFAST_JWT_SECRET</code></strong> — strong random value (use <code>openssl rand -hex 32</code>)</li>
-    <li><strong><code>PICFAST_SERVER_BASE_URL</code></strong> — your actual HTTPS domain</li>
-    <li><strong><code>PICFAST_APP_ADMIN_EMAIL</code> / <code>PICFAST_APP_ADMIN_PASSWORD</code></strong> — set for headless deployments</li>
-    <li><strong><code>POSTGRES_PASSWORD</code></strong> — don't use example passwords</li>
-    <li>Reverse proxy correctly passes <code>Host</code> and <code>X-Forwarded-Proto</code> headers</li>
-    <li>Upload size limits in reverse proxy match your requirements</li>
+    <li><strong>JWT secret:</strong> set to a strong random value (<code>openssl rand -hex 32</code>)</li>
+    <li><strong>Server base URL:</strong> your actual HTTPS domain</li>
+    <li><strong>Admin credentials:</strong> set for headless deployments, or use the setup wizard</li>
+    <li><strong>Database password:</strong> don't use example values in production</li>
+    <li>Reverse proxy passes <code>Host</code> and <code>X-Forwarded-Proto</code> headers</li>
+    <li>Upload size limits in reverse proxy match your needs (default 50 MB per file)</li>
   </ul>
 
   <h2>Environment variables</h2>
-  <p>All config keys can be set via <code>PICFAST_</code> prefixed environment variables. Environment variables take precedence over <code>config.yaml</code> values. Full reference: <a href="/docs/configuration">Configuration</a>.</p>
+  <p>All configuration can be set via <code>PICFAST_</code> prefixed environment variables (they take precedence over <code>config.yaml</code>). See <a href="/docs/configuration">Configuration</a> for the full reference.</p>
   <pre><code>PICFAST_SERVER_PORT=8080
 PICFAST_SERVER_BASE_URL=https://pics.example.com
 PICFAST_JWT_SECRET=your-strong-secret
@@ -96,37 +103,14 @@ PICFAST_STORAGE_THUMBNAIL_DIR=./data/thumbnails</code></pre>
     &#125;
 &#125;</code></pre>
 
-  <h3>Traefik</h3>
-  <p>Add these labels to your Docker Compose service:</p>
-  <pre><code>labels:
-  - "traefik.enable=true"
-  - "traefik.http.routers.picfast.rule=Host&#96;pics.example.com&#96;"
-  - "traefik.http.routers.picfast.tls=true"
-  - "traefik.http.services.picfast.loadbalancer.server.port=8080"</code></pre>
-
   <h2>Database backup</h2>
   <pre><code>docker exec picfast-db pg_dump -U picfast picfast > backup.sql</code></pre>
 
   <h2>Updating</h2>
-  <p>When using the Docker Hub image:</p>
-  <pre><code>docker pull xbeta/picfast:latest
-docker stop picfast && docker rm picfast
-# Re-run your docker run command with the same volumes</code></pre>
-  <p>When using docker-compose:</p>
   <pre><code>docker compose pull
 docker compose up -d</code></pre>
-  <p>Database migrations run automatically on startup.</p>
+  <p>Migrations run automatically on startup.</p>
 
   <h2>Home network &amp; NAS</h2>
-  <p>For deploying on home hardware like Synology, QNAP, or Raspberry Pi — with tunnels (Cloudflare, Tailscale, FRP) to expose your instance to the internet — see <a href="/docs/home-network">Home Network &amp; NAS</a>.</p>
-
-  <h2>Development deployment</h2>
-  <p>For building from source (requires Go 1.26+, Node 20+, pnpm):</p>
-  <pre><code>git clone https://github.com/atbeta/picfast.git
-cd picfast
-make docker-up          # PostgreSQL + Mailpit
-cp .env.example .env
-go run ./cmd/picfast    # backend
-cd web && pnpm install && pnpm dev  # frontend</code></pre>
-  <p>For more development details, see the <a href="https://github.com/atbeta/picfast/blob/main/README.en.md#local-development" target="_blank" rel="noopener">development section</a> of the GitHub README.</p>
+  <p>For Synology, QNAP, TrueNAS, Unraid, or Raspberry Pi — with Cloudflare/Tailscale/FRP tunnels — see <a href="/docs/home-network">Home Network &amp; NAS</a>.</p>
 </DocsLayout>

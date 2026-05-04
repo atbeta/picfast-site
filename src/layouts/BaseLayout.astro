@@ -7,12 +7,11 @@ interface Props {
 
 const {
   title,
-  description = 'PicFast — Self-hosted image hosting platform. Deploy in one command with Docker. Full admin panel, 6 storage backends, API-first with MCP AI integration and ShareX support.',
+  description = 'PicFast — Self-hosted image hosting app. Deploy in one command with Docker. Full admin panel, 6 storage backends, API-first with MCP AI integration and ShareX support.',
   lang = 'en',
 } = Astro.props;
 
 const currentPath = Astro.url.pathname;
-const isDocs = currentPath.startsWith('/zh/docs') || currentPath.startsWith('/docs');
 const locale = currentPath.startsWith('/zh') ? 'zh' : 'en';
 const switchLocale = locale === 'en' ? '/zh' : '/';
 const switchLocaleLabel = locale === 'en' ? '中文' : 'English';
@@ -50,9 +49,6 @@ const docsLink = locale === 'en' ? '/docs/getting-started' : '/zh/docs/getting-s
           <span class="logo-text">PicFast</span>
         </a>
         <nav class="nav-links">
-          <a href={docsLink} class:list={["nav-link", { active: isDocs }]}>
-            {locale === 'en' ? 'Docs' : '文档'}
-          </a>
           <a href="https://github.com/atbeta/picfast" class="nav-link nav-icon-link" target="_blank" rel="noopener" title="GitHub" aria-label="GitHub">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
               <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
@@ -94,8 +90,8 @@ const docsLink = locale === 'en' ? '/docs/getting-started' : '/zh/docs/getting-s
           </a>
           <p class="footer-tagline">
             {locale === 'en'
-              ? 'Self-hosted image hosting platform. One command to deploy.'
-              : '自托管图床平台，一行命令即可部署。'}
+              ? 'Self-hosted image hosting app. One command to deploy.'
+              : '自托管图床应用，一行命令即可部署。'}
           </p>
         </div>
         <div class="footer-links">
@@ -240,6 +236,7 @@ const docsLink = locale === 'en' ? '/docs/getting-started' : '/zh/docs/getting-s
     background: var(--bg);
     color: var(--text);
     line-height: 1.65;
+    font-size: 16px;
     min-height: 100vh;
     display: flex;
     flex-direction: column;
@@ -292,9 +289,9 @@ const docsLink = locale === 'en' ? '/docs/getting-started' : '/zh/docs/getting-s
   }
 
   .container {
-    max-width: 1120px;
+    max-width: 1200px;
     margin: 0 auto;
-    padding: 0 1.5rem;
+    padding: 0 2rem;
   }
 
   .btn {
@@ -401,9 +398,9 @@ const docsLink = locale === 'en' ? '/docs/getting-started' : '/zh/docs/getting-s
   }
 
   .header-inner {
-    max-width: 1120px;
+    max-width: 1200px;
     margin: 0 auto;
-    padding: 0 1.5rem;
+    padding: 0 2rem;
     height: 56px;
     display: flex;
     align-items: center;
@@ -504,9 +501,9 @@ const docsLink = locale === 'en' ? '/docs/getting-started' : '/zh/docs/getting-s
   }
 
   .footer-inner {
-    max-width: 1120px;
+    max-width: 1200px;
     margin: 0 auto;
-    padding: 2rem 1.5rem;
+    padding: 2rem 2rem;
     display: flex;
     flex-direction: column;
     gap: 0.75rem;
