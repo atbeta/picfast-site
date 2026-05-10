@@ -112,7 +112,9 @@ PICFAST_STORAGE_THUMBNAIL_DIR=./data/thumbnails</code></pre>
       - targets: ["app:9190"]</code></pre>
   <p>The <code>/health</code> endpoint returns 200 when the database and storage are reachable. Metrics include HTTP request counts, upload throughput, database pool stats, and more.</p>
 
-  <h2>Database backup</h2>
+  <h2>Backup & maintenance</h2>
+  <p>For full-instance archives (database + optional objects), checksum verification, restore preflight, and consistency checks, use the built‑in <code>picfast maintenance</code> CLI — see <a href="/docs/maintenance">Backup & Maintenance</a>.</p>
+  <p>Quick SQL‑only dump from Postgres (example; container and DB names vary):</p>
   <pre><code>docker exec picfast-db pg_dump -U picfast picfast > backup.sql</code></pre>
 
   <h2>Updating</h2>

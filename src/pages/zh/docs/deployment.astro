@@ -112,7 +112,9 @@ PICFAST_STORAGE_THUMBNAIL_DIR=./data/thumbnails</code></pre>
       - targets: ["app:9190"]</code></pre>
   <p><code>/health</code> 端点在数据库和存储可达时返回 200。指标涵盖 HTTP 请求数、上传吞吐量、数据库连接池状态等。</p>
 
-  <h2>数据库备份</h2>
+  <h2>备份与维护</h2>
+  <p>需要整实例归档（数据库与可选对象）、校验包、恢复预检与一致性巡检时，请使用内置 <code>picfast maintenance</code> 命令行，详见 <a href="/zh/docs/maintenance">备份与维护</a>。</p>
+  <p>若仅需从 Postgres 导出纯 SQL，可直接对数据库容器执行（示例，容器名与库名以实际为准）：</p>
   <pre><code>docker exec picfast-db pg_dump -U picfast picfast > backup.sql</code></pre>
 
   <h2>更新</h2>

@@ -1,0 +1,56 @@
+---
+import DocsLayout from '../../layouts/DocsLayout.astro';
+---
+
+<DocsLayout
+  title="Backup & Maintenance"
+  description="PicFast maintenance CLI — doctor, backup, inspect, restore, and thumbnail repair for self-hosted deployments."
+>
+  <h1>Backup & Maintenance</h1>
+  <p>
+    PicFast includes a <code>picfast maintenance</code> CLI for consistency checks, backups, archive verification, restores, and optional thumbnail repair.
+    Run commands on the <strong>server</strong> or inside the application container — not from the browser. The admin console only surfaces copy‑paste hints.
+  </p>
+
+  <h2>Before you run</h2>
+  <ul>
+    <li>Use the same configuration as the running instance (<code>config.yaml</code> / environment) so the CLI can reach PostgreSQL and your storage backends.</li>
+    <li>In Docker Compose examples below, replace <code>&lt;service&gt;</code> with your <strong>actual Compose service name</strong> for PicFast (many examples use <code>app</code>; yours may differ — check <code>docker-compose.yml</code>).</li>
+    <li>Large deployments: prefer a maintenance window — <code>doctor</code> and full backups can read many objects.</li>
+  </ul>
+
+  <h2>Command shape</h2>
+  <pre><code>docker compose exec &lt;service&gt; picfast maintenance &lt;subcommand&gt; [flags]</code></pre>
+  <p>Use <code>picfast maintenance --help</code> and <code>picfast maintenance &lt;subcommand&gt; --help</code> for flags (<code>--json</code>, <code>--all</code>, <code>--pg-dump-container</code>, etc.).</p>
+
+  <h2>Subcommands</h2>
+  <table>
+    <thead>
+      <tr><th>Subcommand</th><th>Role</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><code>doctor</code></td><td>Read‑only check of DB rows, stored objects, and thumbnails.</td></tr>
+      <tr><td><code>backup</code></td><td>Writes a PostgreSQL custom‑format dump and can package object payloads into an archive.</td></tr>
+      <tr><td><code>inspect</code></td><td>Validates <code>manifest.json</code> and checksums inside a backup tarball.</td></tr>
+      <tr><td><code>restore</code></td><td>Preflight by default; <code>--apply</code> performs writes. Restoring into a non‑empty database requires <code>--force</code>.</td></tr>
+      <tr><td><code>repair-thumbnails</code></td><td>Rebuilds missing thumbnails from source objects (dry‑run unless <code>--apply</code>).</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Typical order</h2>
+  <ol>
+    <li><strong>Check:</strong> <code>picfast maintenance doctor --all --batch-size 500</code></li>
+    <li><strong>Backup:</strong> <code>picfast maintenance backup --output /app/data/backups/picfast-backup.tar.gz</code> (adjust path to match your volume mounts)</li>
+    <li><strong>Verify archive:</strong> <code>picfast maintenance inspect /app/data/backups/picfast-backup.tar.gz</code></li>
+    <li><strong>Restore</strong> (on the <em>target</em> host, after checks): <code>picfast maintenance restore … --apply</code> — add <code>--force</code> only when you intend to overwrite a non‑empty database.</li>
+  </ol>
+
+  <h2>PostgreSQL client tools</h2>
+  <p>If the host does not have <code>pg_dump</code> / <code>pg_restore</code>, the CLI can shell into a Postgres container (e.g. <code>--pg-dump-container</code> / <code>--pg-restore-container</code>) — see <code>--help</code> on <code>backup</code> and <code>restore</code>.</p>
+
+  <h2>Full archive specification</h2>
+  <p>
+    Manifest schema, <code>objects.jsonl</code> vs checksum ledger, compatibility rules, and safety notes for operators and contributors live in the PicFast repo:
+    <a href="https://github.com/atbeta/picfast/blob/main/docs/maintenance.md" target="_blank" rel="noopener"><code>docs/maintenance.md</code></a>.
+  </p>
+</DocsLayout>

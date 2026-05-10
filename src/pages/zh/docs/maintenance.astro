@@ -1,0 +1,56 @@
+---
+import DocsLayout from '../../../layouts/DocsLayout.astro';
+---
+
+<DocsLayout
+  title="备份与维护"
+  description="PicFast 维护命令行：巡检、备份、校验归档、恢复与缩略图修复，适用于自托管部署。"
+>
+  <h1>备份与维护</h1>
+  <p>
+    PicFast 提供 <code>picfast maintenance</code> 命令行，用于一致性巡检、备份导出、归档校验、恢复以及可选的缩略图修复。
+    请在<strong>服务器</strong>或应用容器内执行；管理后台仅提供可复制命令参考，不会在浏览器里替你执行。
+  </p>
+
+  <h2>执行前注意</h2>
+  <ul>
+    <li>使用与线上实例一致的配置（<code>config.yaml</code> / 环境变量），以便 CLI 能连接 PostgreSQL 与各存储后端。</li>
+    <li>下文 Compose 示例中的 <code>&lt;service&gt;</code> 须替换为你在 <code>docker-compose.yml</code> 里为 PicFast 定义的<strong>实际服务名</strong>（示例仓库常用 <code>app</code>，你的环境可能不同）。</li>
+    <li>体量较大时建议在维护窗口执行：<code>doctor</code> 与完整备份会大量读取对象。</li>
+  </ul>
+
+  <h2>命令形式</h2>
+  <pre><code>docker compose exec &lt;service&gt; picfast maintenance &lt;子命令&gt; [参数]</code></pre>
+  <p>使用 <code>picfast maintenance --help</code> 与各子命令的 <code>--help</code> 查看参数（如 <code>--json</code>、<code>--all</code>、<code>--pg-dump-container</code> 等）。</p>
+
+  <h2>子命令</h2>
+  <table>
+    <thead>
+      <tr><th>子命令</th><th>作用</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><code>doctor</code></td><td>只读巡检：数据库记录、对象存储与缩略图是否一致。</td></tr>
+      <tr><td><code>backup</code></td><td>导出 PostgreSQL 自定义格式 dump，并可按需把对象一并打入归档。</td></tr>
+      <tr><td><code>inspect</code></td><td>校验备份包内的 <code>manifest.json</code> 与校验和。</td></tr>
+      <tr><td><code>restore</code></td><td>默认仅预检；加 <code>--apply</code> 才写入。目标库非空时需显式 <code>--force</code>。</td></tr>
+      <tr><td><code>repair-thumbnails</code></td><td>根据源对象重建缺失缩略图（默认演练，<code>--apply</code> 才写入）。</td></tr>
+    </tbody>
+  </table>
+
+  <h2>推荐顺序</h2>
+  <ol>
+    <li><strong>巡检：</strong> <code>picfast maintenance doctor --all --batch-size 500</code></li>
+    <li><strong>备份：</strong> <code>picfast maintenance backup --output /app/data/backups/picfast-backup.tar.gz</code>（路径请按实际卷挂载调整）</li>
+    <li><strong>校验归档：</strong> <code>picfast maintenance inspect /app/data/backups/picfast-backup.tar.gz</code></li>
+    <li><strong>恢复</strong>（在<strong>目标</strong>环境、预检通过后）： <code>picfast maintenance restore … --apply</code>；仅在确认要覆盖非空库时使用 <code>--force</code>。</li>
+  </ol>
+
+  <h2>PostgreSQL 客户端工具</h2>
+  <p>若宿主机未安装 <code>pg_dump</code> / <code>pg_restore</code>，可将 CLI 指向已有 Postgres 容器（如 <code>--pg-dump-container</code>、<code>--pg-restore-container</code>），详见 <code>backup</code> 与 <code>restore</code> 的 <code>--help</code>。</p>
+
+  <h2>归档格式与完整说明</h2>
+  <p>
+    Manifest 字段、<code>objects.jsonl</code> 与校验账本的职责、兼容性约定及更多实现细节见 PicFast 仓库文档：
+    <a href="https://github.com/atbeta/picfast/blob/main/docs/maintenance.md" target="_blank" rel="noopener"><code>docs/maintenance.md</code></a>。
+  </p>
+</DocsLayout>
