@@ -147,6 +147,21 @@ app:
     </tbody>
   </table>
 
+  <h3>oauth</h3>
+  <table>
+    <thead><tr><th>Key</th><th>Env Variable (prefix)</th><th>Type</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr><td><code>providers</code></td><td><code>PICFAST_OAUTH_PROVIDERS</code></td><td>array</td><td>List of OAuth / OIDC providers. See the <a href="/docs/oauth">OAuth docs</a> for setup guides.</td></tr>
+      <tr><td><code>providers[].id</code></td><td>—</td><td>string</td><td>Unique provider identifier (e.g. <code>"github"</code>, <code>"keycloak"</code>)</td></tr>
+      <tr><td><code>providers[].display_name</code></td><td>—</td><td>string</td><td>Name shown on the login button</td></tr>
+      <tr><td><code>providers[].type</code></td><td>—</td><td>string</td><td><code>"oidc"</code> or <code>"github"</code></td></tr>
+      <tr><td><code>providers[].client_id</code></td><td>—</td><td>string</td><td>OAuth client ID from the provider</td></tr>
+      <tr><td><code>providers[].client_secret</code></td><td>—</td><td>string</td><td>OAuth client secret from the provider</td></tr>
+      <tr><td><code>providers[].issuer</code></td><td>—</td><td>string</td><td>OIDC issuer URL (<code>type: oidc</code> only)</td></tr>
+      <tr><td><code>providers[].enabled</code></td><td>—</td><td>bool</td><td>Enable this provider</td></tr>
+    </tbody>
+  </table>
+
   <h3>mail</h3>
   <table>
     <thead><tr><th>Key</th><th>Env Variable</th><th>Type</th><th>Default</th><th>Description</th></tr></thead>

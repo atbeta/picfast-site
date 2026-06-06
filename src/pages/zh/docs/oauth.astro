@@ -1,0 +1,161 @@
+---
+import DocsLayout from '../../../layouts/DocsLayout.astro';
+---
+
+<DocsLayout title="OAuth 2.0 / OIDC" description="配置 OAuth 2.0 或 OpenID Connect 第三方登录 — GitHub、Keycloak 等。">
+  <h1>OAuth 2.0 / OIDC</h1>
+  <p>
+    PicFast 支持通过 OAuth 2.0 和 OpenID Connect (OIDC) 进行第三方登录。
+    配置完成后，登录页会出现<strong>"使用 ... 登录"</strong>按钮，用户还可以在设置中关联或解绑第三方账号。
+  </p>
+
+  <h2>已支持的提供商</h2>
+  <table>
+    <thead><tr><th>提供商</th><th>类型</th><th>说明</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><strong>GitHub</strong></td>
+        <td><code>github</code></td>
+        <td>纯 OAuth 2.0。通过 <code>/user</code> 和 <code>/user/emails</code> API 获取用户信息。</td>
+      </tr>
+      <tr>
+        <td><strong>Keycloak</strong></td>
+        <td><code>oidc</code></td>
+        <td>完整 OIDC 支持，通过 <code>.well-known/openid-configuration</code> 自动发现端点，强制 PKCE。</td>
+      </tr>
+      <tr>
+        <td><strong>任意 OIDC 提供商</strong></td>
+        <td><code>oidc</code></td>
+        <td>使用 <code>type: oidc</code> 即可接入符合 OIDC 规范的提供商（Google、Microsoft、Authelia 等）。</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>配置方式</h2>
+  <p>
+    OAuth 提供商在 <code>config.yaml</code> 的 <code>oauth.providers</code> 下配置。
+    推荐通过 Docker Compose 挂载配置文件。
+  </p>
+
+  <h3>Docker Compose 挂载</h3>
+  <p>在 <code>docker-compose.yml</code> 中添加 volume 挂载：</p>
+  <pre><code>services:
+  app:
+    volumes:
+      - ./config.yaml:/etc/picfast/config.yaml:ro</code></pre>
+
+  <div class="callout">
+    <strong>文件权限注意。</strong> 容器以 <code>10001:10001</code> 用户运行。
+    请确保 <code>config.yaml</code> 对该用户可读：
+    <code>chown 10001:10001 config.yaml && chmod 0644 config.yaml</code>。
+  </div>
+
+  <h3>GitHub</h3>
+  <ol>
+    <li>在 <a href="https://github.com/settings/developers" target="_blank">GitHub 设置 → Developer settings → OAuth Apps</a> 创建应用。</li>
+    <li><strong>Authorization callback URL</strong> 填写 <code>https://你的域名/api/v1/auth/oauth/github/callback</code>。</li>
+    <li>复制 <strong>Client ID</strong>，生成 <strong>Client Secret</strong>。</li>
+  </ol>
+  <pre><code>oauth:
+  providers:
+    - id: github
+      display_name: GitHub
+      type: github
+      client_id: "Iv1.xxxxxxxxxxxx"
+      client_secret: "ghs_xxxxxxxxxxxxxxxxxxxx"
+      enabled: true
+
+app:
+  web_base_url: "https://picfast.example.com"</code></pre>
+
+  <h3>Keycloak（或其他 OIDC 提供商）</h3>
+  <ol>
+    <li>在 Keycloak Realm 中创建客户端：
+      <ul>
+        <li><strong>Client type</strong>: OpenID Connect</li>
+        <li><strong>Access type</strong>: confidential</li>
+        <li><strong>Valid redirect URIs</strong>: <code>https://你的域名/api/v1/auth/oauth/keycloak/callback</code></li>
+      </ul>
+    </li>
+    <li>从 Credentials 标签页复制 <strong>Client ID</strong> 和 <strong>Client Secret</strong>。</li>
+  </ol>
+  <pre><code>oauth:
+  providers:
+    - id: keycloak
+      display_name: "Keycloak SSO"
+      type: oidc
+      client_id: "picfast"
+      client_secret: "你的 Keycloak Secret"
+      issuer: "https://auth.example.com/realms/myrealm"
+      enabled: true
+
+app:
+  web_base_url: "https://picfast.example.com"</code></pre>
+
+  <h3>多提供商同时启用</h3>
+  <pre><code>oauth:
+  providers:
+    - id: keycloak
+      display_name: "Keycloak SSO"
+      type: oidc
+      client_id: "picfast"
+      client_secret: "..."
+      issuer: "https://auth.example.com/realms/myrealm"
+      enabled: true
+    - id: github
+      display_name: GitHub
+      type: github
+      client_id: "Iv1.xxx"
+      client_secret: "ghs_xxx"
+      enabled: true</code></pre>
+
+  <h2>必填配置项</h2>
+  <table>
+    <thead><tr><th>配置项</th><th>说明</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><code>app.web_base_url</code></td>
+        <td><strong>启用 OAuth 时必填。</strong> 用户登录后跳转的前端地址，应填写用户实际访问的域名。</td>
+      </tr>
+      <tr>
+        <td><code>server.base_url</code></td>
+        <td><strong>启用 OAuth 时必填。</strong> 用于构造 OAuth 回调 URL 的后端地址。</td>
+      </tr>
+      <tr>
+        <td><code>server.trusted_proxies</code></td>
+        <td>反向代理的 IP 地址列表（CIDR 格式）。使用 nginx/traefik 时需配置，否则 cookie 和客户端 IP 无法正常工作。</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>使用体验</h2>
+  <ul>
+    <li><strong>登录页：</strong> 提供商按钮显示在邮箱登录表单下方，带分隔线。</li>
+    <li><strong>账号关联：</strong> 已登录用户可在设置页关联或解绑第三方账号。</li>
+    <li><strong>自动绑定：</strong> 当 IdP 验证过的邮箱与已有账号匹配时，首次登录自动关联。</li>
+    <li><strong>防锁死：</strong> 如果没有设置密码，不允许解绑最后一个登录方式。</li>
+  </ul>
+
+  <h2>安全说明</h2>
+  <ul>
+    <li>OIDC 提供商强制 <strong>PKCE</strong>（S256 code challenge）。</li>
+    <li><strong>State cookie</strong> 使用从 JWT secret 派生的 HMAC 签名防 CSRF。</li>
+    <li><strong>受信代理</strong> 是正确处理 X-Forwarded-Proto 和 X-Forwarded-For 的前提。</li>
+    <li><strong>自动绑定</strong> 仅在 IdP 声明 <code>email_verified: true</code> 时触发。</li>
+  </ul>
+
+  <style>
+    .callout {
+      margin: 1.25rem 0;
+      padding: 0.875rem 1rem;
+      border-radius: var(--radius);
+      background: var(--bg-alt);
+      border: 1px solid var(--border);
+      font-size: 0.9375rem;
+      line-height: 1.65;
+    }
+    .callout code {
+      background: var(--bg);
+    }
+  </style>
+</DocsLayout>

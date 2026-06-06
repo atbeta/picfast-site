@@ -26,6 +26,9 @@ const locale = currentPath.startsWith('/zh') ? 'zh' : 'en';
           <li><a href={locale === 'en' ? '/docs/configuration' : '/zh/docs/configuration'} class:list={[{ active: currentPath.endsWith('configuration') }]}>
             {locale === 'en' ? 'Configuration' : '配置'}
           </a></li>
+          <li><a href={locale === 'en' ? '/docs/oauth' : '/zh/docs/oauth'} class:list={[{ active: currentPath.endsWith('oauth') }]}>
+            {locale === 'en' ? 'OAuth Login' : 'OAuth 登录'}
+          </a></li>
         </ul>
 
         <p class="sidebar-heading">

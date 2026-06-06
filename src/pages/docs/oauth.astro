@@ -1,0 +1,162 @@
+---
+import DocsLayout from '../../layouts/DocsLayout.astro';
+---
+
+<DocsLayout title="OAuth 2.0 / OIDC" description="Set up third-party login via OAuth 2.0 or OpenID Connect — GitHub, Keycloak, and more.">
+  <h1>OAuth 2.0 / OIDC</h1>
+  <p>
+    PicFast supports third-party authentication via OAuth 2.0 and OpenID Connect (OIDC).
+    Once configured, a <strong>"Sign in with ..."</strong> button appears on the login page,
+    and users can link or unlink providers from their account settings.
+  </p>
+
+  <h2>Supported providers</h2>
+  <table>
+    <thead><tr><th>Provider</th><th>Type</th><th>Notes</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><strong>GitHub</strong></td>
+        <td><code>github</code></td>
+        <td>Pure OAuth 2.0. Uses <code>/user</code> and <code>/user/emails</code> APIs. No OIDC discovery.</td>
+      </tr>
+      <tr>
+        <td><strong>Keycloak</strong></td>
+        <td><code>oidc</code></td>
+        <td>Full OIDC with automatic discovery via <code>.well-known/openid-configuration</code>. PKCE enforced.</td>
+      </tr>
+      <tr>
+        <td><strong>Any OIDC provider</strong></td>
+        <td><code>oidc</code></td>
+        <td>Use <code>type: oidc</code> with any OIDC-compliant provider (Google, Microsoft, Authelia, etc.).</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>Configuration</h2>
+  <p>
+    OAuth providers are configured under the <code>oauth.providers</code> key in <code>config.yaml</code>.
+    The recommended way is to mount a config file via Docker Compose volume.
+  </p>
+
+  <h3>Docker Compose volume</h3>
+  <p>Add a volume mount to your <code>docker-compose.yml</code>:</p>
+  <pre><code>services:
+  app:
+    volumes:
+      - ./config.yaml:/etc/picfast/config.yaml:ro</code></pre>
+
+  <div class="callout">
+    <strong>File permissions.</strong> The container runs as <code>10001:10001</code>.
+    Make sure your <code>config.yaml</code> is readable by that user:
+    <code>chown 10001:10001 config.yaml && chmod 0644 config.yaml</code>.
+  </div>
+
+  <h3>GitHub</h3>
+  <ol>
+    <li>Create an OAuth App at <a href="https://github.com/settings/developers" target="_blank">GitHub Settings → Developer settings → OAuth Apps</a>.</li>
+    <li>Set <strong>Authorization callback URL</strong> to <code>https://your-domain/api/v1/auth/oauth/github/callback</code>.</li>
+    <li>Copy the <strong>Client ID</strong> and generate a <strong>Client Secret</strong>.</li>
+  </ol>
+  <pre><code>oauth:
+  providers:
+    - id: github
+      display_name: GitHub
+      type: github
+      client_id: "Iv1.xxxxxxxxxxxx"
+      client_secret: "ghs_xxxxxxxxxxxxxxxxxxxx"
+      enabled: true
+
+app:
+  web_base_url: "https://picfast.example.com"</code></pre>
+
+  <h3>Keycloak (or any OIDC provider)</h3>
+  <ol>
+    <li>In your Keycloak realm, create a new client with:
+      <ul>
+        <li><strong>Client type</strong>: OpenID Connect</li>
+        <li><strong>Access type</strong>: confidential</li>
+        <li><strong>Valid redirect URIs</strong>: <code>https://your-domain/api/v1/auth/oauth/keycloak/callback</code></li>
+      </ul>
+    </li>
+    <li>Copy the <strong>Client ID</strong> and <strong>Client Secret</strong> from the Credentials tab.</li>
+  </ol>
+  <pre><code>oauth:
+  providers:
+    - id: keycloak
+      display_name: "Keycloak SSO"
+      type: oidc
+      client_id: "picfast"
+      client_secret: "your-keycloak-secret"
+      issuer: "https://auth.example.com/realms/myrealm"
+      enabled: true
+
+app:
+  web_base_url: "https://picfast.example.com"</code></pre>
+
+  <h3>Multiple providers</h3>
+  <pre><code>oauth:
+  providers:
+    - id: keycloak
+      display_name: "Keycloak SSO"
+      type: oidc
+      client_id: "picfast"
+      client_secret: "..."
+      issuer: "https://auth.example.com/realms/myrealm"
+      enabled: true
+    - id: github
+      display_name: GitHub
+      type: github
+      client_id: "Iv1.xxx"
+      client_secret: "ghs_xxx"
+      enabled: true</code></pre>
+
+  <h2>Required settings</h2>
+  <table>
+    <thead><tr><th>Key</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><code>app.web_base_url</code></td>
+        <td><strong>Required when OAuth is enabled.</strong> The frontend URL users land on after login. Must match the domain users access your site from.</td>
+      </tr>
+      <tr>
+        <td><code>server.base_url</code></td>
+        <td><strong>Required when OAuth is enabled.</strong> The backend URL used to construct the OAuth redirect URIs.</td>
+      </tr>
+      <tr>
+        <td><code>server.trusted_proxies</code></td>
+        <td>CIDR list of reverse proxy IPs. Required behind nginx/traefik for secure cookie and client IP handling.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>User experience</h2>
+  <ul>
+    <li><strong>Login page:</strong> Provider buttons appear below the email form with a separator.</li>
+    <li><strong>Account linking:</strong> Already logged-in users can connect or disconnect providers from the <em>Settings</em> page.</li>
+    <li><strong>Auto-link:</strong> If an IdP-verified email matches an existing account, PicFast links them automatically on first login.</li>
+    <li><strong>Lockout prevention:</strong> You cannot unlink your last login method unless your account has a password.</li>
+  </ul>
+
+  <h2>Security notes</h2>
+  <ul>
+    <li><strong>PKCE</strong> is enforced for OIDC providers via S256 code challenge.</li>
+    <li><strong>State cookies</strong> use HMAC with a key derived from the JWT secret to prevent CSRF.</li>
+    <li><strong>Trusted proxies</strong> are required for correct X-Forwarded-Proto and X-Forwarded-For handling.</li>
+    <li><strong>Auto-link</strong> only happens when the IdP declares the email as verified (<code>email_verified: true</code>).</li>
+  </ul>
+
+  <style>
+    .callout {
+      margin: 1.25rem 0;
+      padding: 0.875rem 1rem;
+      border-radius: var(--radius);
+      background: var(--bg-alt);
+      border: 1px solid var(--border);
+      font-size: 0.9375rem;
+      line-height: 1.65;
+    }
+    .callout code {
+      background: var(--bg);
+    }
+  </style>
+</DocsLayout>
