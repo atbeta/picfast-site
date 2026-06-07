@@ -89,9 +89,30 @@ app:
       client_secret: "your-keycloak-secret"
       issuer: "https://auth.example.com/realms/myrealm"
       enabled: true
+      scopes:
+        - openid
+        - profile
+        - email
 
 app:
   web_base_url: "https://picfast.example.com"</code></pre>
+
+  <h3>Other OIDC providers (without discovery)</h3>
+  <p>If your OIDC provider doesn't support Discovery (<code>.well-known/openid-configuration</code>), keep <code>issuer</code> set (it's required for ID token <code>iss</code> validation) and additionally provide <code>auth_url</code>, <code>token_url</code>, and <code>jwks_url</code>. <code>userinfo_url</code> is optional.</p>
+  <pre><code>oauth:
+  providers:
+    - id: custom-oidc
+      display_name: "Custom OIDC"
+      type: oidc
+      client_id: "your-client-id"
+      client_secret: "your-secret"
+      issuer: "https://idp.example.com"
+      auth_url: "https://idp.example.com/authorize"
+      token_url: "https://idp.example.com/token"
+      userinfo_url: "https://idp.example.com/userinfo"
+      jwks_url: "https://idp.example.com/certs"
+      enabled: true
+</code></pre>
 
   <h3>Multiple providers</h3>
   <pre><code>oauth:

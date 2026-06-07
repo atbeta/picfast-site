@@ -107,15 +107,17 @@ app:
     <thead><tr><th>Key</th><th>Env Variable</th><th>Type</th><th>Default</th><th>Description</th></tr></thead>
     <tbody>
       <tr><td><code>name</code></td><td><code>PICFAST_APP_NAME</code></td><td>string</td><td>PicFast</td><td>Site name shown in page titles, emails, and the web UI</td></tr>
+      <tr><td><code>web_base_url</code></td><td><code>PICFAST_APP_WEB_BASE_URL</code></td><td>string</td><td>""</td><td>Frontend URL users land on after login. Falls back to <code>server.base_url</code> when empty. <strong>Required when OAuth is enabled.</strong></td></tr>
       <tr><td><code>site_description</code></td><td><code>PICFAST_APP_SITE_DESCRIPTION</code></td><td>string</td><td>""</td><td>Meta description for the web UI</td></tr>
       <tr><td><code>favicon_url</code></td><td><code>PICFAST_APP_FAVICON_URL</code></td><td>string</td><td>""</td><td>Custom site favicon URL; empty uses the bundled favicon</td></tr>
       <tr><td><code>allow_guest_upload</code></td><td><code>PICFAST_APP_ALLOW_GUEST_UPLOAD</code></td><td>bool</td><td>false</td><td>Allow uploading without an account</td></tr>
       <tr><td><code>guest_capacity_bytes</code></td><td><code>PICFAST_APP_GUEST_CAPACITY_BYTES</code></td><td>int64</td><td>10737418240</td><td>Total storage quota shared across all guest uploads (10 GB)</td></tr>
-      <tr><td><code>allow_registration</code></td><td><code>PICFAST_APP_ALLOW_REGISTRATION</code></td><td>bool</td><td>true</td><td>Allow new user sign-ups. Set to false once you have your accounts.</td></tr>
-      <tr><td><code>require_email_verification</code></td><td><code>PICFAST_APP_REQUIRE_EMAIL_VERIFICATION</code></td><td>bool</td><td>true</td><td>Require email verification before login. Only takes effect when SMTP is configured and reachable.</td></tr>
+      <tr><td><code>allow_registration</code></td><td><code>PICFAST_APP_ALLOW_REGISTRATION</code></td><td>bool</td><td>false</td><td>Allow new user sign-ups. Set to false once you have your accounts.</td></tr>
+      <tr><td><code>allow_user_image_processing</code></td><td><code>PICFAST_APP_ALLOW_USER_IMAGE_PROCESSING</code></td><td>bool</td><td>true</td><td>Allow users to opt into per-image compression / watermarking</td></tr>
+      <tr><td><code>max_upload_bytes</code></td><td><code>PICFAST_APP_MAX_UPLOAD_BYTES</code></td><td>int64</td><td>52428800</td><td>Default per-file upload limit in bytes (50 MB). Group-level limits can override this.</td></tr>
+      <tr><td><code>require_email_verification</code></td><td><code>PICFAST_APP_REQUIRE_EMAIL_VERIFICATION</code></td><td>bool</td><td>false</td><td>Require email verification before login. Only takes effect when SMTP is configured and reachable.</td></tr>
       <tr><td><code>audit_upload_logs</code></td><td><code>PICFAST_APP_AUDIT_UPLOAD_LOGS</code></td><td>bool</td><td>false</td><td>Log all upload events to the audit log table</td></tr>
       <tr><td><code>user_initial_capacity</code></td><td><code>PICFAST_APP_USER_INITIAL_CAPACITY</code></td><td>int64</td><td>524288000</td><td>Default storage quota per user in bytes (500 MB)</td></tr>
-      <tr><td><code>guest_capacity_bytes</code></td><td><code>PICFAST_APP_GUEST_CAPACITY_BYTES</code></td><td>int64</td><td>10737418240</td><td>Total storage quota shared across all guest uploads (10 GB)</td></tr>
       <tr><td><code>default_image_ttl</code></td><td><code>PICFAST_APP_DEFAULT_IMAGE_TTL</code></td><td>duration</td><td>0 (never)</td><td>Default expiry for uploaded images (0 = never, e.g. <code>24h</code>, <code>168h</code>)</td></tr>
       <tr><td><code>guest_image_ttl</code></td><td><code>PICFAST_APP_GUEST_IMAGE_TTL</code></td><td>duration</td><td>0 (never)</td><td>Separate expiry for guest uploads (0 = use <code>default_image_ttl</code>)</td></tr>
       <tr><td><code>admin_email</code></td><td><code>PICFAST_APP_ADMIN_EMAIL</code></td><td>string</td><td>""</td><td>If set with <code>admin_password</code>, auto-creates admin and skips the setup wizard</td></tr>
@@ -129,6 +131,9 @@ app:
       <tr><td><code>icp_link</code></td><td><code>PICFAST_APP_ICP_LINK</code></td><td>string</td><td>https://beian.miit.gov.cn/</td><td>ICP filing link target</td></tr>
       <tr><td><code>psb_number</code></td><td><code>PICFAST_APP_PSB_NUMBER</code></td><td>string</td><td>""</td><td>Chinese PSB filing number</td></tr>
       <tr><td><code>psb_link</code></td><td><code>PICFAST_APP_PSB_LINK</code></td><td>string</td><td>""</td><td>PSB filing link target</td></tr>
+      <tr><td><code>theme_config</code></td><td><code>PICFAST_APP_THEME_CONFIG</code></td><td>json</td><td>"{}"</td><td>Theme overrides as JSON (logo, colors, etc.)</td></tr>
+      <tr><td><code>default_copy_format</code></td><td><code>PICFAST_APP_DEFAULT_COPY_FORMAT</code></td><td>string</td><td>"markdown"</td><td>Format pre-selected on the upload page: <code>url</code>, <code>markdown</code>, <code>html</code>, <code>bbcode</code></td></tr>
+      <tr><td><code>copy_template</code></td><td><code>PICFAST_APP_COPY_TEMPLATE</code></td><td>string</td><td>""</td><td>Optional custom template for the copied string (e.g. <code>![image](&#123;url&#125;)</code>)</td></tr>
       <tr><td><code>analytics_provider</code></td><td><code>PICFAST_APP_ANALYTICS_PROVIDER</code></td><td>string</td><td>""</td><td>"" (disabled), <code>"plausible"</code>, <code>"umami"</code>, <code>"ga4"</code>, <code>"baidu"</code>, <code>"custom"</code></td></tr>
       <tr><td><code>analytics_config</code></td><td><code>PICFAST_APP_ANALYTICS_CONFIG</code></td><td>json</td><td>"{}"</td><td>Provider-specific config (see Analytics section)</td></tr>
     </tbody>
@@ -149,7 +154,7 @@ app:
 
   <h3>oauth</h3>
   <table>
-    <thead><tr><th>Key</th><th>Env Variable (prefix)</th><th>Type</th><th>Description</th></tr></thead>
+    <thead><tr><th>Key</th><th>Env Variable</th><th>Type</th><th>Description</th></tr></thead>
     <tbody>
       <tr><td><code>providers</code></td><td><code>PICFAST_OAUTH_PROVIDERS</code></td><td>array</td><td>List of OAuth / OIDC providers. See the <a href="/docs/oauth">OAuth docs</a> for setup guides.</td></tr>
       <tr><td><code>providers[].id</code></td><td>—</td><td>string</td><td>Unique provider identifier (e.g. <code>"github"</code>, <code>"keycloak"</code>)</td></tr>
@@ -157,7 +162,12 @@ app:
       <tr><td><code>providers[].type</code></td><td>—</td><td>string</td><td><code>"oidc"</code> or <code>"github"</code></td></tr>
       <tr><td><code>providers[].client_id</code></td><td>—</td><td>string</td><td>OAuth client ID from the provider</td></tr>
       <tr><td><code>providers[].client_secret</code></td><td>—</td><td>string</td><td>OAuth client secret from the provider</td></tr>
-      <tr><td><code>providers[].issuer</code></td><td>—</td><td>string</td><td>OIDC issuer URL (<code>type: oidc</code> only)</td></tr>
+      <tr><td><code>providers[].issuer</code></td><td>—</td><td>string</td><td><strong>Required for <code>type: oidc</code></strong>. OIDC issuer URL; used to validate the ID token's <code>iss</code> claim and (by default) to discover endpoints.</td></tr>
+      <tr><td><code>providers[].auth_url</code></td><td>—</td><td>string</td><td>OAuth authorization endpoint. Required when the provider doesn't support discovery, alongside <code>token_url</code> and <code>jwks_url</code>.</td></tr>
+      <tr><td><code>providers[].token_url</code></td><td>—</td><td>string</td><td>OAuth token endpoint. Required alongside <code>auth_url</code> when discovery is unavailable.</td></tr>
+      <tr><td><code>providers[].userinfo_url</code></td><td>—</td><td>string</td><td>OIDC userinfo endpoint. Optional; overrides the discovered or default endpoint in any mode.</td></tr>
+      <tr><td><code>providers[].scopes</code></td><td>—</td><td>[]string</td><td>OAuth scopes. Defaults to <code>[openid, profile, email]</code></td></tr>
+      <tr><td><code>providers[].jwks_url</code></td><td>—</td><td>string</td><td>JWKS endpoint for ID token verification. Auto-discovered from <code>issuer</code> if unset.</td></tr>
       <tr><td><code>providers[].enabled</code></td><td>—</td><td>bool</td><td>Enable this provider</td></tr>
     </tbody>
   </table>

@@ -43,39 +43,39 @@ import DocsLayout from '../../layouts/DocsLayout.astro';
   <h2>Minimal NAS compose</h2>
   <p>Here's a lean docker-compose file for home deployment. Save as <code>docker-compose.yml</code> and run <code>docker compose up -d</code>:</p>
   <pre><code>services:
-    db:
-      image: postgres:16-alpine
-      restart: unless-stopped
-      environment:
-        POSTGRES_USER: picfast
-        POSTGRES_PASSWORD: picfast
-        POSTGRES_DB: picfast
-      volumes:
-        - pgdata:/var/lib/postgresql/data
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: picfast
+      POSTGRES_PASSWORD: picfast
+      POSTGRES_DB: picfast
+    volumes:
+      - pgdata:/var/lib/postgresql/data
 
-    app:
-      image: xbeta/picfast:latest
-      restart: unless-stopped
-      ports:
-        - "18080:8080"
-      environment:
-        PICFAST_DATABASE_URL: "postgres://picfast:picfast@db:5432/picfast?sslmode=disable"
-        PICFAST_JWT_SECRET: "replace-with-a-strong-random-value"
-        PICFAST_SERVER_BASE_URL: "https://your-domain.com"
-        PICFAST_APP_ADMIN_EMAIL: "admin@example.com"
-        PICFAST_APP_ADMIN_PASSWORD: "change-this-password"
-        PICFAST_STORAGE_LOCAL_ROOT: "/app/data/uploads"
-        PICFAST_STORAGE_THUMBNAIL_DIR: "/app/data/thumbnails"
-      volumes:
-        - uploads:/app/data/uploads
-        - thumbnails:/app/data/thumbnails
-      depends_on:
-        - db
+  app:
+    image: xbeta/picfast:latest
+    restart: unless-stopped
+    ports:
+      - "18080:8080"
+    environment:
+      PICFAST_DATABASE_URL: "postgres://picfast:picfast@db:5432/picfast?sslmode=disable"
+      PICFAST_JWT_SECRET: "replace-with-a-strong-random-value"
+      PICFAST_SERVER_BASE_URL: "https://your-domain.com"
+      PICFAST_APP_ADMIN_EMAIL: "admin@example.com"
+      PICFAST_APP_ADMIN_PASSWORD: "change-this-password"
+      PICFAST_STORAGE_LOCAL_ROOT: "/app/data/uploads"
+      PICFAST_STORAGE_THUMBNAIL_DIR: "/app/data/thumbnails"
+    volumes:
+      - uploads:/app/data/uploads
+      - thumbnails:/app/data/thumbnails
+    depends_on:
+      - db
 
-  volumes:
-    pgdata:
-    uploads:
-    thumbnails:</code></pre>
+volumes:
+  pgdata:
+  uploads:
+  thumbnails:</code></pre>
 
   <h2>Exposing to the internet</h2>
   <p>

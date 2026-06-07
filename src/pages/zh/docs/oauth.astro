@@ -88,9 +88,30 @@ app:
       client_secret: "你的 Keycloak Secret"
       issuer: "https://auth.example.com/realms/myrealm"
       enabled: true
+      scopes:
+        - openid
+        - profile
+        - email
 
 app:
   web_base_url: "https://picfast.example.com"</code></pre>
+
+  <h3>其他 OIDC 提供商（不支持自动发现）</h3>
+  <p>如果 OIDC 提供商不支持 Discovery（<code>.well-known/openid-configuration</code>），请保留 <code>issuer</code>（ID token 的 <code>iss</code> 校验依赖此项），并额外配置 <code>auth_url</code>、<code>token_url</code> 与 <code>jwks_url</code>；<code>userinfo_url</code> 可选。</p>
+  <pre><code>oauth:
+  providers:
+    - id: custom-oidc
+      display_name: "自定义 OIDC"
+      type: oidc
+      client_id: "your-client-id"
+      client_secret: "your-secret"
+      issuer: "https://idp.example.com"
+      auth_url: "https://idp.example.com/authorize"
+      token_url: "https://idp.example.com/token"
+      userinfo_url: "https://idp.example.com/userinfo"
+      jwks_url: "https://idp.example.com/certs"
+      enabled: true
+</code></pre>
 
   <h3>多提供商同时启用</h3>
   <pre><code>oauth:

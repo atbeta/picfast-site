@@ -107,15 +107,17 @@ app:
     <thead><tr><th>Key</th><th>环境变量</th><th>类型</th><th>默认值</th><th>说明</th></tr></thead>
     <tbody>
       <tr><td><code>name</code></td><td><code>PICFAST_APP_NAME</code></td><td>string</td><td>PicFast</td><td>站点名称，显示在页面标题、邮件和 Web UI 中</td></tr>
+      <tr><td><code>web_base_url</code></td><td><code>PICFAST_APP_WEB_BASE_URL</code></td><td>string</td><td>""</td><td>登录后用户跳转的前端地址。空时回退到 <code>server.base_url</code>。<strong>启用 OAuth 时必填。</strong></td></tr>
       <tr><td><code>site_description</code></td><td><code>PICFAST_APP_SITE_DESCRIPTION</code></td><td>string</td><td>""</td><td>Web UI 的 Meta 描述</td></tr>
       <tr><td><code>favicon_url</code></td><td><code>PICFAST_APP_FAVICON_URL</code></td><td>string</td><td>""</td><td>自定义站点图标 URL；空则使用内置默认图标</td></tr>
       <tr><td><code>allow_guest_upload</code></td><td><code>PICFAST_APP_ALLOW_GUEST_UPLOAD</code></td><td>bool</td><td>false</td><td>允许不登录上传</td></tr>
       <tr><td><code>guest_capacity_bytes</code></td><td><code>PICFAST_APP_GUEST_CAPACITY_BYTES</code></td><td>int64</td><td>10737418240</td><td>所有游客共享的总存储配额（10 GB）</td></tr>
-      <tr><td><code>allow_registration</code></td><td><code>PICFAST_APP_ALLOW_REGISTRATION</code></td><td>bool</td><td>true</td><td>允许新用户注册。建议创建账号后关闭。</td></tr>
-      <tr><td><code>require_email_verification</code></td><td><code>PICFAST_APP_REQUIRE_EMAIL_VERIFICATION</code></td><td>bool</td><td>true</td><td>登录前必须验证邮箱。仅在 SMTP 配置正确且可达时生效。</td></tr>
+      <tr><td><code>allow_registration</code></td><td><code>PICFAST_APP_ALLOW_REGISTRATION</code></td><td>bool</td><td>false</td><td>允许新用户注册。建议创建账号后关闭。</td></tr>
+      <tr><td><code>allow_user_image_processing</code></td><td><code>PICFAST_APP_ALLOW_USER_IMAGE_PROCESSING</code></td><td>bool</td><td>true</td><td>允许用户对单张图片启用压缩 / 水印等处理</td></tr>
+      <tr><td><code>max_upload_bytes</code></td><td><code>PICFAST_APP_MAX_UPLOAD_BYTES</code></td><td>int64</td><td>52428800</td><td>默认单文件上传限制（50 MB），分组级别的限制可覆盖此值</td></tr>
+      <tr><td><code>require_email_verification</code></td><td><code>PICFAST_APP_REQUIRE_EMAIL_VERIFICATION</code></td><td>bool</td><td>false</td><td>登录前必须验证邮箱。仅在 SMTP 配置正确且可达时生效。</td></tr>
       <tr><td><code>audit_upload_logs</code></td><td><code>PICFAST_APP_AUDIT_UPLOAD_LOGS</code></td><td>bool</td><td>false</td><td>记录所有上传操作到审计日志</td></tr>
       <tr><td><code>user_initial_capacity</code></td><td><code>PICFAST_APP_USER_INITIAL_CAPACITY</code></td><td>int64</td><td>524288000</td><td>新用户默认存储配额（500 MB）</td></tr>
-      <tr><td><code>guest_capacity_bytes</code></td><td><code>PICFAST_APP_GUEST_CAPACITY_BYTES</code></td><td>int64</td><td>10737418240</td><td>所有游客共享的总存储配额（10 GB）</td></tr>
       <tr><td><code>default_image_ttl</code></td><td><code>PICFAST_APP_DEFAULT_IMAGE_TTL</code></td><td>duration</td><td>0（永不过期）</td><td>图片默认过期时间（如 <code>24h</code>、<code>168h</code>；0 = 永不过期）</td></tr>
       <tr><td><code>guest_image_ttl</code></td><td><code>PICFAST_APP_GUEST_IMAGE_TTL</code></td><td>duration</td><td>0（永不过期）</td><td>游客上传图片的独立过期时间（0 = 使用 <code>default_image_ttl</code>）</td></tr>
       <tr><td><code>admin_email</code></td><td><code>PICFAST_APP_ADMIN_EMAIL</code></td><td>string</td><td>""</td><td>与 <code>admin_password</code> 同时设置后，自动创建管理员并跳过初始化向导</td></tr>
@@ -129,6 +131,9 @@ app:
       <tr><td><code>icp_link</code></td><td><code>PICFAST_APP_ICP_LINK</code></td><td>string</td><td>https://beian.miit.gov.cn/</td><td>ICP 备案链接地址</td></tr>
       <tr><td><code>psb_number</code></td><td><code>PICFAST_APP_PSB_NUMBER</code></td><td>string</td><td>""</td><td>公安备案号</td></tr>
       <tr><td><code>psb_link</code></td><td><code>PICFAST_APP_PSB_LINK</code></td><td>string</td><td>""</td><td>公安备案链接地址</td></tr>
+      <tr><td><code>theme_config</code></td><td><code>PICFAST_APP_THEME_CONFIG</code></td><td>json</td><td>"{}"</td><td>主题覆盖配置（Logo、配色等），JSON 格式</td></tr>
+      <tr><td><code>default_copy_format</code></td><td><code>PICFAST_APP_DEFAULT_COPY_FORMAT</code></td><td>string</td><td>"markdown"</td><td>上传页默认选中的复制格式：<code>url</code>、<code>markdown</code>、<code>html</code>、<code>bbcode</code></td></tr>
+      <tr><td><code>copy_template</code></td><td><code>PICFAST_APP_COPY_TEMPLATE</code></td><td>string</td><td>""</td><td>可选的自定义复制模板（如 <code>![image](&#123;url&#125;)</code>）</td></tr>
       <tr><td><code>analytics_provider</code></td><td><code>PICFAST_APP_ANALYTICS_PROVIDER</code></td><td>string</td><td>""</td><td>""（关闭）、<code>"plausible"</code>、<code>"umami"</code>、<code>"ga4"</code>、<code>"baidu"</code>、<code>"custom"</code></td></tr>
       <tr><td><code>analytics_config</code></td><td><code>PICFAST_APP_ANALYTICS_CONFIG</code></td><td>json</td><td>"{}"</td><td>各服务商的独立配置（详见「统计分析服务」章节）</td></tr>
     </tbody>
@@ -136,7 +141,7 @@ app:
 
   <h3>oauth</h3>
   <table>
-    <thead><tr><th>Key</th><th>环境变量（前缀）</th><th>类型</th><th>说明</th></tr></thead>
+    <thead><tr><th>Key</th><th>环境变量</th><th>类型</th><th>说明</th></tr></thead>
     <tbody>
       <tr><td><code>providers</code></td><td><code>PICFAST_OAUTH_PROVIDERS</code></td><td>array</td><td>OAuth / OIDC 提供商列表。详见 <a href="/zh/docs/oauth">OAuth 文档</a>。</td></tr>
       <tr><td><code>providers[].id</code></td><td>—</td><td>string</td><td>唯一标识（如 <code>"github"</code>、<code>"keycloak"</code>）</td></tr>
@@ -144,7 +149,12 @@ app:
       <tr><td><code>providers[].type</code></td><td>—</td><td>string</td><td><code>"oidc"</code> 或 <code>"github"</code></td></tr>
       <tr><td><code>providers[].client_id</code></td><td>—</td><td>string</td><td>提供商的 OAuth Client ID</td></tr>
       <tr><td><code>providers[].client_secret</code></td><td>—</td><td>string</td><td>提供商的 OAuth Client Secret</td></tr>
-      <tr><td><code>providers[].issuer</code></td><td>—</td><td>string</td><td>OIDC issuer URL（仅 <code>type: oidc</code>）</td></tr>
+      <tr><td><code>providers[].issuer</code></td><td>—</td><td>string</td><td><strong><code>type: oidc</code> 时必填</strong>。OIDC issuer URL，用于校验 ID token 的 <code>iss</code> 声明，并默认用于发现端点。</td></tr>
+      <tr><td><code>providers[].auth_url</code></td><td>—</td><td>string</td><td>OAuth 授权端点。不支持 discovery 时需与 <code>token_url</code>、<code>jwks_url</code> 一起配置。</td></tr>
+      <tr><td><code>providers[].token_url</code></td><td>—</td><td>string</td><td>OAuth token 端点。不支持 discovery 时与 <code>auth_url</code> 一起必填。</td></tr>
+      <tr><td><code>providers[].userinfo_url</code></td><td>—</td><td>string</td><td>OIDC userinfo 端点。可选，覆盖任意模式下的默认端点。</td></tr>
+      <tr><td><code>providers[].scopes</code></td><td>—</td><td>[]string</td><td>OAuth scopes，默认 <code>[openid, profile, email]</code></td></tr>
+      <tr><td><code>providers[].jwks_url</code></td><td>—</td><td>string</td><td>JWKS 端点地址，未填则从 <code>issuer</code> 自动发现</td></tr>
       <tr><td><code>providers[].enabled</code></td><td>—</td><td>bool</td><td>是否启用此提供商</td></tr>
     </tbody>
   </table>
