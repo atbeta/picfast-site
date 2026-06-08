@@ -41,6 +41,9 @@ app:
   favicon_url: ""
   allow_guest_upload: false
   allow_registration: true
+  allow_oauth_registration: true
+  allow_user_image_processing: true
+  skip_image_processing: false
   require_email_verification: true
   audit_upload_logs: false
   user_initial_capacity: 524288000
@@ -113,7 +116,9 @@ app:
       <tr><td><code>allow_guest_upload</code></td><td><code>PICFAST_APP_ALLOW_GUEST_UPLOAD</code></td><td>bool</td><td>false</td><td>Allow uploading without an account</td></tr>
       <tr><td><code>guest_capacity_bytes</code></td><td><code>PICFAST_APP_GUEST_CAPACITY_BYTES</code></td><td>int64</td><td>10737418240</td><td>Total storage quota shared across all guest uploads (10 GB)</td></tr>
       <tr><td><code>allow_registration</code></td><td><code>PICFAST_APP_ALLOW_REGISTRATION</code></td><td>bool</td><td>false</td><td>Allow new user sign-ups. Set to false once you have your accounts.</td></tr>
+      <tr><td><code>allow_oauth_registration</code></td><td><code>PICFAST_APP_ALLOW_OAUTH_REGISTRATION</code></td><td>bool</td><td>false</td><td>Allow new accounts through OAuth/OIDC login. When email registration is disabled but this is enabled, the login page shows only OAuth sign-in options.</td></tr>
       <tr><td><code>allow_user_image_processing</code></td><td><code>PICFAST_APP_ALLOW_USER_IMAGE_PROCESSING</code></td><td>bool</td><td>true</td><td>Allow users to opt into per-image compression / watermarking</td></tr>
+      <tr><td><code>skip_image_processing</code></td><td><code>PICFAST_APP_SKIP_IMAGE_PROCESSING</code></td><td>bool</td><td>false</td><td>Skip all image processing and store original files as-is. When enabled, user image processing settings are hidden and ignored.</td></tr>
       <tr><td><code>max_upload_bytes</code></td><td><code>PICFAST_APP_MAX_UPLOAD_BYTES</code></td><td>int64</td><td>52428800</td><td>Default per-file upload limit in bytes (50 MB). Group-level limits can override this.</td></tr>
       <tr><td><code>require_email_verification</code></td><td><code>PICFAST_APP_REQUIRE_EMAIL_VERIFICATION</code></td><td>bool</td><td>false</td><td>Require email verification before login. Only takes effect when SMTP is configured and reachable.</td></tr>
       <tr><td><code>audit_upload_logs</code></td><td><code>PICFAST_APP_AUDIT_UPLOAD_LOGS</code></td><td>bool</td><td>false</td><td>Log all upload events to the audit log table</td></tr>

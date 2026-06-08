@@ -41,6 +41,9 @@ app:
   favicon_url: ""
   allow_guest_upload: false
   allow_registration: true
+  allow_oauth_registration: true
+  allow_user_image_processing: true
+  skip_image_processing: false
   require_email_verification: true
   audit_upload_logs: false
   user_initial_capacity: 524288000
@@ -113,7 +116,9 @@ app:
       <tr><td><code>allow_guest_upload</code></td><td><code>PICFAST_APP_ALLOW_GUEST_UPLOAD</code></td><td>bool</td><td>false</td><td>允许不登录上传</td></tr>
       <tr><td><code>guest_capacity_bytes</code></td><td><code>PICFAST_APP_GUEST_CAPACITY_BYTES</code></td><td>int64</td><td>10737418240</td><td>所有游客共享的总存储配额（10 GB）</td></tr>
       <tr><td><code>allow_registration</code></td><td><code>PICFAST_APP_ALLOW_REGISTRATION</code></td><td>bool</td><td>false</td><td>允许新用户注册。建议创建账号后关闭。</td></tr>
+      <tr><td><code>allow_oauth_registration</code></td><td><code>PICFAST_APP_ALLOW_OAUTH_REGISTRATION</code></td><td>bool</td><td>false</td><td>允许通过 OAuth/OIDC 登录创建新账户。当邮箱注册关闭但此项开启时，登录页仅显示 OAuth/OIDC 登录入口。</td></tr>
       <tr><td><code>allow_user_image_processing</code></td><td><code>PICFAST_APP_ALLOW_USER_IMAGE_PROCESSING</code></td><td>bool</td><td>true</td><td>允许用户对单张图片启用压缩 / 水印等处理</td></tr>
+      <tr><td><code>skip_image_processing</code></td><td><code>PICFAST_APP_SKIP_IMAGE_PROCESSING</code></td><td>bool</td><td>false</td><td>跳过所有图片处理，直接保存原始文件。开启后用户图片处理设置会被隐藏且忽略。</td></tr>
       <tr><td><code>max_upload_bytes</code></td><td><code>PICFAST_APP_MAX_UPLOAD_BYTES</code></td><td>int64</td><td>52428800</td><td>默认单文件上传限制（50 MB），分组级别的限制可覆盖此值</td></tr>
       <tr><td><code>require_email_verification</code></td><td><code>PICFAST_APP_REQUIRE_EMAIL_VERIFICATION</code></td><td>bool</td><td>false</td><td>登录前必须验证邮箱。仅在 SMTP 配置正确且可达时生效。</td></tr>
       <tr><td><code>audit_upload_logs</code></td><td><code>PICFAST_APP_AUDIT_UPLOAD_LOGS</code></td><td>bool</td><td>false</td><td>记录所有上传操作到审计日志</td></tr>
