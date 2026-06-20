@@ -65,6 +65,27 @@ import DocsLayout from '../../layouts/DocsLayout.astro';
   "url": "https://dav.example.com/pics"
 &#125;</code></pre>
 
+  <h2>Link mode</h2>
+  <p>By default, cloud backends (S3, OSS, COS, Kodo) return direct CDN URLs for uploaded images. Local and WebDAV backends always serve through PicFast's proxy route (<code>/i/&#123;key&#125;.&#123;ext&#125;</code>).</p>
+  <p>You can change this behavior with the <code>link_mode</code> field:</p>
+  <table>
+    <thead><tr><th>Value</th><th>Behavior</th></tr></thead>
+    <tbody>
+      <tr><td><code>"direct"</code> (default)</td><td>Image URLs point directly to the storage CDN</td></tr>
+      <tr><td><code>"proxy"</code></td><td>Image URLs go through PicFast's <code>/i/</code> proxy route</td></tr>
+    </tbody>
+  </table>
+  <pre><code>&#123;
+  "type": "s3",
+  "endpoint": "https://s3.us-east-1.amazonaws.com",
+  "bucket": "my-picfast",
+  "access_key": "...",
+  "secret_key": "...",
+  "url": "https://cdn.example.com",
+  "link_mode": "proxy"
+&#125;</code></pre>
+  <p>Proxy mode is useful when you need unified access control (private images) or want to use PicFast's on-the-fly image processing for cloud-stored images. Switching modes takes effect immediately — no re-upload or migration needed.</p>
+
   <h2>Switching backends</h2>
   <p>Images already stored in one backend stay there. When you change the default strategy for a group, new uploads go to the new backend. Existing images continue to be served from their original locations — no migration needed.</p>
 </DocsLayout>

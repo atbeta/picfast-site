@@ -68,6 +68,49 @@ console.log(data.links.markdown);</code></pre>
     "thumbnail_url": "https://picfast.example.com/t/abc123.png"&#125;,
   "created_at": "2026-05-02T00:00:00Z"&#125;</code></pre>
 
+  <h2>Image processing</h2>
+  <p>PicFast supports on-the-fly image processing via URL parameters. Append <code>@</code> followed by comma-separated parameters to the image URL:</p>
+  <pre><code># Original
+https://picfast.example.com/i/abc123.jpg
+
+# Resize to width 300px
+https://picfast.example.com/i/abc123.jpg@w_300
+
+# Resize to height 200px
+https://picfast.example.com/i/abc123.jpg@h_200
+
+# Fit within 300×200 box (keeps aspect ratio)
+https://picfast.example.com/i/abc123.jpg@w_300,h_200
+
+# Compress to quality 80
+https://picfast.example.com/i/abc123.jpg@q_80
+
+# Convert to WebP
+https://picfast.example.com/i/abc123.jpg@f_webp
+
+# Combine all
+https://picfast.example.com/i/abc123.jpg@w_300,h_200,q_60,f_webp</code></pre>
+
+  <h3>Parameters</h3>
+  <table>
+    <thead><tr><th>Param</th><th>Description</th><th>Range</th></tr></thead>
+    <tbody>
+      <tr><td><code>w_</code></td><td>Target width (px)</td><td>1 – 10000</td></tr>
+      <tr><td><code>h_</code></td><td>Target height (px)</td><td>1 – 10000</td></tr>
+      <tr><td><code>q_</code></td><td>Output quality</td><td>1 – 100</td></tr>
+      <tr><td><code>f_</code></td><td>Output format</td><td><code>jpeg</code>, <code>png</code>, <code>webp</code>, <code>gif</code></td></tr>
+    </tbody>
+  </table>
+
+  <h3>Notes</h3>
+  <ul>
+    <li>When both <code>w_</code> and <code>h_</code> are set, the image is scaled to fit within the box while preserving aspect ratio (no crop).</li>
+    <li>GIF images are not processed and returned as-is.</li>
+    <li>If processing fails for any reason, the original image is returned unchanged.</li>
+    <li>This feature works for local and WebDAV backends by default. For cloud backends (S3, OSS, COS, Kodo), set <code>link_mode: "proxy"</code> in the strategy config. See <a href="/docs/storage">Storage Backends</a>.</li>
+    <li>For cloud backends that return direct CDN URLs, you can use the cloud provider's native image processing parameters instead (e.g. Alibaba OSS <code>?x-oss-process=...</code>, Qiniu <code>?imageView2/...</code>).</li>
+  </ul>
+
   <h2>Formats &amp; limits</h2>
   <p>Default accepted formats: <code>jpg</code>, <code>jpeg</code>, <code>png</code>, <code>gif</code>, <code>webp</code>, <code>svg</code>, <code>bmp</code>, <code>ico</code>. Admins can extend this list per group (e.g. <code>tif</code>, <code>tiff</code>, <code>psd</code>).</p>
   <p>Maximum file size is configured per group. Default is 50 MB per file.</p>

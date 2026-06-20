@@ -66,6 +66,27 @@ import DocsLayout from '../../../layouts/DocsLayout.astro';
   "url": "https://dav.example.com/pics"
 &#125;</code></pre>
 
+  <h2>链接模式</h2>
+  <p>默认情况下，云存储后端（S3、OSS、COS、Kodo）返回 CDN 直链。本地和 WebDAV 后端始终通过 PicFast 的代理路由（<code>/i/&#123;key&#125;.&#123;ext&#125;</code>）提供服务。</p>
+  <p>可通过 <code>link_mode</code> 字段更改此行为：</p>
+  <table>
+    <thead><tr><th>值</th><th>行为</th></tr></thead>
+    <tbody>
+      <tr><td><code>"direct"</code>（默认）</td><td>图片 URL 直接指向存储 CDN</td></tr>
+      <tr><td><code>"proxy"</code></td><td>图片 URL 通过 PicFast 的 <code>/i/</code> 代理路由</td></tr>
+    </tbody>
+  </table>
+  <pre><code>&#123;
+  "type": "s3",
+  "endpoint": "https://s3.us-east-1.amazonaws.com",
+  "bucket": "my-picfast",
+  "access_key": "...",
+  "secret_key": "...",
+  "url": "https://cdn.example.com",
+  "link_mode": "proxy"
+&#125;</code></pre>
+  <p>代理模式适用于需要统一权限控制（私有图片）或对云存储图片使用 PicFast 实时图片处理的场景。切换模式即时生效，无需重新上传或迁移。</p>
+
   <h2>切换后端</h2>
   <p>已存储的图片不受后端切换影响。更改分组的默认存储策略后，新上传的文件将写入新后端，已有文件仍从原有位置提供服务，无需数据迁移。</p>
 </DocsLayout>

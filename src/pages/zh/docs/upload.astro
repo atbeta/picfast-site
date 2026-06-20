@@ -68,6 +68,49 @@ console.log(data.links.markdown);</code></pre>
     "thumbnail_url": "https://picfast.example.com/t/abc123.png"&#125;,
   "created_at": "2026-05-02T00:00:00Z"&#125;</code></pre>
 
+  <h2>图片处理</h2>
+  <p>PicFast 支持通过 URL 参数实时处理图片。在图片 URL 后追加 <code>@</code> 和逗号分隔的参数即可：</p>
+  <pre><code># 原图
+https://picfast.example.com/i/abc123.jpg
+
+# 宽度缩放至 300px
+https://picfast.example.com/i/abc123.jpg@w_300
+
+# 高度缩放至 200px
+https://picfast.example.com/i/abc123.jpg@h_200
+
+# 拟合 300×200 框（保持宽高比）
+https://picfast.example.com/i/abc123.jpg@w_300,h_200
+
+# 压缩至质量 80
+https://picfast.example.com/i/abc123.jpg@q_80
+
+# 转换为 WebP 格式
+https://picfast.example.com/i/abc123.jpg@f_webp
+
+# 全部组合
+https://picfast.example.com/i/abc123.jpg@w_300,h_200,q_60,f_webp</code></pre>
+
+  <h3>参数说明</h3>
+  <table>
+    <thead><tr><th>参数</th><th>说明</th><th>范围</th></tr></thead>
+    <tbody>
+      <tr><td><code>w_</code></td><td>目标宽度（px）</td><td>1 – 10000</td></tr>
+      <tr><td><code>h_</code></td><td>目标高度（px）</td><td>1 – 10000</td></tr>
+      <tr><td><code>q_</code></td><td>输出质量</td><td>1 – 100</td></tr>
+      <tr><td><code>f_</code></td><td>输出格式</td><td><code>jpeg</code>、<code>png</code>、<code>webp</code>、<code>gif</code></td></tr>
+    </tbody>
+  </table>
+
+  <h3>说明</h3>
+  <ul>
+    <li>同时设置 <code>w_</code> 和 <code>h_</code> 时，图片会缩放以适应框内，保持宽高比不变（不裁剪）。</li>
+    <li>GIF 图片不做处理，直接返回原图。</li>
+    <li>如果处理失败，自动返回原图。</li>
+    <li>此功能默认适用于本地和 WebDAV 后端。云存储后端（S3、OSS、COS、Kodo）需在策略配置中设置 <code>link_mode: "proxy"</code>，详见 <a href="/zh/docs/storage">存储后端</a>。</li>
+    <li>对于返回 CDN 直链的云存储后端，也可直接使用云厂商的原生图片处理参数（如阿里 OSS 的 <code>?x-oss-process=...</code>、七牛的 <code>?imageView2/...</code>）。</li>
+  </ul>
+
   <h2>支持的格式与限制</h2>
   <p>默认支持格式：<code>jpg</code>、<code>jpeg</code>、<code>png</code>、<code>gif</code>、<code>webp</code>、<code>svg</code>、<code>bmp</code>、<code>ico</code>。管理员可按分组扩展（如 <code>tif</code>、<code>tiff</code>、<code>psd</code>）。</p>
   <p>单文件最大体积按分组配置，默认 50 MB。</p>
