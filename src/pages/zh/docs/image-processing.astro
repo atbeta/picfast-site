@@ -1,0 +1,60 @@
+---
+import DocsLayout from '../../../layouts/DocsLayout.astro';
+---
+
+<DocsLayout title="图片处理" description="PicFast 实时图片处理。">
+  <h1>图片处理</h1>
+  <p>PicFast 支持通过 URL 参数实时处理图片。在图片 URL 后追加 <code>@</code> 和逗号分隔的参数即可。</p>
+
+  <h2>快速示例</h2>
+  <pre><code># 原图
+https://picfast.example.com/i/abc123.jpg
+
+# 宽度缩放至 300px
+https://picfast.example.com/i/abc123.jpg@w_300
+
+# 高度缩放至 200px
+https://picfast.example.com/i/abc123.jpg@h_200
+
+# 拟合 300×200 框（保持宽高比）
+https://picfast.example.com/i/abc123.jpg@w_300,h_200
+
+# 压缩至质量 80
+https://picfast.example.com/i/abc123.jpg@q_80
+
+# 转换为 WebP 格式
+https://picfast.example.com/i/abc123.jpg@f_webp
+
+# 全部组合
+https://picfast.example.com/i/abc123.jpg@w_300,h_200,q_60,f_webp</code></pre>
+
+  <h2>参数说明</h2>
+  <table>
+    <thead><tr><th>参数</th><th>说明</th><th>范围</th></tr></thead>
+    <tbody>
+      <tr><td><code>w_</code></td><td>目标宽度（px）</td><td>1 – 10000</td></tr>
+      <tr><td><code>h_</code></td><td>目标高度（px）</td><td>1 – 10000</td></tr>
+      <tr><td><code>q_</code></td><td>输出质量</td><td>1 – 100</td></tr>
+      <tr><td><code>f_</code></td><td>输出格式</td><td><code>jpeg</code>、<code>png</code>、<code>webp</code>、<code>gif</code></td></tr>
+    </tbody>
+  </table>
+
+  <h2>行为说明</h2>
+  <ul>
+    <li>同时设置 <code>w_</code> 和 <code>h_</code> 时，图片会缩放以适应框内，保持宽高比不变（不裁剪）。</li>
+    <li>GIF 图片不做处理，直接返回原图。</li>
+    <li>如果处理失败，自动返回原图。</li>
+    <li>处理后的响应使用 <code>Cache-Control: public, max-age=2592000</code>（30 天）。CDN 或浏览器缓存会直接返回处理结果，不再回源 PicFast。</li>
+  </ul>
+
+  <h2>后端支持</h2>
+  <table>
+    <thead><tr><th>后端</th><th>图片处理</th><th>说明</th></tr></thead>
+    <tbody>
+      <tr><td>本地</td><td>内置支持</td><td>开箱即用</td></tr>
+      <tr><td>WebDAV</td><td>内置支持</td><td>开箱即用</td></tr>
+      <tr><td>S3 / OSS / COS / Kodo</td><td>需设置 <code>link_mode: "proxy"</code></td><td>详见 <a href="/zh/docs/storage#链接模式">存储后端</a></td></tr>
+    </tbody>
+  </table>
+  <p>对于返回 CDN 直链的云存储后端，也可直接使用云厂商的原生图片处理参数（如阿里 OSS 的 <code>?x-oss-process=...</code>、七牛的 <code>?imageView2/...</code>）。</p>
+</DocsLayout>

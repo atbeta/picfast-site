@@ -1,0 +1,60 @@
+---
+import DocsLayout from '../../layouts/DocsLayout.astro';
+---
+
+<DocsLayout title="Image Processing" description="On-the-fly image processing with PicFast.">
+  <h1>Image Processing</h1>
+  <p>PicFast supports on-the-fly image processing via URL parameters. Append <code>@</code> followed by comma-separated parameters to the image URL.</p>
+
+  <h2>Quick examples</h2>
+  <pre><code># Original
+https://picfast.example.com/i/abc123.jpg
+
+# Resize to width 300px
+https://picfast.example.com/i/abc123.jpg@w_300
+
+# Resize to height 200px
+https://picfast.example.com/i/abc123.jpg@h_200
+
+# Fit within 300×200 box (keeps aspect ratio)
+https://picfast.example.com/i/abc123.jpg@w_300,h_200
+
+# Compress to quality 80
+https://picfast.example.com/i/abc123.jpg@q_80
+
+# Convert to WebP
+https://picfast.example.com/i/abc123.jpg@f_webp
+
+# Combine all
+https://picfast.example.com/i/abc123.jpg@w_300,h_200,q_60,f_webp</code></pre>
+
+  <h2>Parameters</h2>
+  <table>
+    <thead><tr><th>Param</th><th>Description</th><th>Range</th></tr></thead>
+    <tbody>
+      <tr><td><code>w_</code></td><td>Target width (px)</td><td>1 – 10000</td></tr>
+      <tr><td><code>h_</code></td><td>Target height (px)</td><td>1 – 10000</td></tr>
+      <tr><td><code>q_</code></td><td>Output quality</td><td>1 – 100</td></tr>
+      <tr><td><code>f_</code></td><td>Output format</td><td><code>jpeg</code>, <code>png</code>, <code>webp</code>, <code>gif</code></td></tr>
+    </tbody>
+  </table>
+
+  <h2>Behavior</h2>
+  <ul>
+    <li>When both <code>w_</code> and <code>h_</code> are set, the image is scaled to fit within the box while preserving aspect ratio (no crop).</li>
+    <li>GIF images are not processed and returned as-is.</li>
+    <li>If processing fails for any reason, the original image is returned unchanged.</li>
+    <li>Processed responses use <code>Cache-Control: public, max-age=2592000</code> (30 days). CDN or browser caches will serve the processed version without hitting PicFast again.</li>
+  </ul>
+
+  <h2>Backend support</h2>
+  <table>
+    <thead><tr><th>Backend</th><th>Image processing</th><th>Notes</th></tr></thead>
+    <tbody>
+      <tr><td>Local</td><td>Built-in</td><td>Works out of the box</td></tr>
+      <tr><td>WebDAV</td><td>Built-in</td><td>Works out of the box</td></tr>
+      <tr><td>S3 / OSS / COS / Kodo</td><td>Requires <code>link_mode: "proxy"</code></td><td>See <a href="/docs/storage#link-mode">Storage Backends</a></td></tr>
+    </tbody>
+  </table>
+  <p>For cloud backends that return direct CDN URLs, you can alternatively use the cloud provider's native image processing parameters (e.g. Alibaba OSS <code>?x-oss-process=...</code>, Qiniu <code>?imageView2/...</code>).</p>
+</DocsLayout>

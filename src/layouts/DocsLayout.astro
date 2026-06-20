@@ -38,6 +38,9 @@ const locale = currentPath.startsWith('/zh') ? 'zh' : 'en';
           <li><a href={locale === 'en' ? '/docs/upload' : '/zh/docs/upload'} class:list={[{ active: currentPath.endsWith('upload') }]}>
             {locale === 'en' ? 'Upload Images' : '上传图片'}
           </a></li>
+          <li><a href={locale === 'en' ? '/docs/image-processing' : '/zh/docs/image-processing'} class:list={[{ active: currentPath.endsWith('image-processing') }]}>
+            {locale === 'en' ? 'Image Processing' : '图片处理'}
+          </a></li>
           <li><a href={locale === 'en' ? '/docs/storage' : '/zh/docs/storage'} class:list={[{ active: currentPath.endsWith('storage') }]}>
             {locale === 'en' ? 'Storage Backends' : '存储后端'}
           </a></li>
