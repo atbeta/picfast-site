@@ -136,9 +136,7 @@ app:
       <tr><td><code>icp_link</code></td><td><code>PICFAST_APP_ICP_LINK</code></td><td>string</td><td>https://beian.miit.gov.cn/</td><td>ICP filing link target</td></tr>
       <tr><td><code>psb_number</code></td><td><code>PICFAST_APP_PSB_NUMBER</code></td><td>string</td><td>""</td><td>Chinese PSB filing number</td></tr>
       <tr><td><code>psb_link</code></td><td><code>PICFAST_APP_PSB_LINK</code></td><td>string</td><td>""</td><td>PSB filing link target</td></tr>
-      <tr><td><code>theme_config</code></td><td><code>PICFAST_APP_THEME_CONFIG</code></td><td>json</td><td>"{}"</td><td>Theme overrides as JSON (logo, colors, etc.)</td></tr>
-      <tr><td><code>default_copy_format</code></td><td><code>PICFAST_APP_DEFAULT_COPY_FORMAT</code></td><td>string</td><td>"markdown"</td><td>Format pre-selected on the upload page: <code>url</code>, <code>markdown</code>, <code>html</code>, <code>bbcode</code></td></tr>
-      <tr><td><code>copy_template</code></td><td><code>PICFAST_APP_COPY_TEMPLATE</code></td><td>string</td><td>""</td><td>Optional custom template for the copied string (e.g. <code>![image](&#123;url&#125;)</code>)</td></tr>
+      <tr><td><code>theme_config</code></td><td><code>PICFAST_APP_THEME_CONFIG</code></td><td>json</td><td>"{}"</td><td>Custom CSS injected into the site <code>&lt;style&gt;</code> tag: <code>&#123;"custom_css": "..."&#125;</code>. The site uses a single built-in theme; use this for fine-grained overrides.</td></tr>
       <tr><td><code>analytics_provider</code></td><td><code>PICFAST_APP_ANALYTICS_PROVIDER</code></td><td>string</td><td>""</td><td>"" (disabled), <code>"plausible"</code>, <code>"umami"</code>, <code>"ga4"</code>, <code>"baidu"</code>, <code>"custom"</code></td></tr>
       <tr><td><code>analytics_config</code></td><td><code>PICFAST_APP_ANALYTICS_CONFIG</code></td><td>json</td><td>"{}"</td><td>Provider-specific config (see Analytics section)</td></tr>
     </tbody>

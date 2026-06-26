@@ -136,9 +136,7 @@ app:
       <tr><td><code>icp_link</code></td><td><code>PICFAST_APP_ICP_LINK</code></td><td>string</td><td>https://beian.miit.gov.cn/</td><td>ICP 备案链接地址</td></tr>
       <tr><td><code>psb_number</code></td><td><code>PICFAST_APP_PSB_NUMBER</code></td><td>string</td><td>""</td><td>公安备案号</td></tr>
       <tr><td><code>psb_link</code></td><td><code>PICFAST_APP_PSB_LINK</code></td><td>string</td><td>""</td><td>公安备案链接地址</td></tr>
-      <tr><td><code>theme_config</code></td><td><code>PICFAST_APP_THEME_CONFIG</code></td><td>json</td><td>"{}"</td><td>主题覆盖配置（Logo、配色等），JSON 格式</td></tr>
-      <tr><td><code>default_copy_format</code></td><td><code>PICFAST_APP_DEFAULT_COPY_FORMAT</code></td><td>string</td><td>"markdown"</td><td>上传页默认选中的复制格式：<code>url</code>、<code>markdown</code>、<code>html</code>、<code>bbcode</code></td></tr>
-      <tr><td><code>copy_template</code></td><td><code>PICFAST_APP_COPY_TEMPLATE</code></td><td>string</td><td>""</td><td>可选的自定义复制模板（如 <code>![image](&#123;url&#125;)</code>）</td></tr>
+      <tr><td><code>theme_config</code></td><td><code>PICFAST_APP_THEME_CONFIG</code></td><td>json</td><td>"{}"</td><td>注入到站点 <code>&lt;style&gt;</code> 标签中的自定义 CSS：<code>&#123;"custom_css": "..."&#125;</code>。站点使用单一内置主题，需要细节定制时使用此字段。</td></tr>
       <tr><td><code>analytics_provider</code></td><td><code>PICFAST_APP_ANALYTICS_PROVIDER</code></td><td>string</td><td>""</td><td>""（关闭）、<code>"plausible"</code>、<code>"umami"</code>、<code>"ga4"</code>、<code>"baidu"</code>、<code>"custom"</code></td></tr>
       <tr><td><code>analytics_config</code></td><td><code>PICFAST_APP_ANALYTICS_CONFIG</code></td><td>json</td><td>"{}"</td><td>各服务商的独立配置（详见「统计分析服务」章节）</td></tr>
     </tbody>
