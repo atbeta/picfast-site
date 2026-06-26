@@ -2,11 +2,21 @@
 import DocsLayout from '../../layouts/DocsLayout.astro';
 ---
 
-<DocsLayout title="Image Processing" description="On-the-fly image processing with PicFast.">
+<DocsLayout title="Image Processing" description="PicFast's two image processing layers: on-the-fly via URL parameters, and server-side at upload time.">
   <h1>Image Processing</h1>
-  <p>PicFast supports on-the-fly image processing via URL parameters. Append <code>@</code> followed by comma-separated parameters to the image URL.</p>
+  <p>
+    PicFast offers two layers of image processing. Choose based on whether you need to transform a single image
+    on demand or apply a fixed policy to every upload:
+  </p>
+  <ul>
+    <li><strong>On-the-fly</strong> — append <code>@</code> + params to any image URL; processed on the CDN/browser cache layer. Good for one-off resizes or a gallery that serves the same source at multiple sizes.</li>
+    <li><strong>Upload-time</strong> — the server transforms and stores the result at upload time. Good for consistent compression, metadata stripping, and watermarking before storage hits the network.</li>
+  </ul>
 
-  <h2>Quick examples</h2>
+  <h2>On-the-fly (URL parameters)</h2>
+  <p>Append <code>@</code> followed by comma-separated parameters to an image URL. The result is cached and served on subsequent requests.</p>
+
+  <h3>Quick examples</h3>
   <pre><code># Original
 https://picfast.example.com/i/abc123.jpg
 
@@ -28,7 +38,7 @@ https://picfast.example.com/i/abc123.jpg@f_webp
 # Combine all
 https://picfast.example.com/i/abc123.jpg@w_300,h_200,q_60,f_webp</code></pre>
 
-  <h2>Parameters</h2>
+  <h3>Parameters</h3>
   <table>
     <thead><tr><th>Param</th><th>Description</th><th>Range</th></tr></thead>
     <tbody>
@@ -39,7 +49,7 @@ https://picfast.example.com/i/abc123.jpg@w_300,h_200,q_60,f_webp</code></pre>
     </tbody>
   </table>
 
-  <h2>Behavior</h2>
+  <h3>Behavior</h3>
   <ul>
     <li>When both <code>w_</code> and <code>h_</code> are set, the image is scaled to fit within the box while preserving aspect ratio (no crop).</li>
     <li>GIF images are not processed and returned as-is.</li>
@@ -47,14 +57,60 @@ https://picfast.example.com/i/abc123.jpg@w_300,h_200,q_60,f_webp</code></pre>
     <li>Processed responses use <code>Cache-Control: public, max-age=2592000</code> (30 days). CDN or browser caches will serve the processed version without hitting PicFast again.</li>
   </ul>
 
-  <h2>Backend support</h2>
+  <h2>Upload-time (server-side)</h2>
+  <p>When a user uploads an image, the server applies the configured processing pipeline before storing the result. The original is discarded; only the processed version is kept.</p>
+
+  <h3>User settings</h3>
+  <p>Each user can configure their own pipeline from the gear icon on the upload page. Settings persist on the server and apply to all subsequent uploads.</p>
   <table>
-    <thead><tr><th>Backend</th><th>Image processing</th><th>Notes</th></tr></thead>
+    <thead><tr><th>Setting</th><th>Description</th><th>Default</th></tr></thead>
     <tbody>
-      <tr><td>Local</td><td>Built-in</td><td>Works out of the box</td></tr>
-      <tr><td>WebDAV</td><td>Built-in</td><td>Works out of the box</td></tr>
-      <tr><td>S3 / OSS / COS / Kodo</td><td>Requires <code>link_mode: "proxy"</code></td><td>See <a href="/docs/storage#link-mode">Storage Backends</a></td></tr>
+      <tr><td>Compression quality</td><td>JPEG/WebP quality, 1 – 100. Only applies when format is <code>jpeg</code> or <code>webp</code>.</td><td><code>85</code></td></tr>
+      <tr><td>Output format</td><td><code>origin</code> keeps the source format; <code>jpeg</code> / <code>png</code> / <code>webp</code> transcodes.</td><td><code>origin</code></td></tr>
+      <tr><td>Strip EXIF</td><td>Removes all EXIF metadata (camera info, GPS, etc.) before storage. Recommended for privacy.</td><td>on</td></tr>
+      <tr><td>Text watermark</td><td>Overlays configurable text on every uploaded image. See watermark options below.</td><td>off</td></tr>
     </tbody>
   </table>
-  <p>For cloud backends that return direct CDN URLs, you can alternatively use the cloud provider's native image processing parameters (e.g. Alibaba OSS <code>?x-oss-process=...</code>, Qiniu <code>?imageView2/...</code>).</p>
+
+  <h3>Watermark options</h3>
+  <table>
+    <thead><tr><th>Option</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr><td>Text</td><td>The literal string to render. Required when watermark is enabled.</td></tr>
+      <tr><td>Position</td><td><code>top-left</code>, <code>top-right</code>, <code>center</code>, <code>bottom-left</code>, <code>bottom-right</code>.</td></tr>
+      <tr><td>Font size</td><td>8 – 200 (CSS px).</td></tr>
+      <tr><td>Color</td><td>Any CSS color value (e.g. <code>#FFFFFF</code>, <code>oklch(...)</code>).</td></tr>
+      <tr><td>Opacity</td><td>0 – 1.</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Admin controls</h3>
+  <p>Admins configure two global switches on the <strong>Access settings</strong> page that override per-user settings:</p>
+  <table>
+    <thead><tr><th>Switch</th><th>Effect</th></tr></thead>
+    <tbody>
+      <tr><td><code>allow_user_image_processing</code></td><td>When <strong>off</strong>, every user is forced to the system default pipeline (quality 85, origin format, EXIF strip on, no watermark). The user gear icon still opens the dialog but the fields are disabled.</td></tr>
+      <tr><td><code>skip_image_processing</code></td><td>When <strong>on</strong>, <em>all</em> uploads bypass the processing pipeline entirely. The original file is stored as-is. Useful for raw backups or trusted internal users.</td></tr>
+    </tbody>
+  </table>
+  <p>Precedence: <code>skip_image_processing</code> wins over user settings; otherwise the user pipeline runs, falling back to system defaults if the user has not configured anything.</p>
+
+  <h3>Behavior</h3>
+  <ul>
+    <li>Processing happens once, at upload, on the server (libvips). Network bandwidth to storage is reduced because only the processed file is uploaded.</li>
+    <li>Originals are not retained. If a user wants the unprocessed source they must keep their own copy.</li>
+    <li>Each setting has server-side validation (quality 1-100, format enum, font size 8-200, opacity 0-1). Invalid values are rejected on save with a 400.</li>
+    <li>If processing fails for any reason, the upload still succeeds with the original file stored (graceful fallback).</li>
+  </ul>
+
+  <h2>Backend support</h2>
+  <table>
+    <thead><tr><th>Backend</th><th>On-the-fly</th><th>Upload-time</th><th>Notes</th></tr></thead>
+    <tbody>
+      <tr><td>Local</td><td>Built-in</td><td>Built-in</td><td>Works out of the box</td></tr>
+      <tr><td>WebDAV</td><td>Built-in</td><td>Built-in</td><td>Works out of the box</td></tr>
+      <tr><td>S3 / OSS / COS / Kodo</td><td>Requires <code>link_mode: "proxy"</code></td><td>Built-in</td><td>See <a href="/docs/storage#link-mode">Storage Backends</a> for the on-the-fly requirement</td></tr>
+    </tbody>
+  </table>
+  <p>For cloud backends that return direct CDN URLs, you can alternatively use the cloud provider's native image processing parameters (e.g. Alibaba OSS <code>?x-oss-process=...</code>, Qiniu <code>?imageView2/...</code>) in place of PicFast's on-the-fly layer.</p>
 </DocsLayout>

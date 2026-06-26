@@ -2,33 +2,42 @@
 import DocsLayout from '../../../layouts/DocsLayout.astro';
 ---
 
-<DocsLayout title="图片处理" description="PicFast 实时图片处理。">
+<DocsLayout title="图片处理" description="PicFast 的两层图片处理：URL 参数动态处理 与 上传时服务端处理。">
   <h1>图片处理</h1>
-  <p>PicFast 支持通过 URL 参数实时处理图片。在图片 URL 后追加 <code>@</code> 和逗号分隔的参数即可。</p>
+  <p>
+    PicFast 提供两套图片处理机制，根据场景选择：
+  </p>
+  <ul>
+    <li><strong>URL 动态处理</strong> —— 在任意图片 URL 后面追加 <code>@</code> 加参数即可，结果由 CDN / 浏览器缓存。适合一次性缩放，或同一张源图在多个尺寸场景里复用。</li>
+    <li><strong>上传时处理</strong> —— 服务端在上传流程里处理并存储结果。适合统一的压缩、剥离元数据、批量水印等"先处理再落盘"的策略。</li>
+  </ul>
 
-  <h2>快速示例</h2>
+  <h2>URL 动态处理（@ 参数）</h2>
+  <p>在图片 URL 后面追加 <code>@</code> 加逗号分隔的参数；首次处理后会缓存，重复请求直接走缓存。</p>
+
+  <h3>常用示例</h3>
   <pre><code># 原图
 https://picfast.example.com/i/abc123.jpg
 
-# 宽度缩放至 300px
+# 缩放为宽 300px
 https://picfast.example.com/i/abc123.jpg@w_300
 
-# 高度缩放至 200px
+# 缩放为高 200px
 https://picfast.example.com/i/abc123.jpg@h_200
 
-# 拟合 300×200 框（保持宽高比）
+# 适配 300×200 框（保持比例）
 https://picfast.example.com/i/abc123.jpg@w_300,h_200
 
-# 压缩至质量 80
+# 压缩到质量 80
 https://picfast.example.com/i/abc123.jpg@q_80
 
-# 转换为 WebP 格式
+# 转换为 WebP
 https://picfast.example.com/i/abc123.jpg@f_webp
 
-# 全部组合
+# 组合使用
 https://picfast.example.com/i/abc123.jpg@w_300,h_200,q_60,f_webp</code></pre>
 
-  <h2>参数说明</h2>
+  <h3>参数</h3>
   <table>
     <thead><tr><th>参数</th><th>说明</th><th>范围</th></tr></thead>
     <tbody>
@@ -39,22 +48,68 @@ https://picfast.example.com/i/abc123.jpg@w_300,h_200,q_60,f_webp</code></pre>
     </tbody>
   </table>
 
-  <h2>行为说明</h2>
+  <h3>行为</h3>
   <ul>
-    <li>同时设置 <code>w_</code> 和 <code>h_</code> 时，图片会缩放以适应框内，保持宽高比不变（不裁剪）。</li>
-    <li>GIF 图片不做处理，直接返回原图。</li>
-    <li>如果处理失败，自动返回原图。</li>
-    <li>处理后的响应使用 <code>Cache-Control: public, max-age=2592000</code>（30 天）。CDN 或浏览器缓存会直接返回处理结果，不再回源 PicFast。</li>
+    <li>同时指定 <code>w_</code> 和 <code>h_</code> 时，图片缩放至不超过该框的大小，保持比例（不裁剪）。</li>
+    <li>GIF 不做处理，原样返回。</li>
+    <li>处理失败时原图原样返回。</li>
+    <li>处理结果使用 <code>Cache-Control: public, max-age=2592000</code>（30 天），CDN / 浏览器缓存会直接返回处理结果。</li>
   </ul>
 
-  <h2>后端支持</h2>
+  <h2>上传时处理（服务端）</h2>
+  <p>用户上传图片时，服务端按配置的处理流水线执行一遍，结果直接落盘。原图不再保留。</p>
+
+  <h3>用户设置</h3>
+  <p>每个用户可在上传页右上角齿轮弹窗里配置自己的处理策略。设置保存在服务器，对之后的所有上传生效。</p>
   <table>
-    <thead><tr><th>后端</th><th>图片处理</th><th>说明</th></tr></thead>
+    <thead><tr><th>设置项</th><th>说明</th><th>默认值</th></tr></thead>
     <tbody>
-      <tr><td>本地</td><td>内置支持</td><td>开箱即用</td></tr>
-      <tr><td>WebDAV</td><td>内置支持</td><td>开箱即用</td></tr>
-      <tr><td>S3 / OSS / COS / Kodo</td><td>需设置 <code>link_mode: "proxy"</code></td><td>详见 <a href="/zh/docs/storage#链接模式">存储后端</a></td></tr>
+      <tr><td>压缩质量</td><td>JPEG / WebP 编码质量，1 – 100。仅在输出格式为 <code>jpeg</code> 或 <code>webp</code> 时生效。</td><td><code>85</code></td></tr>
+      <tr><td>转码格式</td><td><code>origin</code> 保持原格式；<code>jpeg</code> / <code>png</code> / <code>webp</code> 转码。</td><td><code>origin</code></td></tr>
+      <tr><td>去除 EXIF</td><td>存储前剥离全部 EXIF 元数据（相机、GPS 等）。建议开启以保护隐私。</td><td>开</td></tr>
+      <tr><td>文字水印</td><td>在每张上传图片上叠加可配置文字。下方有详细参数。</td><td>关</td></tr>
     </tbody>
   </table>
-  <p>对于返回 CDN 直链的云存储后端，也可直接使用云厂商的原生图片处理参数（如阿里 OSS 的 <code>?x-oss-process=...</code>、七牛的 <code>?imageView2/...</code>）。</p>
+
+  <h3>水印参数</h3>
+  <table>
+    <thead><tr><th>选项</th><th>说明</th></tr></thead>
+    <tbody>
+      <tr><td>文本</td><td>渲染的文字内容。开启水印时必填。</td></tr>
+      <tr><td>位置</td><td><code>top-left</code>、<code>top-right</code>、<code>center</code>、<code>bottom-left</code>、<code>bottom-right</code>。</td></tr>
+      <tr><td>字号</td><td>8 – 200（CSS 像素）。</td></tr>
+      <tr><td>颜色</td><td>任意 CSS 颜色值（如 <code>#FFFFFF</code>、<code>oklch(...)</code>）。</td></tr>
+      <tr><td>透明度</td><td>0 – 1。</td></tr>
+    </tbody>
+  </table>
+
+  <h3>管理员控制</h3>
+  <p>管理员可在「<strong>访问控制</strong>」里配置两个全局开关，覆盖用户设置：</p>
+  <table>
+    <thead><tr><th>开关</th><th>作用</th></tr></thead>
+    <tbody>
+      <tr><td><code>allow_user_image_processing</code></td><td>关闭时，所有用户都强制使用系统默认处理（质量 85、保持原格式、去 EXIF、无水印）。齿轮弹窗仍可打开但字段禁用。</td></tr>
+      <tr><td><code>skip_image_processing</code></td><td>开启时，<em>所有</em>上传都跳过处理流水线，文件原样存储。适合做原始备份或内部受信用户场景。</td></tr>
+    </tbody>
+  </table>
+  <p>优先级：<code>skip_image_processing</code> &gt; 用户设置；若 <code>skip</code> 关闭且用户未配置，则使用系统默认。</p>
+
+  <h3>行为</h3>
+  <ul>
+    <li>处理在服务端（libvips）一次性完成，存储侧只接收处理后的文件，节省带宽。</li>
+    <li>原图不保留；如需未处理源文件请自行备份。</li>
+    <li>每项设置都有服务端校验（质量 1-100、格式枚举、字号 8-200、透明度 0-1），非法值会在保存时返回 400。</li>
+    <li>处理失败时上传仍成功，使用原图存储（优雅降级）。</li>
+  </ul>
+
+  <h2>存储后端支持</h2>
+  <table>
+    <thead><tr><th>后端</th><th>URL 动态</th><th>上传时</th><th>备注</th></tr></thead>
+    <tbody>
+      <tr><td>本地</td><td>内置</td><td>内置</td><td>开箱即用</td></tr>
+      <tr><td>WebDAV</td><td>内置</td><td>内置</td><td>开箱即用</td></tr>
+      <tr><td>S3 / OSS / COS / Kodo</td><td>需要 <code>link_mode: "proxy"</code></td><td>内置</td><td>URL 动态需要 proxy 模式，详见 <a href="/zh/docs/storage#link-mode">存储后端</a></td></tr>
+    </tbody>
+  </table>
+  <p>如果云存储后端直接返回 CDN 地址，可以改用云厂商自带的图片处理参数（如阿里云 OSS <code>?x-oss-process=...</code>、七牛 <code>?imageView2/...</code>）替代 PicFast 的 URL 动态层。</p>
 </DocsLayout>
