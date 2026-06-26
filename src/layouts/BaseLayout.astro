@@ -163,20 +163,22 @@ const docsLink = locale === 'en' ? '/docs/getting-started' : '/zh/docs/getting-s
 
 <style is:global>
   :root {
-    --bg: #fbfbfb;
+    --bg: #fafafa;
     --bg-alt: #f2f2f5;
     --bg-card: #ffffff;
-    --text: #1a1a1c;
-    --text-muted: #6b6e77;
-    --text-dim: #9b9ea8;
-    --border: #e4e4e8;
-    --accent: #3d5dd4;
-    --accent-hover: #3450c3;
-    --accent-subtle: #edf0fa;
-    --code-bg: #f0f0f3;
+    --text: #0d0d10;
+    --text-muted: #595b66;
+    --text-dim: #8c8f9a;
+    --border: #e0e1e6;
+    --accent: #2f4bc2;
+    --accent-hover: #243ba0;
+    --accent-subtle: #ebeffa;
+    --code-bg: #eeeff3;
     --code-text: #1a1a1c;
-    --shadow-sm: 0 1px 2px rgba(0,0,0,0.04);
-    --shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.06);
+    --shadow: 0 1px 3px rgba(0,0,0,0.06), 0 4px 12px rgba(0,0,0,0.05);
+    --shadow-md: 0 2px 6px rgba(0,0,0,0.07), 0 8px 24px rgba(0,0,0,0.06);
+    --shadow-lg: 0 4px 12px rgba(0,0,0,0.08), 0 16px 40px rgba(0,0,0,0.06);
     --radius: 8px;
     --radius-sm: 6px;
     --radius-lg: 12px;
@@ -185,38 +187,42 @@ const docsLink = locale === 'en' ? '/docs/getting-started' : '/zh/docs/getting-s
   }
 
   :root[data-theme="dark"] {
-    --bg: #121318;
-    --bg-alt: #181a21;
-    --bg-card: #1a1d27;
-    --text: #f1f1f4;
-    --text-muted: #8f92a0;
-    --text-dim: #5e616e;
-    --border: #262833;
+    --bg: #0d0d12;
+    --bg-alt: #13151c;
+    --bg-card: #171a24;
+    --text: #f0f0f5;
+    --text-muted: #8b8fa0;
+    --text-dim: #545766;
+    --border: #20232f;
     --accent: #5d7af0;
     --accent-hover: #7b92f4;
-    --accent-subtle: #1c2138;
-    --code-bg: #1a1d27;
-    --code-text: #f1f1f4;
-    --shadow-sm: 0 1px 2px rgba(0,0,0,0.15);
-    --shadow: 0 1px 3px rgba(0,0,0,0.2), 0 1px 2px rgba(0,0,0,0.1);
+    --accent-subtle: #1a1f35;
+    --code-bg: #171a24;
+    --code-text: #f0f0f5;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.3);
+    --shadow: 0 1px 3px rgba(0,0,0,0.4), 0 4px 12px rgba(0,0,0,0.3);
+    --shadow-md: 0 2px 6px rgba(0,0,0,0.45), 0 8px 24px rgba(0,0,0,0.3);
+    --shadow-lg: 0 4px 12px rgba(0,0,0,0.5), 0 16px 40px rgba(0,0,0,0.35);
   }
 
   @media (prefers-color-scheme: dark) {
     :root:not([data-theme="light"]) {
-      --bg: #121318;
-      --bg-alt: #181a21;
-      --bg-card: #1a1d27;
-      --text: #f1f1f4;
-      --text-muted: #8f92a0;
-      --text-dim: #5e616e;
-      --border: #262833;
+      --bg: #0d0d12;
+      --bg-alt: #13151c;
+      --bg-card: #171a24;
+      --text: #f0f0f5;
+      --text-muted: #8b8fa0;
+      --text-dim: #545766;
+      --border: #20232f;
       --accent: #5d7af0;
       --accent-hover: #7b92f4;
-      --accent-subtle: #1c2138;
-      --code-bg: #1a1d27;
-      --code-text: #f1f1f4;
-      --shadow-sm: 0 1px 2px rgba(0,0,0,0.15);
-      --shadow: 0 1px 3px rgba(0,0,0,0.2), 0 1px 2px rgba(0,0,0,0.1);
+      --accent-subtle: #1a1f35;
+      --code-bg: #171a24;
+      --code-text: #f0f0f5;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.3);
+      --shadow: 0 1px 3px rgba(0,0,0,0.4), 0 4px 12px rgba(0,0,0,0.3);
+      --shadow-md: 0 2px 6px rgba(0,0,0,0.45), 0 8px 24px rgba(0,0,0,0.3);
+      --shadow-lg: 0 4px 12px rgba(0,0,0,0.5), 0 16px 40px rgba(0,0,0,0.35);
     }
   }
 
@@ -325,29 +331,36 @@ const docsLink = locale === 'en' ? '/docs/getting-started' : '/zh/docs/getting-s
     font-weight: 500;
     cursor: pointer;
     border: none;
-    transition: all 0.15s;
+    transition: all 0.2s ease;
     letter-spacing: -0.01em;
   }
 
   .btn-primary {
-    background: var(--accent);
+    background: linear-gradient(135deg, var(--accent), var(--accent-hover));
     color: #fff;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.08);
+    transition: all 0.2s ease;
   }
   .btn-primary:hover {
-    background: var(--accent-hover);
+    background: linear-gradient(135deg, var(--accent-hover), var(--accent));
     color: #fff;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15), 0 2px 4px rgba(0,0,0,0.1);
+    transform: translateY(-1px);
   }
 
   .btn-secondary {
     background: var(--bg-card);
     color: var(--text);
     border: 1px solid var(--border);
+    box-shadow: var(--shadow-sm);
+    transition: all 0.2s ease;
   }
   .btn-secondary:hover {
     border-color: var(--accent);
     color: var(--accent);
     background: var(--accent-subtle);
+    box-shadow: var(--shadow);
+    transform: translateY(-1px);
   }
 
   .code-block-wrapper {
@@ -402,19 +415,19 @@ const docsLink = locale === 'en' ? '/docs/getting-started' : '/zh/docs/getting-s
     position: sticky;
     top: 0;
     z-index: 100;
-    background: rgba(251, 251, 251, 0.82);
+    background: rgba(250, 250, 250, 0.82);
     border-bottom: 1px solid var(--border);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
   }
 
   :root[data-theme="dark"] .site-header {
-    background: rgba(18, 19, 24, 0.82);
+    background: rgba(13, 13, 18, 0.82);
   }
 
   @media (prefers-color-scheme: dark) {
     :root:not([data-theme="light"]) .site-header {
-      background: rgba(18, 19, 24, 0.82);
+    background: rgba(13, 13, 18, 0.82);
     }
   }
 

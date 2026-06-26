@@ -1,6 +1,7 @@
 .hero {
   text-align: center;
   padding: 5rem 0 3.5rem;
+  background: radial-gradient(ellipse 70% 60% at 50% 35%, var(--accent-subtle), transparent);
 }
 
 .hero-badge {
@@ -19,12 +20,10 @@
 
 .hero h1 {
   font-size: clamp(3rem, 7vw, 4rem);
-  font-weight: 900;
+  font-weight: 800;
   letter-spacing: -0.04em;
   line-height: 1.05;
   margin-bottom: 1rem;
-  -webkit-text-stroke: 0.4px;
-  paint-order: stroke fill;
 }
 
 .hero-sub {
@@ -43,7 +42,7 @@
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   overflow: hidden;
-  box-shadow: var(--shadow);
+  box-shadow: var(--shadow-md);
 }
 
 .hero-code.small {
@@ -110,8 +109,6 @@
   font-weight: 800;
   letter-spacing: -0.025em;
   margin-bottom: 3rem;
-  -webkit-text-stroke: 0.35px;
-  paint-order: stroke fill;
 }
 
 .features-grid {
@@ -141,28 +138,30 @@
 }
 
 .feature-card {
-  padding: 1.25rem;
+  padding: 1.5rem;
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   background: var(--bg-card);
-  transition: border-color 0.15s, box-shadow 0.15s;
+  box-shadow: 0 0 0 0 rgba(0,0,0,0);
+  transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
 }
 
 .feature-card:hover {
   border-color: var(--accent);
-  box-shadow: var(--shadow);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
 }
 
 .feature-icon {
-  width: 36px;
-  height: 36px;
+  width: 40px;
+  height: 40px;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius);
   background: var(--accent-subtle);
   color: var(--accent);
-  margin-bottom: 0.75rem;
+  margin-bottom: 1rem;
 }
 
 .feature-card h3 {
@@ -170,8 +169,6 @@
   font-weight: 700;
   letter-spacing: -0.015em;
   margin-bottom: 0.375rem;
-  -webkit-text-stroke: 0.25px;
-  paint-order: stroke fill;
 }
 
 .feature-card p {
@@ -190,6 +187,7 @@
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   background: var(--bg-card);
+  box-shadow: var(--shadow-sm);
 }
 
 .comparison table {
@@ -216,6 +214,14 @@
   border-bottom: 1px solid var(--border);
 }
 
+.comparison tbody tr:nth-child(even) td {
+  background: var(--bg-alt);
+}
+
+.comparison tbody tr:nth-child(even) td:last-child {
+  background: var(--accent-subtle);
+}
+
 .comparison tr:last-child td {
   border-bottom: none;
 }
@@ -229,7 +235,13 @@
 .comparison th:last-child {
   background: var(--accent-subtle);
   color: var(--accent);
-  font-weight: 600;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  border-left: 2px solid var(--border);
+}
+
+.comparison thead th:last-child {
+  border-radius: 0 var(--radius-lg) 0 0;
 }
 
 /* Quick Start */
@@ -274,8 +286,6 @@
   font-weight: 700;
   letter-spacing: -0.015em;
   margin-bottom: 0.375rem;
-  -webkit-text-stroke: 0.3px;
-  paint-order: stroke fill;
 }
 
 .qs-content p {
