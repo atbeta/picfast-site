@@ -158,6 +158,13 @@
   var toggle = document.getElementById('theme-toggle-btn');
   if (!editor) return;
 
+  // Default to current site theme
+  var siteTheme = document.documentElement.getAttribute('data-theme');
+  var prefersDark = siteTheme === 'dark' || (!siteTheme && window.matchMedia('(prefers-color-scheme: dark)').matches);
+  if (prefersDark && toggle) {
+    toggle.classList.add('active');
+  }
+
   function updatePreview() {
     var css = editor.value;
     var dark = toggle ? toggle.classList.contains('active') : false;
