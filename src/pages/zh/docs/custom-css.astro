@@ -1,0 +1,281 @@
+---
+import DocsLayout from '../../../layouts/DocsLayout.astro';
+---
+
+<DocsLayout title="自定义 CSS" description="通过自定义 CSS 覆盖 PicFast 内置主题，打造专属视觉风格。">
+  <h1>自定义 CSS</h1>
+  <p>
+    在管理面板的 <strong>设置 → 站点设置</strong> 页面中可以注入自定义 CSS。保存后会原样注入到站点每个页面的 <code>&lt;style&gt;</code> 标签中。
+  </p>
+
+  <h2>CSS 变量参考</h2>
+  <p>所有 PicFast 主题 token 都以 CSS 自定义属性的形式暴露。覆盖这些变量即可改变颜色、圆角、间距等：</p>
+
+  <div class="table-wrapper">
+    <table>
+      <thead>
+        <tr><th>变量</th><th>用途</th><th>示例值</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>--background</code></td><td>页面背景色</td><td><code>oklch(0.985 0 0)</code></td></tr>
+        <tr><td><code>--foreground</code></td><td>文字颜色</td><td><code>oklch(0.145 0 0)</code></td></tr>
+        <tr><td><code>--card</code></td><td>卡片/面板背景</td><td><code>oklch(1 0 0)</code></td></tr>
+        <tr><td><code>--primary</code></td><td>主强调色</td><td><code>oklch(0.55 0.18 260)</code></td></tr>
+        <tr><td><code>--primary-foreground</code></td><td>主色上的文字</td><td><code>oklch(0.985 0 0)</code></td></tr>
+        <tr><td><code>--secondary</code></td><td>次要表面色</td><td><code>oklch(0.97 0 0)</code></td></tr>
+        <tr><td><code>--accent</code></td><td>强调表面色</td><td><code>oklch(0.97 0 0)</code></td></tr>
+        <tr><td><code>--muted</code></td><td>弱化表面色</td><td><code>oklch(0.97 0 0)</code></td></tr>
+        <tr><td><code>--muted-foreground</code></td><td>弱化文字颜色</td><td><code>oklch(0.556 0 0)</code></td></tr>
+        <tr><td><code>--border</code></td><td>边框颜色</td><td><code>oklch(0.922 0 0)</code></td></tr>
+        <tr><td><code>--radius</code></td><td>基础圆角</td><td><code>0.625rem</code></td></tr>
+        <tr><td><code>--destructive</code></td><td>危险/删除色</td><td><code>oklch(0.577 0.245 27.3)</code></td></tr>
+        <tr><td><code>--success</code></td><td>成功色</td><td><code>oklch(0.6 0.18 145)</code></td></tr>
+        <tr><td><code>--warning</code></td><td>警告色</td><td><code>oklch(0.75 0.15 80)</code></td></tr>
+        <tr><td><code>--info</code></td><td>信息色</td><td><code>oklch(0.55 0.18 260)</code></td></tr>
+        <tr><td><code>--pf-logo-radius</code></td><td>Logo 圆角</td><td><code>0.75rem</code></td></tr>
+        <tr><td><code>--pf-density</code></td><td>界面密度倍数</td><td><code>1</code></td></tr>
+        <tr><td><code>--pf-motion-duration</code></td><td>动画速度</td><td><code>150ms</code></td></tr>
+        <tr><td><code>--sidebar</code></td><td>侧边栏背景</td><td><code>oklch(0.985 0 0)</code></td></tr>
+        <tr><td><code>--popover</code></td><td>弹出层背景</td><td><code>oklch(1 0 0)</code></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>覆盖选择器</h2>
+  <p>以下是可用于精准覆盖的关键 CSS 类名：</p>
+
+  <div class="table-wrapper">
+    <table>
+      <thead>
+        <tr><th>选择器</th><th>作用范围</th><th>控制内容</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>.pf-public-glow</code></td><td>公共页面</td><td>装饰性背景光晕效果</td></tr>
+        <tr><td><code>.pf-site-logo</code></td><td>所有页面</td><td>站点 Logo 外观（圆角由 <code>--pf-logo-radius</code> 驱动）</td></tr>
+        <tr><td><code>.pf-console-shell</code></td><td>控制台布局</td><td>侧边栏 + 内容区包裹容器</td></tr>
+        <tr><td><code>.pf-console-content</code></td><td>控制台布局</td><td>控制台主内容区</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>常用示例</h2>
+
+  <h3>更换主强调色</h3>
+  <pre><code>:root &#123;
+  --primary: oklch(0.55 0.22 280);
+  --primary-foreground: oklch(0.985 0 0);
+&#125;
+
+.dark &#123;
+  --primary: oklch(0.65 0.22 280);
+&#125;</code></pre>
+
+  <h3>让界面更圆润</h3>
+  <pre><code>:root &#123;
+  --radius: 1.25rem;
+  --pf-logo-radius: 1rem;
+&#125;</code></pre>
+
+  <h3>隐藏公共页面的光晕效果</h3>
+  <pre><code>.pf-public-glow &#123;
+  display: none;
+&#125;</code></pre>
+
+  <h3>自定义控制台侧边栏背景</h3>
+  <pre><code>.pf-console-shell &#123;
+  background: linear-gradient(180deg, oklch(0.2 0.01 260) 0%, oklch(0.13 0 0) 100%);
+&#125;</code></pre>
+
+  <h2>在线演练场</h2>
+  <p>在下方编辑 CSS，右侧预览区会实时展示应用到你自己的 PicFast 实例上的效果。</p>
+
+  <div class="playground" id="playground">
+    <div class="playground-editor">
+      <div class="playground-header">
+        <span class="code-filename">custom.css</span>
+      </div>
+      <textarea id="css-editor" class="css-editor" spellcheck="false">/* 试试换个主色调 */
+:root &#123;
+  --primary: oklch(0.55 0.22 340);
+  --primary-foreground: oklch(0.985 0 0);
+&#125;
+
+/* 把 Logo 变圆 */
+.pf-site-logo &#123;
+  border-radius: 50%;
+&#125;
+
+/* 调整光晕透明度 */
+.pf-public-glow &#123;
+  opacity: 0.6;
+&#125;</textarea>
+    </div>
+    <div class="playground-preview">
+      <div class="playground-header">
+        <span>预览</span>
+        <button id="theme-toggle-btn" class="theme-toggle-btn" title="切换暗色模式">
+          <svg class="icon-sun" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+          <svg class="icon-moon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+        </button>
+      </div>
+      <iframe id="preview-frame" class="preview-frame" title="CSS 预览"></iframe>
+    </div>
+  </div>
+
+  <h2>AI 生成 CSS</h2>
+  <p>
+    将下方的提示词模板复制到 Claude、ChatGPT 或任意大模型中，即可自动生成适用于你的 PicFast 实例的自定义 CSS：
+  </p>
+
+  <pre><code>我想自定义我的 PicFast 图床站点外观。它使用 CSS 自定义属性（变量）进行主题化。
+
+可覆盖的选择器：
+- .pf-public-glow（公共页面的背景光晕）
+- .pf-site-logo（Logo 元素）
+- .pf-console-shell（控制台侧边栏 + 内容区包裹层）
+- .pf-console-content（控制台主内容区）
+
+可用的 CSS 变量（使用 oklch 色彩空间）：
+--background、--foreground、--card、--card-foreground、--primary、--primary-foreground、
+--secondary、--secondary-foreground、--accent、--accent-foreground、--muted、
+--muted-foreground、--border、--radius、--pf-logo-radius、--pf-density、
+--pf-motion-duration、--destructive、--success、--warning、--info、
+--sidebar、--sidebar-foreground、--popover、--popover-foreground
+
+亮色模式变量放在 :root &#123; &#125; 下，暗色模式放在 .dark &#123; &#125; 下。
+
+请生成如下风格的 CSS：[在这里描述你想要的风格，例如"暗色主题配霓虹粉强调色和大圆角"]</code></pre>
+</DocsLayout>
+
+<style>
+  .playground {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    margin: 1.5rem 0;
+    min-height: 480px;
+  }
+
+  @media (max-width: 768px) {
+    .playground {
+      grid-template-columns: 1fr;
+      grid-template-rows: 1fr 1fr;
+    }
+  }
+
+  .playground-editor,
+  .playground-preview {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+  }
+
+  .playground-editor {
+    border-right: 1px solid var(--border);
+  }
+
+  @media (max-width: 768px) {
+    .playground-editor {
+      border-right: none;
+      border-bottom: 1px solid var(--border);
+    }
+  }
+
+  .playground-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.5rem 0.75rem;
+    background: var(--bg-alt);
+    border-bottom: 1px solid var(--border);
+    font-size: 0.75rem;
+    font-family: var(--font-mono);
+    color: var(--text-dim);
+    flex-shrink: 0;
+  }
+
+  .theme-toggle-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    border-radius: 4px;
+    border: none;
+    background: transparent;
+    color: var(--text-dim);
+    cursor: pointer;
+    transition: color 0.15s, background 0.15s;
+  }
+
+  .theme-toggle-btn:hover {
+    color: var(--text);
+    background: var(--bg);
+  }
+
+  .theme-toggle-btn .icon-sun { display: block; }
+  .theme-toggle-btn .icon-moon { display: none; }
+  .theme-toggle-btn.active .icon-sun { display: none; }
+  .theme-toggle-btn.active .icon-moon { display: block; }
+
+  .css-editor {
+    flex: 1;
+    min-height: 0;
+    padding: 0.75rem;
+    border: none;
+    background: var(--code-bg);
+    color: var(--code-text);
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    line-height: 1.65;
+    resize: none;
+    outline: none;
+    tab-size: 2;
+  }
+
+  .preview-frame {
+    flex: 1;
+    min-height: 0;
+    border: none;
+    background: var(--bg);
+  }
+
+  .table-wrapper {
+    overflow-x: auto;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    margin: 1rem 0 1.5rem;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.8125rem;
+  }
+
+  th, td {
+    text-align: left;
+    padding: 0.5rem 0.75rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  th {
+    font-weight: 600;
+    background: var(--bg-alt);
+    font-size: 0.75rem;
+  }
+
+  td code {
+    font-size: 0.8em;
+    white-space: nowrap;
+  }
+
+  tbody tr:last-child td {
+    border-bottom: none;
+  }
+</style>
+
+<script is:inline src="/js/css-playground-zh.js"></script>

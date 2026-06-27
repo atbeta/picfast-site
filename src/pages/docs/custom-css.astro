@@ -1,0 +1,281 @@
+---
+import DocsLayout from '../../layouts/DocsLayout.astro';
+---
+
+<DocsLayout title="Custom CSS" description="Use custom CSS to override PicFast's built-in theme with your own styles.">
+  <h1>Custom CSS</h1>
+  <p>
+    PicFast lets you inject custom CSS into the site via the <strong>Settings → Site Settings</strong> page in the admin panel. The CSS is saved and injected directly into a <code>&lt;style&gt;</code> tag on every page.
+  </p>
+
+  <h2>CSS Variables Reference</h2>
+  <p>All PicFast theme tokens are exposed as CSS custom properties. Override these to change colors, radii, spacing, and more:</p>
+
+  <div class="table-wrapper">
+    <table>
+      <thead>
+        <tr><th>Variable</th><th>Purpose</th><th>Example</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>--background</code></td><td>Page background</td><td><code>oklch(0.985 0 0)</code></td></tr>
+        <tr><td><code>--foreground</code></td><td>Text color</td><td><code>oklch(0.145 0 0)</code></td></tr>
+        <tr><td><code>--card</code></td><td>Card/panel background</td><td><code>oklch(1 0 0)</code></td></tr>
+        <tr><td><code>--primary</code></td><td>Primary accent color</td><td><code>oklch(0.55 0.18 260)</code></td></tr>
+        <tr><td><code>--primary-foreground</code></td><td>Text on primary</td><td><code>oklch(0.985 0 0)</code></td></tr>
+        <tr><td><code>--secondary</code></td><td>Secondary surface</td><td><code>oklch(0.97 0 0)</code></td></tr>
+        <tr><td><code>--accent</code></td><td>Accent surface</td><td><code>oklch(0.97 0 0)</code></td></tr>
+        <tr><td><code>--muted</code></td><td>Muted surface</td><td><code>oklch(0.97 0 0)</code></td></tr>
+        <tr><td><code>--muted-foreground</code></td><td>Muted text</td><td><code>oklch(0.556 0 0)</code></td></tr>
+        <tr><td><code>--border</code></td><td>Border color</td><td><code>oklch(0.922 0 0)</code></td></tr>
+        <tr><td><code>--radius</code></td><td>Base border radius</td><td><code>0.625rem</code></td></tr>
+        <tr><td><code>--destructive</code></td><td>Danger/delete color</td><td><code>oklch(0.577 0.245 27.3)</code></td></tr>
+        <tr><td><code>--success</code></td><td>Success color</td><td><code>oklch(0.6 0.18 145)</code></td></tr>
+        <tr><td><code>--warning</code></td><td>Warning color</td><td><code>oklch(0.75 0.15 80)</code></td></tr>
+        <tr><td><code>--info</code></td><td>Info color</td><td><code>oklch(0.55 0.18 260)</code></td></tr>
+        <tr><td><code>--pf-logo-radius</code></td><td>Logo border-radius</td><td><code>0.75rem</code></td></tr>
+        <tr><td><code>--pf-density</code></td><td>UI density multiplier</td><td><code>1</code></td></tr>
+        <tr><td><code>--pf-motion-duration</code></td><td>Animation speed</td><td><code>150ms</code></td></tr>
+        <tr><td><code>--sidebar</code></td><td>Sidebar background</td><td><code>oklch(0.985 0 0)</code></td></tr>
+        <tr><td><code>--popover</code></td><td>Popover background</td><td><code>oklch(1 0 0)</code></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>Target Selectors</h2>
+  <p>These are the key CSS classes you can override for targeted changes:</p>
+
+  <div class="table-wrapper">
+    <table>
+      <thead>
+        <tr><th>Selector</th><th>Scope</th><th>What it controls</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>.pf-public-glow</code></td><td>Public pages</td><td>Decorative background glow effect</td></tr>
+        <tr><td><code>.pf-site-logo</code></td><td>All pages</td><td>Site logo appearance (border-radius driven by <code>--pf-logo-radius</code>)</td></tr>
+        <tr><td><code>.pf-console-shell</code></td><td>Console layout</td><td>Main sidebar + content wrapper</td></tr>
+        <tr><td><code>.pf-console-content</code></td><td>Console layout</td><td>Main content area inside console</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>Common Recipes</h2>
+
+  <h3>Change the primary accent color</h3>
+  <pre><code>:root &#123;
+  --primary: oklch(0.55 0.22 280);
+  --primary-foreground: oklch(0.985 0 0);
+&#125;
+
+.dark &#123;
+  --primary: oklch(0.65 0.22 280);
+&#125;</code></pre>
+
+  <h3>Make the site feel more rounded</h3>
+  <pre><code>:root &#123;
+  --radius: 1.25rem;
+  --pf-logo-radius: 1rem;
+&#125;</code></pre>
+
+  <h3>Hide the public page glow effect</h3>
+  <pre><code>.pf-public-glow &#123;
+  display: none;
+&#125;</code></pre>
+
+  <h3>Custom console sidebar background</h3>
+  <pre><code>.pf-console-shell &#123;
+  background: linear-gradient(180deg, oklch(0.2 0.01 260) 0%, oklch(0.13 0 0) 100%);
+&#125;</code></pre>
+
+  <h2>Live Playground</h2>
+  <p>Edit the CSS below and see changes applied to mock PicFast UI elements in real time.</p>
+
+  <div class="playground" id="playground">
+    <div class="playground-editor">
+      <div class="playground-header">
+        <span class="code-filename">custom.css</span>
+      </div>
+      <textarea id="css-editor" class="css-editor" spellcheck="false">/* Try changing the primary color */
+:root &#123;
+  --primary: oklch(0.55 0.22 340);
+  --primary-foreground: oklch(0.985 0 0);
+&#125;
+
+/* Make the logo round */
+.pf-site-logo &#123;
+  border-radius: 50%;
+&#125;
+
+/* Customize the glow */
+.pf-public-glow &#123;
+  opacity: 0.6;
+&#125;</textarea>
+    </div>
+    <div class="playground-preview">
+      <div class="playground-header">
+        <span>Preview</span>
+        <button id="theme-toggle-btn" class="theme-toggle-btn" title="Toggle dark mode">
+          <svg class="icon-sun" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+          <svg class="icon-moon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+        </button>
+      </div>
+      <iframe id="preview-frame" class="preview-frame" title="CSS Preview"></iframe>
+    </div>
+  </div>
+
+  <h2>Generate CSS with AI</h2>
+  <p>
+    Copy a prompt template below and paste it into Claude, ChatGPT, or any LLM to generate custom CSS for your PicFast instance:
+  </p>
+
+  <pre><code>I want to customize my PicFast image hosting site. It uses CSS custom properties (variables) for theming.
+
+Available selectors:
+- .pf-public-glow (background glow on public pages)
+- .pf-site-logo (the logo element)
+- .pf-console-shell (console sidebar + content wrapper)
+- .pf-console-content (console main content area)
+
+Available CSS variables (oklch colors):
+--background, --foreground, --card, --card-foreground, --primary, --primary-foreground,
+--secondary, --secondary-foreground, --accent, --accent-foreground, --muted,
+--muted-foreground, --border, --radius, --pf-logo-radius, --pf-density,
+--pf-motion-duration, --destructive, --success, --warning, --info,
+--sidebar, --sidebar-foreground, --popover, --popover-foreground
+
+Light mode variables go under :root &#123; &#125;, dark mode under .dark &#123; &#125;.
+
+Please generate CSS for: [DESCRIBE YOUR DESIRED LOOK HERE - e.g. "a dark theme with neon pink accents and large rounded corners"]</code></pre>
+</DocsLayout>
+
+<style>
+  .playground {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    margin: 1.5rem 0;
+    min-height: 480px;
+  }
+
+  @media (max-width: 768px) {
+    .playground {
+      grid-template-columns: 1fr;
+      grid-template-rows: 1fr 1fr;
+    }
+  }
+
+  .playground-editor,
+  .playground-preview {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+  }
+
+  .playground-editor {
+    border-right: 1px solid var(--border);
+  }
+
+  @media (max-width: 768px) {
+    .playground-editor {
+      border-right: none;
+      border-bottom: 1px solid var(--border);
+    }
+  }
+
+  .playground-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.5rem 0.75rem;
+    background: var(--bg-alt);
+    border-bottom: 1px solid var(--border);
+    font-size: 0.75rem;
+    font-family: var(--font-mono);
+    color: var(--text-dim);
+    flex-shrink: 0;
+  }
+
+  .theme-toggle-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    border-radius: 4px;
+    border: none;
+    background: transparent;
+    color: var(--text-dim);
+    cursor: pointer;
+    transition: color 0.15s, background 0.15s;
+  }
+
+  .theme-toggle-btn:hover {
+    color: var(--text);
+    background: var(--bg);
+  }
+
+  .theme-toggle-btn .icon-sun { display: block; }
+  .theme-toggle-btn .icon-moon { display: none; }
+  .theme-toggle-btn.active .icon-sun { display: none; }
+  .theme-toggle-btn.active .icon-moon { display: block; }
+
+  .css-editor {
+    flex: 1;
+    min-height: 0;
+    padding: 0.75rem;
+    border: none;
+    background: var(--code-bg);
+    color: var(--code-text);
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    line-height: 1.65;
+    resize: none;
+    outline: none;
+    tab-size: 2;
+  }
+
+  .preview-frame {
+    flex: 1;
+    min-height: 0;
+    border: none;
+    background: var(--bg);
+  }
+
+  .table-wrapper {
+    overflow-x: auto;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    margin: 1rem 0 1.5rem;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.8125rem;
+  }
+
+  th, td {
+    text-align: left;
+    padding: 0.5rem 0.75rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  th {
+    font-weight: 600;
+    background: var(--bg-alt);
+    font-size: 0.75rem;
+  }
+
+  td code {
+    font-size: 0.8em;
+    white-space: nowrap;
+  }
+
+  tbody tr:last-child td {
+    border-bottom: none;
+  }
+</style>
+
+<script is:inline src="/js/css-playground.js"></script>
