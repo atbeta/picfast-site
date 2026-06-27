@@ -1,0 +1,140 @@
+---
+import DocsLayout from '../../../layouts/DocsLayout.astro';
+---
+
+<DocsLayout title="升级指南" description="PicFast 自托管实例跨版本升级时的迁移说明。">
+  <h1>升级指南</h1>
+  <p>本页记录 PicFast 各版本之间的 breaking change 与迁移方法。每一节独立，只看对应你当前版本的那一节即可。</p>
+
+  <h2>从 0.15.x 升级到 0.16</h2>
+  <p>v0.16 把主题系统收敛成单一内置主题。6 套预设、token 调色板、JSON 主题包导入导出、用户级 <code>theme_override</code> 全部移除。</p>
+
+  <h3>会失去什么</h3>
+  <ul>
+    <li><strong>admin 站点设置</strong>：独立的「外观风格」页面没了；并入新的「站点信息」页，只保留 <code>custom_css</code> 一项。「主题包」导入导出 UI 移除。</li>
+    <li><strong>用户设置</strong>：个人设置里的「外观」tab 没了。用户唯一与主题相关的控件是 header 里的亮/暗/系统切换（作为基础可用性保留，不算"个性化"）。</li>
+    <li><strong>已存数据</strong>：旧值仍然躺在 <code>site_settings.theme_config</code> JSONB 里，以及设过的用户的 <code>users.settings.theme_override</code> 里，但应用不再读任何一项。</li>
+  </ul>
+
+  <h3>会保留什么</h3>
+  <ul>
+    <li>所有现有的 <code>site_settings.theme_config.custom_css</code> 完整保留，现在直接驱动站点的 <code>&lt;style&gt;</code> 标签。</li>
+    <li>现有的 per-user <code>image_processing</code>、<code>default_strategy</code>、<code>default_album</code>、<code>default_permission</code> 不受影响。</li>
+    <li>数据库 schema 不变。升级时不需要数据迁移——旧值变成死数据，不会报错。</li>
+  </ul>
+
+  <h3>步骤 1：部署新镜像</h3>
+  <p>按标准 PicFast 升级流程即可。启动时会自动跑 migration 029，清理每个用户的 <code>users.settings.theme_override</code> 字段。旧的 <code>site_settings.theme_config</code> 保留不动（应用现在只读 <code>mode</code> 和 <code>custom_css</code>）。</p>
+  <pre><code>docker compose pull
+docker compose up -d</code></pre>
+
+  <h3>步骤 2：还原你之前用的预设</h3>
+  <p>如果你之前选了 6 套被砍掉的预设之一（<code>default</code> / <code>moe</code> / <code>cyber</code> / <code>pixel</code> / <code>terminal</code> / <code>fresh</code>），或改过 token 面板 / public 字段，视觉上会回到 default 主题。把下面对应的 <code>custom_css</code> 贴到 <strong>admin → 站点信息 → 自定义 CSS</strong> 即可还原。</p>
+
+  <h4>default</h4>
+  <p>不需要任何 <code>custom_css</code>。</p>
+
+  <h4>moe（粉系柔光）</h4>
+  <pre><code>:root &#123;
+  --primary: oklch(0.70 0.16 350);
+  --accent: oklch(0.92 0.05 350);
+  --background: oklch(0.99 0.01 350);
+  --ring: oklch(0.70 0.16 350);
+&#125;
+.pf-site-logo &#123; border-radius: 1.25rem; &#125;</code></pre>
+
+  <h4>cyber（赛博霓虹）</h4>
+  <pre><code>:root &#123;
+  --background: oklch(0.13 0.02 280);
+  --foreground: oklch(0.95 0.02 280);
+  --card: oklch(0.18 0.03 280);
+  --primary: oklch(0.78 0.20 200);
+  --accent: oklch(0.72 0.25 320);
+  --border: oklch(0.28 0.04 280);
+  --ring: oklch(0.78 0.20 200);
+&#125;</code></pre>
+
+  <h4>pixel（像素乐园）</h4>
+  <pre><code>:root &#123;
+  --radius: 0.125rem;
+  --border: oklch(0.85 0 0);
+&#125;</code></pre>
+
+  <h4>terminal（黑绿终端）</h4>
+  <pre><code>:root &#123;
+  --background: oklch(0.05 0 0);
+  --foreground: oklch(0.85 0.18 145);
+  --card: oklch(0.08 0 0);
+  --primary: oklch(0.75 0.22 145);
+  --border: oklch(0.20 0.05 145);
+  --ring: oklch(0.75 0.22 145);
+&#125;</code></pre>
+
+  <h4>fresh（清新海盐）</h4>
+  <pre><code>:root &#123;
+  --primary: oklch(0.72 0.10 195);
+  --accent: oklch(0.94 0.04 195);
+  --background: oklch(0.99 0.005 195);
+  --ring: oklch(0.72 0.10 195);
+&#125;
+.pf-site-logo &#123; border-radius: 0.875rem; &#125;</code></pre>
+
+  <h3>步骤 3：还原 token 覆盖</h3>
+  <p>如果之前在 token 面板里改过 <code>primary</code> / <code>accent</code> / <code>radius</code>，把对应值复制到 <code>custom_css</code> 里的 <code>:root</code> 块：</p>
+  <pre><code>:root &#123;
+  --primary: oklch(0.65 0.20 30);
+  --radius: 0.875rem;
+&#125;</code></pre>
+
+  <h3>步骤 4：还原 public 字段</h3>
+
+  <h4>之前设过 <code>background_image</code></h4>
+  <pre><code>body::before &#123;
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background-image: url('https://your-host/bg.jpg');
+  background-size: cover;
+  background-position: center;
+&#125;
+.pf-public-glow &#123; display: none; &#125;</code></pre>
+
+  <h4>之前设过 <code>logo_shape</code></h4>
+  <pre><code>/* circle */   .pf-site-logo &#123; border-radius: 9999px; &#125;
+/* square */   .pf-site-logo &#123; border-radius: 0; &#125;
+/* rounded */  .pf-site-logo &#123; border-radius: 0.75rem; &#125;</code></pre>
+
+  <h3>步骤 5：通知用户 mode 的变化</h3>
+  <p>亮/暗/系统切换现在存到浏览器的 <code>localStorage</code>，不再写 server。换设备不会同步——每个用户每个设备需要各选一次。</p>
+
+  <h3>回滚</h3>
+  <p>如果升级后样式不理想：</p>
+  <ol>
+    <li>回滚到 v0.15 镜像。数据库不动——旧 JSONB 字段还在。</li>
+    <li>在 v0.15 的 admin → 站点信息 → 外观风格里把 <code>theme_config</code> 完整复制一份作为参考。</li>
+    <li>再升级到 v0.16，按上面步骤用 <code>custom_css</code> 重做。</li>
+  </ol>
+
+  <h3>FAQ</h3>
+
+  <h4>我从来没设过任何主题，会受影响吗？</h4>
+  <p>不会。你的 <code>site_settings.theme_config</code> 是 <code>&#123;&#125;</code> 或 <code>&#123;"custom_css": "..."&#125;</code>，升级对你来说无感。</p>
+
+  <h4>我的某个用户在个人设置里选过预设，会怎样？</h4>
+  <p>该用户的视觉回到 default 主题。他的 <code>theme_override</code> 字段被 migration 029 清掉。请他在 header 里选 dark（如果你的站点整体偏 cyber 或 terminal 风格，会比较接近）。</p>
+
+  <h4>升级前能导出我的配置吗？</h4>
+  <p>可以。在 v0.15 打开 admin → 站点信息 → 外观风格 → 主题包 → 复制 JSON，本地保存。升到 v0.16 之后导入按钮没了，需要按上面步骤手工把 <code>preset</code> / <code>tokens</code> / <code>public</code> 翻译成 <code>custom_css</code>。</p>
+
+  <h4>能恢复预设选择器吗？</h4>
+  <p>预设 UI 不会回来。用上面 6 段 <code>custom_css</code> 配方能完整还原任意一套预设的视觉效果——底层变的本来就只有 token，配方是等价的。</p>
+
+  <h4>我的 custom_css 撞到 20000 字符上限了怎么办？</h4>
+  <p>20000 字符是硬限制（之前没显式，现在强制了）。建议：</p>
+  <ul>
+    <li>把重复的值抽成 CSS 变量，其他地方用变量名引用。</li>
+    <li>去掉 vendor 前缀——Tailwind 已经处理了兼容性。</li>
+    <li>把稳定共享的规则搬到 fork 的 <code>index.css</code> 里，发布你自己的镜像。</li>
+  </ul>
+</DocsLayout>

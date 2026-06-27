@@ -1,0 +1,142 @@
+---
+import DocsLayout from '../../layouts/DocsLayout.astro';
+---
+
+<DocsLayout title="Upgrading" description="How to upgrade PicFast self-hosted instances across breaking versions.">
+  <h1>Upgrading</h1>
+  <p>This page covers breaking changes between PicFast versions and how to migrate. Each section is self-contained — only read the one matching your current version.</p>
+
+  <h2>From 0.15.x to 0.16</h2>
+  <p>
+    v0.16 collapses the theme system to a single built-in theme. Six presets, the token palette, JSON theme package import/export, and the per-user <code>theme_override</code> were all removed.
+  </p>
+
+  <h3>What you lose</h3>
+  <ul>
+    <li><strong>Admin site settings</strong>: the standalone "Visual style" page is gone; the page was merged into the new "Site info" page and exposes only a <code>custom_css</code> field. The "Theme package" import/export UI is removed.</li>
+    <li><strong>User settings</strong>: the "Appearance" tab under personal settings is gone. The only theme-related control users have is the light/dark/system switcher in the header (kept as basic usability, not as personalization).</li>
+    <li><strong>Stored data</strong>: every old value still sits in the <code>site_settings.theme_config</code> JSONB blob and in <code>users.settings.theme_override</code> for users who set one, but the application no longer reads any of it.</li>
+  </ul>
+
+  <h3>What you keep</h3>
+  <ul>
+    <li>All your existing <code>site_settings.theme_config.custom_css</code> is preserved and now drives the site's <code>&lt;style&gt;</code> tag on its own.</li>
+    <li>Your existing per-user <code>image_processing</code>, <code>default_strategy</code>, <code>default_album</code>, <code>default_permission</code> settings are unaffected.</li>
+    <li>Database schema is unchanged. No data migration is required to start the new image — values become dead weight, not errors.</li>
+  </ul>
+
+  <h3>Step 1: Deploy the new image</h3>
+  <p>The standard upgrade path applies. Migration 029 runs at startup and cleans up <code>users.settings.theme_override</code> on every row. The old <code>site_settings.theme_config</code> is left untouched — the application now ignores all fields except <code>mode</code> and <code>custom_css</code>.</p>
+  <pre><code>docker compose pull
+docker compose up -d</code></pre>
+
+  <h3>Step 2: Recreate any preset you were using</h3>
+  <p>If you had picked one of the six removed presets (<code>default</code> / <code>moe</code> / <code>cyber</code> / <code>pixel</code> / <code>terminal</code> / <code>fresh</code>), or customized the token palette or public surface fields, the visual baseline is gone. Paste the matching <code>custom_css</code> below into <strong>Admin → Site info → Custom CSS</strong> to restore the closest equivalent.</p>
+
+  <h4>default</h4>
+  <p>No <code>custom_css</code> needed.</p>
+
+  <h4>moe (pink soft glow)</h4>
+  <pre><code>:root &#123;
+  --primary: oklch(0.70 0.16 350);
+  --accent: oklch(0.92 0.05 350);
+  --background: oklch(0.99 0.01 350);
+  --ring: oklch(0.70 0.16 350);
+&#125;
+.pf-site-logo &#123; border-radius: 1.25rem; &#125;</code></pre>
+
+  <h4>cyber (neon dark)</h4>
+  <pre><code>:root &#123;
+  --background: oklch(0.13 0.02 280);
+  --foreground: oklch(0.95 0.02 280);
+  --card: oklch(0.18 0.03 280);
+  --primary: oklch(0.78 0.20 200);
+  --accent: oklch(0.72 0.25 320);
+  --border: oklch(0.28 0.04 280);
+  --ring: oklch(0.78 0.20 200);
+&#125;</code></pre>
+
+  <h4>pixel (hard edges, retro)</h4>
+  <pre><code>:root &#123;
+  --radius: 0.125rem;
+  --border: oklch(0.85 0 0);
+&#125;</code></pre>
+
+  <h4>terminal (green-on-dark)</h4>
+  <pre><code>:root &#123;
+  --background: oklch(0.05 0 0);
+  --foreground: oklch(0.85 0.18 145);
+  --card: oklch(0.08 0 0);
+  --primary: oklch(0.75 0.22 145);
+  --border: oklch(0.20 0.05 145);
+  --ring: oklch(0.75 0.22 145);
+&#125;</code></pre>
+
+  <h4>fresh (mint accent)</h4>
+  <pre><code>:root &#123;
+  --primary: oklch(0.72 0.10 195);
+  --accent: oklch(0.94 0.04 195);
+  --background: oklch(0.99 0.005 195);
+  --ring: oklch(0.72 0.10 195);
+&#125;
+.pf-site-logo &#123; border-radius: 0.875rem; &#125;</code></pre>
+
+  <h3>Step 3: Recreate any token overrides</h3>
+  <p>If you had overridden <code>primary</code>, <code>accent</code>, or <code>radius</code> in the old token panel, copy the value(s) into a <code>:root</code> block in your <code>custom_css</code>:</p>
+  <pre><code>:root &#123;
+  --primary: oklch(0.65 0.20 30);
+  --radius: 0.875rem;
+&#125;</code></pre>
+
+  <h3>Step 4: Recreate any public-surface fields</h3>
+
+  <h4>If you had set <code>background_image</code></h4>
+  <pre><code>body::before &#123;
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background-image: url('https://your-host/bg.jpg');
+  background-size: cover;
+  background-position: center;
+&#125;
+.pf-public-glow &#123; display: none; &#125;</code></pre>
+
+  <h4>If you had set <code>logo_shape</code></h4>
+  <pre><code>/* circle */   .pf-site-logo &#123; border-radius: 9999px; &#125;
+/* square */   .pf-site-logo &#123; border-radius: 0; &#125;
+/* rounded */  .pf-site-logo &#123; border-radius: 0.75rem; &#125;</code></pre>
+
+  <h3>Step 5: Tell users about mode</h3>
+  <p>The light/dark/system switcher now stores the choice in the browser's <code>localStorage</code> rather than the user's server profile. Cross-device sync is gone. Each user picks their mode once per device.</p>
+
+  <h3>Rollback</h3>
+  <p>If v0.16 doesn't fit:</p>
+  <ol>
+    <li>Roll back to the v0.15 image. No database change is required — the old JSONB fields still hold the previous configuration.</li>
+    <li>Open Admin → Site info (in v0.15) → Visual style, copy the current <code>theme_config</code> as a JSON dump for reference.</li>
+    <li>Re-upgrade to v0.16 and re-apply via <code>custom_css</code> using the recipes above.</li>
+  </ol>
+
+  <h3>FAQ</h3>
+
+  <h4>I never set any theme options. Am I affected?</h4>
+  <p>No. Your <code>site_settings.theme_config</code> is <code>&#123;&#125;</code> or <code>&#123;"custom_css": "..."&#125;</code>; the upgrade is a no-op for you.</p>
+
+  <h4>One of my users had picked a preset. What do they see?</h4>
+  <p>The user is back on the default theme. Their <code>theme_override</code> has been wiped by migration 029. Ask them to pick a mode in the header (dark gives a closer feel to <code>cyber</code> or <code>terminal</code> if you intend to keep either of those for the rest of the site).</p>
+
+  <h4>Can I export my old theme before upgrading?</h4>
+  <p>Yes. On v0.15 open Admin → Site info → Visual style → Theme package → Copy JSON. Save the dump locally. After upgrading to v0.16 the import button is gone; translate the <code>preset</code> / <code>tokens</code> / <code>public</code> fields by hand using the recipes above.</p>
+
+  <h4>Can I get the presets back?</h4>
+  <p>The preset picker is not coming back. Use the <code>custom_css</code> recipes above to recreate any of the six looks; the result is identical because the underlying tokens were the only thing varying.</p>
+
+  <h4>My custom_css is hitting the 20,000-character limit. What now?</h4>
+  <p>That's a hard limit (was implicit before, now enforced). Try:</p>
+  <ul>
+    <li>Hoist repeated values into CSS variables, reference them by name elsewhere.</li>
+    <li>Drop vendor prefixes — Tailwind already handles compatibility.</li>
+    <li>Move stable shared rules to <code>index.css</code> in a fork and ship your own image.</li>
+  </ul>
+</DocsLayout>
