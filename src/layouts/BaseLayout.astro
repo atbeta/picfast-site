@@ -17,6 +17,7 @@ const switchLocale = locale === 'en' ? '/zh' : '/';
 const switchLocaleLabel = locale === 'en' ? '中文' : 'English';
 const homeLink = locale === 'en' ? '/' : '/zh';
 const docsLink = locale === 'en' ? '/docs/getting-started' : '/zh/docs/getting-started';
+const upgradingLink = locale === 'en' ? '/docs/upgrading' : '/zh/docs/upgrading';
 ---
 
 <!doctype html>
@@ -97,6 +98,9 @@ const docsLink = locale === 'en' ? '/docs/getting-started' : '/zh/docs/getting-s
         <div class="footer-links">
           <a href={docsLink}>
             {locale === 'en' ? 'Documentation' : '文档'}
+          </a>
+          <a href={upgradingLink}>
+            {locale === 'en' ? 'Upgrading' : '升级指南'}
           </a>
           <a href="https://github.com/atbeta/picfast" target="_blank" rel="noopener">GitHub</a>
           <a href={switchLocale}>{switchLocaleLabel}</a>
