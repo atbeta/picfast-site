@@ -1,0 +1,90 @@
+---
+import DocsLayout from '../../layouts/DocsLayout.astro';
+---
+
+<DocsLayout title="Webhooks" description="Receive real-time event notifications from PicFast to external services.">
+  <h1>Webhooks</h1>
+  <p>
+    Webhooks allow PicFast to send real-time HTTP notifications to external services (like n8n, Make, Zapier, or your own application) when specific events occur — such as image uploads, deletions, or moderation decisions.
+  </p>
+
+  <h2>Creating a Webhook</h2>
+  <ol>
+    <li>Navigate to <strong>Webhooks</strong> in the PicFast console sidebar</li>
+    <li>Click <strong>Create Webhook</strong></li>
+    <li>Enter a name, the target URL (must be HTTPS), and select one or more event types</li>
+    <li>Copy the secret immediately — it will not be shown again</li>
+  </ol>
+
+  <h2>Supported Events</h2>
+  <table>
+    <thead><tr><th>Event Type</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr><td><code>image.uploaded</code></td><td>An image was successfully uploaded</td></tr>
+      <tr><td><code>image.processed</code></td><td>Processing pipeline completed (compression, thumbnail, moderation)</td></tr>
+      <tr><td><code>image.deleted</code></td><td>An image was deleted (by owner, admin, or system expiry)</td></tr>
+      <tr><td><code>moderation.reviewed</code></td><td>An admin approved or rejected an image</td></tr>
+      <tr><td><code>user.registered</code></td><td>A new user registered</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Verifying Signatures</h2>
+  <p>PicFast signs every delivery with HMAC-SHA256. The signature header is <code>X-PicFast-Signature: sha256=...</code>. Verify it using the webhook secret returned at creation time:</p>
+
+  <pre><code>import crypto from 'crypto'
+
+function verifySignature(secret: string, timestamp: string, rawBody: string, signature: string): boolean {
+  const payload = `${timestamp}.${rawBody}`
+  const hmac = crypto.createHmac('sha256', secret)
+  hmac.update(payload)
+  const expected = `sha256=${hmac.digest('hex')}`
+  return crypto.timingSafeEqual(Buffer.from(expected), Buffer.from(signature))
+}
+
+// In your HTTP handler:
+const sig = req.headers['x-picfast-signature']
+const ts = req.headers['x-picfast-timestamp']
+if (Math.abs(Date.now()/1000 - parseInt(ts)) > 300) {
+  return res.status(400).send('Timestamp too old')
+}
+if (!verifySignature(secret, ts, JSON.stringify(req.body), sig)) {
+  return res.status(401).send('Invalid signature')
+}
+</code></pre>
+
+  <h2>Delivery & Retries</h2>
+  <p>PicFast delivers events with exponential backoff on failure:</p>
+  <table>
+    <thead><tr><th>Attempt</th><th>Delay</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td>Immediate</td></tr>
+      <tr><td>2</td><td>1 minute</td></tr>
+      <tr><td>3</td><td>5 minutes</td></tr>
+      <tr><td>4</td><td>30 minutes</td></tr>
+      <tr><td>5</td><td>2 hours</td></tr>
+      <tr><td>6</td><td>12 hours</td></tr>
+    </tbody>
+  </table>
+  <p>After 6 failed attempts, the delivery is marked as dead. You can manually replay any failed delivery from the webhook detail page.</p>
+
+  <h2>Request Headers</h2>
+  <table>
+    <thead><tr><th>Header</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr><td><code>X-PicFast-Event-Id</code></td><td>Unique event instance UUID</td></tr>
+      <tr><td><code>X-PicFast-Event-Type</code></td><td>Event type (e.g. <code>image.uploaded</code>)</td></tr>
+      <tr><td><code>X-PicFast-Delivery-Id</code></td><td>Unique delivery attempt ID</td></tr>
+      <tr><td><code>X-PicFast-Timestamp</code></td><td>Unix timestamp of signature generation</td></tr>
+      <tr><td><code>X-PicFast-Signature</code></td><td>HMAC-SHA256 signature</td></tr>
+    </tbody>
+  </table>
+
+  <h2>n8n Integration</h2>
+  <ol>
+    <li>Add a <strong>Webhook</strong> node in your n8n workflow (HTTP Method: POST)</li>
+    <li>Copy the production webhook URL from n8n</li>
+    <li>In PicFast, create a webhook pointing to the n8n URL with your desired event types</li>
+    <li>In n8n, connect the Webhook node to your processing logic</li>
+    <li>Use the <strong>Test</strong> button in PicFast to verify connectivity</li>
+  </ol>
+</DocsLayout>

@@ -74,6 +74,9 @@ const locale = currentPath.startsWith('/zh') ? 'zh' : 'en';
           <li><a href={locale === 'en' ? '/docs/mcp' : '/zh/docs/mcp'} class:list={[{ active: currentPath.endsWith('mcp') }]}>
             {locale === 'en' ? 'MCP Integration' : 'MCP 集成'}
           </a></li>
+          <li><a href={locale === 'en' ? '/docs/webhooks' : '/zh/docs/webhooks'} class:list={[{ active: currentPath.endsWith('webhooks') }]}>
+            {locale === 'en' ? 'Webhooks' : 'Webhooks'}
+          </a></li>
         </ul>
 
         <p class="sidebar-heading">

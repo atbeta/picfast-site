@@ -1,0 +1,90 @@
+---
+import DocsLayout from '../../layouts/DocsLayout.astro';
+---
+
+<DocsLayout title="Webhooks 集成" description="通过 Webhook 接收 PicFast 的实时事件通知。">
+  <h1>Webhooks 集成</h1>
+  <p>
+    Webhook 允许 PicFast 在发生特定事件（如图片上传、删除或审核决策）时，向外部服务（如 n8n、Make、Zapier 或你的应用程序）发送实时 HTTP 通知。
+  </p>
+
+  <h2>创建 Webhook</h2>
+  <ol>
+    <li>在 PicFast 控制台侧边栏中进入 <strong>Webhooks</strong></li>
+    <li>点击 <strong>新建 Webhook</strong></li>
+    <li>输入名称、目标 URL（必须是 HTTPS）并选择一个或多个事件类型</li>
+    <li>立即复制密钥 — 关闭后将无法再次查看</li>
+  </ol>
+
+  <h2>支持的事件</h2>
+  <table>
+    <thead><tr><th>事件类型</th><th>说明</th></tr></thead>
+    <tbody>
+      <tr><td><code>image.uploaded</code></td><td>图片上传成功</td></tr>
+      <tr><td><code>image.processed</code></td><td>处理流水线完成（压缩、缩略图、审核）</td></tr>
+      <tr><td><code>image.deleted</code></td><td>图片被删除（所有者、管理员或过期清理）</td></tr>
+      <tr><td><code>moderation.reviewed</code></td><td>管理员通过或拒绝了图片</td></tr>
+      <tr><td><code>user.registered</code></td><td>新用户注册</td></tr>
+    </tbody>
+  </table>
+
+  <h2>验证签名</h2>
+  <p>PicFast 使用 HMAC-SHA256 对每次投递进行签名。签名头为 <code>X-PicFast-Signature: sha256=...</code>。使用创建时返回的 webhook 密钥进行验证：</p>
+
+  <pre><code>import crypto from 'crypto'
+
+function verifySignature(secret, timestamp, rawBody, signature) {
+  const payload = `${timestamp}.${rawBody}`
+  const hmac = crypto.createHmac('sha256', secret)
+  hmac.update(payload)
+  const expected = `sha256=${hmac.digest('hex')}`
+  return crypto.timingSafeEqual(Buffer.from(expected), Buffer.from(signature))
+}
+
+// 在 HTTP handler 中：
+const sig = req.headers['x-picfast-signature']
+const ts = req.headers['x-picfast-timestamp']
+if (Math.abs(Date.now()/1000 - parseInt(ts)) > 300) {
+  return res.status(400).send('时间戳已过期')
+}
+if (!verifySignature(secret, ts, JSON.stringify(req.body), sig)) {
+  return res.status(401).send('签名无效')
+}
+</code></pre>
+
+  <h2>投递与重试</h2>
+  <p>PicFast 在投递失败时使用指数退避进行重试：</p>
+  <table>
+    <thead><tr><th>尝试次数</th><th>延迟</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td>立即</td></tr>
+      <tr><td>2</td><td>1 分钟</td></tr>
+      <tr><td>3</td><td>5 分钟</td></tr>
+      <tr><td>4</td><td>30 分钟</td></tr>
+      <tr><td>5</td><td>2 小时</td></tr>
+      <tr><td>6</td><td>12 小时</td></tr>
+    </tbody>
+  </table>
+  <p>6 次失败后，投递标记为死信。可以在 webhook 详情页手动重放任何失败的投递。</p>
+
+  <h2>请求头</h2>
+  <table>
+    <thead><tr><th>请求头</th><th>说明</th></tr></thead>
+    <tbody>
+      <tr><td><code>X-PicFast-Event-Id</code></td><td>唯一事件实例 UUID</td></tr>
+      <tr><td><code>X-PicFast-Event-Type</code></td><td>事件类型（如 <code>image.uploaded</code>）</td></tr>
+      <tr><td><code>X-PicFast-Delivery-Id</code></td><td>唯一投递尝试 ID</td></tr>
+      <tr><td><code>X-PicFast-Timestamp</code></td><td>签名生成的 Unix 时间戳</td></tr>
+      <tr><td><code>X-PicFast-Signature</code></td><td>HMAC-SHA256 签名</td></tr>
+    </tbody>
+  </table>
+
+  <h2>n8n 集成</h2>
+  <ol>
+    <li>在 n8n 工作流中添加 <strong>Webhook</strong> 节点（HTTP 方法：POST）</li>
+    <li>复制 n8n 的生产 Webhook URL</li>
+    <li>在 PicFast 中创建一个指向 n8n URL 的 webhook 并选择事件类型</li>
+    <li>在 n8n 中将 Webhook 节点连接到处理逻辑</li>
+    <li>使用 PicFast 中的 <strong>测试</strong> 按钮验证连通性</li>
+  </ol>
+</DocsLayout>
