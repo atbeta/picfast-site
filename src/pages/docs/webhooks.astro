@@ -1,5 +1,25 @@
 ---
 import DocsLayout from '../../layouts/DocsLayout.astro';
+
+const verifySignatureCode = `import crypto from 'crypto'
+
+function verifySignature(secret: string, timestamp: string, rawBody: string, signature: string): boolean {
+  const payload = \`\${timestamp}.\${rawBody}\`
+  const hmac = crypto.createHmac('sha256', secret)
+  hmac.update(payload)
+  const expected = \`sha256=\${hmac.digest('hex')}\`
+  return crypto.timingSafeEqual(Buffer.from(expected), Buffer.from(signature))
+}
+
+// In your HTTP handler:
+const sig = req.headers['x-picfast-signature']
+const ts = req.headers['x-picfast-timestamp']
+if (Math.abs(Date.now()/1000 - parseInt(ts)) > 300) {
+  return res.status(400).send('Timestamp too old')
+}
+if (!verifySignature(secret, ts, JSON.stringify(req.body), sig)) {
+  return res.status(401).send('Invalid signature')
+}`;
 ---
 
 <DocsLayout title="Webhooks" description="Receive real-time event notifications from PicFast to external services.">
@@ -31,26 +51,7 @@ import DocsLayout from '../../layouts/DocsLayout.astro';
   <h2>Verifying Signatures</h2>
   <p>PicFast signs every delivery with HMAC-SHA256. The signature header is <code>X-PicFast-Signature: sha256=...</code>. Verify it using the webhook secret returned at creation time:</p>
 
-  <pre><code>import crypto from 'crypto'
-
-function verifySignature(secret: string, timestamp: string, rawBody: string, signature: string): boolean {
-  const payload = `${timestamp}.${rawBody}`
-  const hmac = crypto.createHmac('sha256', secret)
-  hmac.update(payload)
-  const expected = `sha256=${hmac.digest('hex')}`
-  return crypto.timingSafeEqual(Buffer.from(expected), Buffer.from(signature))
-}
-
-// In your HTTP handler:
-const sig = req.headers['x-picfast-signature']
-const ts = req.headers['x-picfast-timestamp']
-if (Math.abs(Date.now()/1000 - parseInt(ts)) > 300) {
-  return res.status(400).send('Timestamp too old')
-}
-if (!verifySignature(secret, ts, JSON.stringify(req.body), sig)) {
-  return res.status(401).send('Invalid signature')
-}
-</code></pre>
+  <pre><code>{verifySignatureCode}</code></pre>
 
   <h2>Delivery & Retries</h2>
   <p>PicFast delivers events with exponential backoff on failure:</p>

@@ -1,5 +1,25 @@
 ---
-import DocsLayout from '../../layouts/DocsLayout.astro';
+import DocsLayout from '../../../layouts/DocsLayout.astro';
+
+const verifySignatureCode = `import crypto from 'crypto'
+
+function verifySignature(secret, timestamp, rawBody, signature) {
+  const payload = \`\${timestamp}.\${rawBody}\`
+  const hmac = crypto.createHmac('sha256', secret)
+  hmac.update(payload)
+  const expected = \`sha256=\${hmac.digest('hex')}\`
+  return crypto.timingSafeEqual(Buffer.from(expected), Buffer.from(signature))
+}
+
+// 在 HTTP handler 中：
+const sig = req.headers['x-picfast-signature']
+const ts = req.headers['x-picfast-timestamp']
+if (Math.abs(Date.now()/1000 - parseInt(ts)) > 300) {
+  return res.status(400).send('时间戳已过期')
+}
+if (!verifySignature(secret, ts, JSON.stringify(req.body), sig)) {
+  return res.status(401).send('签名无效')
+}`;
 ---
 
 <DocsLayout title="Webhooks 集成" description="通过 Webhook 接收 PicFast 的实时事件通知。">
@@ -31,26 +51,7 @@ import DocsLayout from '../../layouts/DocsLayout.astro';
   <h2>验证签名</h2>
   <p>PicFast 使用 HMAC-SHA256 对每次投递进行签名。签名头为 <code>X-PicFast-Signature: sha256=...</code>。使用创建时返回的 webhook 密钥进行验证：</p>
 
-  <pre><code>import crypto from 'crypto'
-
-function verifySignature(secret, timestamp, rawBody, signature) {
-  const payload = `${timestamp}.${rawBody}`
-  const hmac = crypto.createHmac('sha256', secret)
-  hmac.update(payload)
-  const expected = `sha256=${hmac.digest('hex')}`
-  return crypto.timingSafeEqual(Buffer.from(expected), Buffer.from(signature))
-}
-
-// 在 HTTP handler 中：
-const sig = req.headers['x-picfast-signature']
-const ts = req.headers['x-picfast-timestamp']
-if (Math.abs(Date.now()/1000 - parseInt(ts)) > 300) {
-  return res.status(400).send('时间戳已过期')
-}
-if (!verifySignature(secret, ts, JSON.stringify(req.body), sig)) {
-  return res.status(401).send('签名无效')
-}
-</code></pre>
+  <pre><code>{verifySignatureCode}</code></pre>
 
   <h2>投递与重试</h2>
   <p>PicFast 在投递失败时使用指数退避进行重试：</p>
