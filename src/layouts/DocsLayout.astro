@@ -159,21 +159,40 @@ const locale = currentPath.startsWith('/zh') ? 'zh' : 'en';
 
   .sidebar-list a {
     display: block;
-    padding: 0.375rem 0.5rem;
+    padding: 0.4375rem 0.75rem;
     border-radius: var(--radius-sm);
-    font-size: 0.8125rem;
+    font-size: 0.84375rem;
     color: var(--text-muted);
-    transition: color 0.15s, background 0.15s;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     letter-spacing: -0.01em;
+    position: relative;
+    overflow: hidden;
   }
+  
+  .sidebar-list a::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; bottom: 0; right: 0;
+    background: var(--accent);
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    z-index: -1;
+  }
+
   .sidebar-list a:hover {
     color: var(--text);
     background: var(--bg-alt);
+    transform: translateX(2px);
   }
+
   .sidebar-list a.active {
     color: var(--accent);
-    background: var(--accent-subtle);
-    font-weight: 500;
+    font-weight: 600;
+    transform: translateX(2px);
+  }
+
+  .sidebar-list a.active::before {
+    opacity: 0.08;
   }
 
   .docs-content {
@@ -181,41 +200,65 @@ const locale = currentPath.startsWith('/zh') ? 'zh' : 'en';
   }
 
   .docs-content :global(h1) {
-    font-size: 2.25rem;
+    font-size: 2.5rem;
     font-weight: 800;
     letter-spacing: -0.035em;
-    margin-bottom: 0.75rem;
+    margin-bottom: 1.25rem;
     line-height: 1.2;
+    background: linear-gradient(135deg, var(--text) 0%, var(--text-muted) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .docs-content :global(h2),
+  .docs-content :global(h3),
+  .docs-content :global(h4) {
+    scroll-margin-top: 80px; /* Account for fixed header */
   }
 
   .docs-content :global(h2) {
     font-size: 1.5rem;
     font-weight: 700;
     letter-spacing: -0.02em;
-    margin-top: 2.75rem;
-    margin-bottom: 0.625rem;
+    margin-top: 3rem;
+    margin-bottom: 1rem;
     padding-bottom: 0.5rem;
     border-bottom: 1px solid var(--border);
+    color: var(--text);
   }
 
   .docs-content :global(h3) {
     font-size: 1.1875rem;
     font-weight: 650;
-    margin-top: 1.75rem;
+    margin-top: 2rem;
+    margin-bottom: 0.75rem;
+    color: var(--text);
+  }
+
+  .docs-content :global(h4) {
+    font-size: 1.0625rem;
+    font-weight: 600;
+    margin-top: 1.5rem;
     margin-bottom: 0.5rem;
+    color: var(--text);
   }
 
   .docs-content :global(p) {
-    margin-bottom: 1rem;
-    color: var(--text);
+    margin-bottom: 1.125rem;
+    color: var(--text-muted);
     line-height: 1.75;
     font-size: 0.96875rem;
   }
 
   .docs-content :global(ul),
   .docs-content :global(ol) {
-    margin-bottom: 1rem;
+    margin-bottom: 1.125rem;
     padding-left: 1.5rem;
+    color: var(--text-muted);
+  }
+
+  .docs-content :global(li::marker) {
+    color: var(--text-dim);
   }
 
   .docs-content :global(li) {
@@ -226,26 +269,51 @@ const locale = currentPath.startsWith('/zh') ? 'zh' : 'en';
 
   .docs-content :global(a) {
     color: var(--accent);
+    text-decoration-thickness: 1px;
+    text-underline-offset: 2px;
+    transition: color 0.2s;
   }
   .docs-content :global(a:hover) {
+    color: var(--accent-hover);
     text-decoration: underline;
   }
 
+  .docs-content :global(blockquote) {
+    margin: 1.5rem 0;
+    padding: 1rem 1.25rem;
+    border-left: 3px solid var(--accent);
+    background: var(--accent-subtle);
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    color: var(--text);
+  }
+
+  .docs-content :global(blockquote p) {
+    margin-bottom: 0;
+  }
+
+  .docs-content :global(blockquote p:not(:last-child)) {
+    margin-bottom: 0.75rem;
+  }
+
   .docs-content :global(.code-block) {
-    margin: 1.25rem 0;
+    margin: 1.5rem 0;
   }
 
   .docs-content :global(table) {
     width: 100%;
     border-collapse: collapse;
-    margin: 1.25rem 0;
+    margin: 1.5rem 0;
     font-size: 0.875rem;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-sm);
   }
 
   .docs-content :global(th),
   .docs-content :global(td) {
     text-align: left;
-    padding: 0.625rem 0.875rem;
+    padding: 0.75rem 1rem;
     border-bottom: 1px solid var(--border);
   }
 
@@ -253,15 +321,20 @@ const locale = currentPath.startsWith('/zh') ? 'zh' : 'en';
     font-weight: 600;
     background: var(--bg-alt);
     position: sticky;
-    top: 60px;
+    top: 56px;
+    color: var(--text);
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    font-size: 0.75rem;
   }
 
-  .docs-content :global(tbody tr:hover) {
-    background: var(--bg-alt);
+  .docs-content :global(tbody tr:hover td) {
+    background: var(--accent-subtle);
   }
 
   .docs-content :global(pre) {
     line-height: 1.7;
+    box-shadow: var(--shadow-sm);
   }
 
   .docs-content :global(td code) {
