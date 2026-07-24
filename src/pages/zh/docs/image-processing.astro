@@ -2,7 +2,7 @@
 import DocsLayout from '../../../layouts/DocsLayout.astro';
 ---
 
-<DocsLayout title="图片处理" description="PicFast 的两层图片处理：URL 参数动态处理 与 上传时服务端处理。">
+<DocsLayout title="图片处理与管理" description="PicFast 的两层图片处理，以及标签、EXIF 元数据、高级搜索和 OCR。">
   <h1>图片处理</h1>
   <p>
     PicFast 提供两套图片处理机制，根据场景选择：
@@ -112,4 +112,34 @@ https://picfast.example.com/i/abc123.jpg@w_300,h_200,q_60,f_webp</code></pre>
     </tbody>
   </table>
   <p>如果云存储后端直接返回 CDN 地址，可以改用云厂商自带的图片处理参数（如阿里云 OSS <code>?x-oss-process=...</code>、七牛 <code>?imageView2/...</code>）替代 PicFast 的 URL 动态层。</p>
+
+  <h2>图片详情与搜索</h2>
+  <p>每张图片都携带元数据，管理后台和公开图片详情页均可查看。点击图片即可打开详情面板。</p>
+
+  <h3>EXIF 元数据</h3>
+  <p>PicFast 在上传时自动从每张 JPEG 中提取 EXIF 元数据（相机型号、镜头、曝光参数、GPS 位置等），并在图片详情面板中展示。无需额外配置，服务端上传时自动完成。</p>
+
+  <h3>标签</h3>
+  <p>图片可通过标签进行分类管理。标签在图片详情面板或「标签」管理页面中操作。支持的操作：</p>
+  <ul>
+    <li>在管理后台标签页创建和删除标签</li>
+    <li>在详情面板中为任意图片添加或移除标签</li>
+    <li>在图片列表中按标签筛选</li>
+    <li>所有标签接口均验证标签所有权和图片可见性</li>
+  </ul>
+
+  <h3>高级搜索</h3>
+  <p>图片列表除基础关键词搜索外，还支持以下筛选：</p>
+  <table>
+    <thead><tr><th>筛选条件</th><th>说明</th></tr></thead>
+    <tbody>
+      <tr><td>关键词</td><td>对文件名做不区分大小写的模糊匹配</td></tr>
+      <tr><td>文件类型</td><td>按扩展名筛选（png、jpg、webp、gif 等）</td></tr>
+      <tr><td>日期范围</td><td>按上传时间起止范围筛选</td></tr>
+      <tr><td>标签</td><td>筛选拥有指定标签的图片</td></tr>
+    </tbody>
+  </table>
+
+  <h3>OCR 文字识别</h3>
+  <p>每张图片预留了 <code>ocr_text</code> 字段。配置 OCR 识别服务后，提取的文字将存入该字段并展示在图片详情面板中。内置 OCR 功能由 <code>app.enable_dummy_ocr</code> 控制（默认关闭），并发数上限为 5 — 生产环境建议接入真实 OCR 服务。</p>
 </DocsLayout>

@@ -14,12 +14,56 @@ const picgoConfig = `{
 }`;
 
 const dropshareHeader = '{"Authorization": "Bearer <YOUR_API_TOKEN>"}';
+const vscodeSettings = `{
+  "picfast.baseUrl": "https://picfast.example.com",
+  "picfast.apiToken": "img_xxxxxxxx"
+}`;
 ---
 
-<DocsLayout title="客户端工具" description="将 PicGo、PicList、uPic、Dropshare、Obsidian 接入 PicFast。">
+<DocsLayout title="客户端工具" description="将 PicGo、PicList、uPic、Dropshare、Obsidian、VS Code 以及 PicFast CLI 接入 PicFast。">
   <h1>客户端工具</h1>
   <p>
     PicFast 提供扁平上传端点 <code>/api/v1/flat/upload</code>，返回简洁的 JSON 响应，非常适合对接第三方上传客户端。以下工具均使用同一接口。
+  </p>
+
+  <h2>VS Code 插件</h2>
+  <p>
+    官方 <strong>PicFast Image Uploader</strong> 插件（<code>atbeta.picfast</code>）让你在 VS Code 中直接上传图片。可从 <a href="https://marketplace.visualstudio.com/items?itemName=atbeta.picfast" target="_blank" rel="noopener">VS Code Marketplace</a> 安装。
+  </p>
+  <h3>功能</h3>
+  <ul>
+    <li><strong>CodeLens</strong> — 在 <code>.md</code> 和 <code>.mdx</code> 文件中，每个本地图片引用上方会出现可点击的上传链接</li>
+    <li><strong>批量上传</strong> — 在文件中右键选择「上传全部本地图片」一键替换所有引用</li>
+    <li><strong>快捷键</strong> — <kbd>Ctrl+Alt+U</kbd> / <kbd>Cmd+Alt+U</kbd> 批量上传，<kbd>Ctrl+Alt+V</kbd> / <kbd>Cmd+Alt+V</kbd> 单张上传</li>
+    <li>双语界面（英文 + 简体中文）</li>
+  </ul>
+  <h3>配置</h3>
+  <p>在 VS Code 设置中（<code>Ctrl+,</code> / <code>Cmd+,</code>）：</p>
+  <pre><code>{vscodeSettings}</code></pre>
+  <p>若不设置 <code>picfast.apiToken</code>，插件将以游客模式运行（需要在实例上启用游客上传）。</p>
+
+  <h2>CLI 命令行工具</h2>
+  <p>
+    <code>picfast</code> 命令行工具让你在终端里直接上传图片。通过 npm 安装：
+  </p>
+  <pre><code>npm install -g picfast</code></pre>
+  <p>或无需安装直接运行：</p>
+  <pre><code>npx picfast screenshot.png</code></pre>
+  <h3>用法</h3>
+  <pre><code># 设置服务器地址和 API Token
+export PICFAST_URL="https://picfast.example.com"
+export PICFAST_TOKEN="img_xxxxxxxx"
+
+# 上传图片
+picfast screenshot.png
+
+# 以 Markdown 格式输出
+picfast --format markdown screenshot.png
+
+# 以 Markdown 格式输出（短参数）
+picfast -m screenshot.png</code></pre>
+  <p>
+    CLI 支持 <code>darwin</code>、<code>linux</code>、<code>windows</code> 及 <code>amd64</code> 和 <code>arm64</code> 架构。npm 包安装时自动下载对应平台的二进制文件。npm 包地址：<a href="https://www.npmjs.com/package/picfast" target="_blank" rel="noopener">picfast</a>。
   </p>
 
   <h2>PicGo / PicList</h2>

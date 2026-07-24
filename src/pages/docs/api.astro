@@ -74,7 +74,7 @@ import DocsLayout from '../../layouts/DocsLayout.astro';
     <thead><tr><th>Method</th><th>Path</th><th>Auth</th><th>Description</th></tr></thead>
     <tbody>
       <tr><td>POST</td><td><code>/api/v1/images</code></td><td>JWT / token</td><td>Upload an image (multipart)</td></tr>
-      <tr><td>GET</td><td><code>/api/v1/images</code></td><td>JWT / token</td><td>List your images (paginated, filterable by album_id)</td></tr>
+      <tr><td>GET</td><td><code>/api/v1/images</code></td><td>JWT / token</td><td>List your images (paginated, filterable by keyword, extension, date range, tag, album_id)</td></tr>
       <tr><td>GET</td><td><code>/api/v1/images/&#123;key&#125;</code></td><td>JWT / token</td><td>Get image details by key</td></tr>
       <tr><td>PATCH</td><td><code>/api/v1/images/&#123;key&#125;</code></td><td>JWT / token</td><td>Update image (album_id, permission)</td></tr>
       <tr><td>DELETE</td><td><code>/api/v1/images/&#123;key&#125;</code></td><td>JWT / token</td><td>Delete an image by key</td></tr>
@@ -141,14 +141,33 @@ import DocsLayout from '../../layouts/DocsLayout.astro';
       <tr><td>GET / PUT / DELETE</td><td><code>/admin/groups/&#123;id&#125;</code></td><td>View, update, or delete a group</td></tr>
       <tr><td>GET / POST</td><td><code>/admin/strategies</code></td><td>List or create storage strategies</td></tr>
       <tr><td>GET / PUT / DELETE</td><td><code>/admin/strategies/&#123;id&#125;</code></td><td>View, update, or delete a strategy</td></tr>
-      <tr><td>GET</td><td><code>/admin/images</code></td><td>List all images (filter by keyword, email, extension)</td></tr>
+      <tr><td>GET</td><td><code>/admin/images</code></td><td>List all images (filter by keyword, email, extension, date range, tags)</td></tr>
       <tr><td>DELETE</td><td><code>/admin/images/&#123;id&#125;</code></td><td>Delete any image by ID</td></tr>
       <tr><td>GET</td><td><code>/admin/moderation/pending</code></td><td>List images pending moderation</td></tr>
       <tr><td>POST</td><td><code>/admin/moderation/&#123;id&#125;/approve</code></td><td>Approve an image</td></tr>
       <tr><td>POST</td><td><code>/admin/moderation/&#123;id&#125;/reject</code></td><td>Reject an image (optional reason)</td></tr>
       <tr><td>GET / PUT</td><td><code>/admin/settings</code></td><td>View or update site settings (runtime hot-reload)</td></tr>
       <tr><td>GET</td><td><code>/admin/audit-logs</code></td><td>List audit logs (filter by action, resource_type)</td></tr>
+      <tr><td>GET</td><td><code>/admin/audit-logs/events</code></td><td>List available audit event types</td></tr>
       <tr><td>GET</td><td><code>/admin/observability/summary</code></td><td>System overview (uptime, health, DB pool, usage stats)</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Audit log events</h3>
+  <p>The audit log records the following event types (enabled by default via <code>audit_upload_logs</code>):</p>
+  <table>
+    <thead><tr><th>Event</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr><td><code>upload.success</code></td><td>Image uploaded successfully</td></tr>
+      <tr><td><code>upload.delete</code></td><td>Image deleted</td></tr>
+      <tr><td><code>tag.create</code></td><td>Tag created</td></tr>
+      <tr><td><code>image.tag_add</code></td><td>Tag added to an image</td></tr>
+      <tr><td><code>image.tag_remove</code></td><td>Tag removed from an image</td></tr>
+      <tr><td><code>webhook.create</code></td><td>Webhook created</td></tr>
+      <tr><td><code>webhook.delete</code></td><td>Webhook deleted</td></tr>
+      <tr><td><code>user.register</code></td><td>New user registration</td></tr>
+      <tr><td><code>user.password_change</code></td><td>User changed their password</td></tr>
+      <tr><td><code>user.password_reset</code></td><td>User reset their password</td></tr>
     </tbody>
   </table>
 

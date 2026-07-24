@@ -2,7 +2,7 @@
 import DocsLayout from '../../layouts/DocsLayout.astro';
 ---
 
-<DocsLayout title="Image Processing" description="PicFast's two image processing layers: on-the-fly via URL parameters, and server-side at upload time.">
+<DocsLayout title="Image Processing &amp; Management" description="PicFast's two image processing layers, plus tags, EXIF metadata, advanced search, and OCR.">
   <h1>Image Processing</h1>
   <p>
     PicFast offers two layers of image processing. Choose based on whether you need to transform a single image
@@ -113,4 +113,34 @@ https://picfast.example.com/i/abc123.jpg@w_300,h_200,q_60,f_webp</code></pre>
     </tbody>
   </table>
   <p>For cloud backends that return direct CDN URLs, you can alternatively use the cloud provider's native image processing parameters (e.g. Alibaba OSS <code>?x-oss-process=...</code>, Qiniu <code>?imageView2/...</code>) in place of PicFast's on-the-fly layer.</p>
+
+  <h2>Image details &amp; search</h2>
+  <p>Every image in PicFast carries metadata that the admin panel and public image detail page can surface. Click an image to open its detail drawer.</p>
+
+  <h3>EXIF metadata</h3>
+  <p>PicFast extracts EXIF metadata (camera model, lens, exposure, GPS, etc.) from every uploaded JPEG and displays it in the image detail drawer. No configuration needed — the data is extracted server-side at upload time.</p>
+
+  <h3>Tags</h3>
+  <p>Images can be organized with tags. Tags are per-image and managed through the image detail drawer or the <strong>Tags</strong> admin page. Available operations:</p>
+  <ul>
+    <li>Create and delete tags from the admin Tags page</li>
+    <li>Add or remove tags on any image from the detail drawer</li>
+    <li>Filter images by tag in the image list</li>
+    <li>Tag ownership and image visibility checks are enforced on all tag endpoints</li>
+  </ul>
+
+  <h3>Advanced search</h3>
+  <p>The image list supports filtering beyond simple keyword search:</p>
+  <table>
+    <thead><tr><th>Filter</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr><td>Keyword</td><td>Case-insensitive ILIKE match against image filenames</td></tr>
+      <tr><td>Extension</td><td>Filter by file type (png, jpg, webp, gif, etc.)</td></tr>
+      <tr><td>Date range</td><td>Filter images uploaded within a start and end date</td></tr>
+      <tr><td>Tags</td><td>Filter images that have specific tags assigned</td></tr>
+    </tbody>
+  </table>
+
+  <h3>OCR text</h3>
+  <p>PicFast reserves an <code>ocr_text</code> column on every image row. When an OCR processor is configured, extracted text is stored here and displayed in the image detail drawer. Built-in OCR processing is gated behind <code>app.enable_dummy_ocr</code> (off by default) and capped at 5 concurrent goroutines — swap in a real OCR provider for production use.</p>
 </DocsLayout>

@@ -45,7 +45,12 @@ app:
   allow_user_image_processing: true
   skip_image_processing: false
   require_email_verification: true
-  audit_upload_logs: false
+  audit_upload_logs: true
+  image_key_min_length: 4
+  show_powered_by: true
+  show_login_link: true
+  guest_upload_notice_title: ""
+  guest_upload_notice_subtitle: ""
   user_initial_capacity: 524288000
   guest_capacity_bytes: 10737418240
   default_image_ttl: "0"
@@ -121,7 +126,12 @@ app:
       <tr><td><code>skip_image_processing</code></td><td><code>PICFAST_APP_SKIP_IMAGE_PROCESSING</code></td><td>bool</td><td>false</td><td>Skip all image processing and store original files as-is. When enabled, user image processing settings are hidden and ignored.</td></tr>
       <tr><td><code>max_upload_bytes</code></td><td><code>PICFAST_APP_MAX_UPLOAD_BYTES</code></td><td>int64</td><td>52428800</td><td>Default per-file upload limit in bytes (50 MB). Group-level limits can override this.</td></tr>
       <tr><td><code>require_email_verification</code></td><td><code>PICFAST_APP_REQUIRE_EMAIL_VERIFICATION</code></td><td>bool</td><td>false</td><td>Require email verification before login. Only takes effect when SMTP is configured and reachable.</td></tr>
-      <tr><td><code>audit_upload_logs</code></td><td><code>PICFAST_APP_AUDIT_UPLOAD_LOGS</code></td><td>bool</td><td>false</td><td>Log all upload events to the audit log table</td></tr>
+      <tr><td><code>audit_upload_logs</code></td><td><code>PICFAST_APP_AUDIT_UPLOAD_LOGS</code></td><td>bool</td><td>true</td><td>Log all uploads, tag changes, webhook and user lifecycle events to the audit log table</td></tr>
+      <tr><td><code>image_key_min_length</code></td><td><code>PICFAST_APP_IMAGE_KEY_MIN_LENGTH</code></td><td>int</td><td>4</td><td>Minimum length for generated image keys (range 4-10). Raise to avoid sequential-looking short URLs.</td></tr>
+      <tr><td><code>show_powered_by</code></td><td><code>PICFAST_APP_SHOW_POWERED_BY</code></td><td>bool</td><td>true</td><td>Show "Powered by PicFast" footer line. Set to <code>false</code> for white-label internal deployments.</td></tr>
+      <tr><td><code>show_login_link</code></td><td><code>PICFAST_APP_SHOW_LOGIN_LINK</code></td><td>bool</td><td>true</td><td>Show Login button in the public header. Set to <code>false</code> for internal deployments (<code>/login</code> stays reachable directly).</td></tr>
+      <tr><td><code>guest_upload_notice_title</code></td><td><code>PICFAST_APP_GUEST_UPLOAD_NOTICE_TITLE</code></td><td>string</td><td>""</td><td>Title for the guest upload notice block. Leave both title and subtitle empty to hide the block entirely.</td></tr>
+      <tr><td><code>guest_upload_notice_subtitle</code></td><td><code>PICFAST_APP_GUEST_UPLOAD_NOTICE_SUBTITLE</code></td><td>string</td><td>""</td><td>Subtitle for the guest upload notice block. Leave both title and subtitle empty to hide the block entirely.</td></tr>
       <tr><td><code>user_initial_capacity</code></td><td><code>PICFAST_APP_USER_INITIAL_CAPACITY</code></td><td>int64</td><td>524288000</td><td>Default storage quota per user in bytes (500 MB)</td></tr>
       <tr><td><code>default_image_ttl</code></td><td><code>PICFAST_APP_DEFAULT_IMAGE_TTL</code></td><td>duration</td><td>0 (never)</td><td>Default expiry for uploaded images (0 = never, e.g. <code>24h</code>, <code>168h</code>)</td></tr>
       <tr><td><code>guest_image_ttl</code></td><td><code>PICFAST_APP_GUEST_IMAGE_TTL</code></td><td>duration</td><td>0 (never)</td><td>Separate expiry for guest uploads (0 = use <code>default_image_ttl</code>)</td></tr>

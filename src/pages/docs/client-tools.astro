@@ -15,12 +15,56 @@ const picgoConfig = `{
 
 const dropshareHeader = '{"Authorization": "Bearer <YOUR_API_TOKEN>"}';
 const uPicUrlPath = '[\\"url\\"]';
+const vscodeSettings = `{
+  "picfast.baseUrl": "https://picfast.example.com",
+  "picfast.apiToken": "img_xxxxxxxx"
+}`;
 ---
 
-<DocsLayout title="Client Tools" description="Connect PicGo, PicList, uPic, Dropshare, and Obsidian to PicFast.">
+<DocsLayout title="Client Tools" description="Connect PicGo, PicList, uPic, Dropshare, Obsidian, VS Code, and the PicFast CLI to PicFast.">
   <h1>Client Tools</h1>
   <p>
     PicFast provides a flat upload endpoint at <code>/api/v1/flat/upload</code> that returns a clean JSON response — ideal for third-party upload clients. All tools below use this same endpoint.
+  </p>
+
+  <h2>VS Code Extension</h2>
+  <p>
+    The official <strong>PicFast Image Uploader</strong> extension (<code>atbeta.picfast</code>) lets you upload images directly from VS Code. Install it from the <a href="https://marketplace.visualstudio.com/items?itemName=atbeta.picfast" target="_blank" rel="noopener">VS Code Marketplace</a>.
+  </p>
+  <h3>Features</h3>
+  <ul>
+    <li><strong>CodeLens</strong> — a clickable upload link appears above every local image reference in <code>.md</code> and <code>.mdx</code> files</li>
+    <li><strong>Bulk upload</strong> — right-click in a file and select "Upload All Local Images" to batch-upload and replace every reference at once</li>
+    <li><strong>Keyboard shortcuts</strong> — <kbd>Ctrl+Alt+U</kbd> / <kbd>Cmd+Alt+U</kbd> for bulk upload, <kbd>Ctrl+Alt+V</kbd> / <kbd>Cmd+Alt+V</kbd> for single upload</li>
+    <li>Bilingual UI (English + Simplified Chinese)</li>
+  </ul>
+  <h3>Configuration</h3>
+  <p>In VS Code settings (<code>Ctrl+,</code> / <code>Cmd+,</code>):</p>
+  <pre><code>{vscodeSettings}</code></pre>
+  <p>If <code>picfast.apiToken</code> is omitted, the extension operates in guest mode (requires guest upload to be enabled on your instance).</p>
+
+  <h2>CLI</h2>
+  <p>
+    The <code>picfast</code> CLI lets you upload images from the terminal. Install it via npm:
+  </p>
+  <pre><code>npm install -g picfast</code></pre>
+  <p>Or run without installing:</p>
+  <pre><code>npx picfast screenshot.png</code></pre>
+  <h3>Usage</h3>
+  <pre><code># Set your server URL and API token
+export PICFAST_URL="https://picfast.example.com"
+export PICFAST_TOKEN="img_xxxxxxxx"
+
+# Upload an image
+picfast screenshot.png
+
+# Output as Markdown
+picfast --format markdown screenshot.png
+
+# Output as Markdown (short flag)
+picfast -m screenshot.png</code></pre>
+  <p>
+    The CLI supports <code>darwin</code>, <code>linux</code>, and <code>windows</code> on both <code>amd64</code> and <code>arm64</code>. The npm package auto-downloads the right binary for your platform on install. The npm package is <a href="https://www.npmjs.com/package/picfast" target="_blank" rel="noopener">picfast</a>.
   </p>
 
   <h2>PicGo / PicList</h2>

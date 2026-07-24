@@ -45,7 +45,12 @@ app:
   allow_user_image_processing: true
   skip_image_processing: false
   require_email_verification: true
-  audit_upload_logs: false
+  audit_upload_logs: true
+  image_key_min_length: 4
+  show_powered_by: true
+  show_login_link: true
+  guest_upload_notice_title: ""
+  guest_upload_notice_subtitle: ""
   user_initial_capacity: 524288000
   guest_capacity_bytes: 10737418240
   default_image_ttl: "0"
@@ -121,7 +126,12 @@ app:
       <tr><td><code>skip_image_processing</code></td><td><code>PICFAST_APP_SKIP_IMAGE_PROCESSING</code></td><td>bool</td><td>false</td><td>跳过所有图片处理，直接保存原始文件。开启后用户图片处理设置会被隐藏且忽略。</td></tr>
       <tr><td><code>max_upload_bytes</code></td><td><code>PICFAST_APP_MAX_UPLOAD_BYTES</code></td><td>int64</td><td>52428800</td><td>默认单文件上传限制（50 MB），分组级别的限制可覆盖此值</td></tr>
       <tr><td><code>require_email_verification</code></td><td><code>PICFAST_APP_REQUIRE_EMAIL_VERIFICATION</code></td><td>bool</td><td>false</td><td>登录前必须验证邮箱。仅在 SMTP 配置正确且可达时生效。</td></tr>
-      <tr><td><code>audit_upload_logs</code></td><td><code>PICFAST_APP_AUDIT_UPLOAD_LOGS</code></td><td>bool</td><td>false</td><td>记录所有上传操作到审计日志</td></tr>
+      <tr><td><code>audit_upload_logs</code></td><td><code>PICFAST_APP_AUDIT_UPLOAD_LOGS</code></td><td>bool</td><td>true</td><td>记录所有上传、标签变更、Webhook 和用户生命周期事件到审计日志</td></tr>
+      <tr><td><code>image_key_min_length</code></td><td><code>PICFAST_APP_IMAGE_KEY_MIN_LENGTH</code></td><td>int</td><td>4</td><td>生成图片 key 的最小长度（范围 4-10）。调大可以避免短 URL 看起来像自增 ID。</td></tr>
+      <tr><td><code>show_powered_by</code></td><td><code>PICFAST_APP_SHOW_POWERED_BY</code></td><td>bool</td><td>true</td><td>页脚显示「Powered by PicFast」。内网/白标部署时设为 <code>false</code> 可隐藏。</td></tr>
+      <tr><td><code>show_login_link</code></td><td><code>PICFAST_APP_SHOW_LOGIN_LINK</code></td><td>bool</td><td>true</td><td>公共页头显示「登录」按钮。内网部署时设为 <code>false</code> 可隐藏（<code>/login</code> 仍可直接访问）。</td></tr>
+      <tr><td><code>guest_upload_notice_title</code></td><td><code>PICFAST_APP_GUEST_UPLOAD_NOTICE_TITLE</code></td><td>string</td><td>""</td><td>游客上传提示区域的标题。标题和副标题都为空则会隐藏整个提示区块。</td></tr>
+      <tr><td><code>guest_upload_notice_subtitle</code></td><td><code>PICFAST_APP_GUEST_UPLOAD_NOTICE_SUBTITLE</code></td><td>string</td><td>""</td><td>游客上传提示区域的副标题。标题和副标题都为空则会隐藏整个提示区块。</td></tr>
       <tr><td><code>user_initial_capacity</code></td><td><code>PICFAST_APP_USER_INITIAL_CAPACITY</code></td><td>int64</td><td>524288000</td><td>新用户默认存储配额（500 MB）</td></tr>
       <tr><td><code>default_image_ttl</code></td><td><code>PICFAST_APP_DEFAULT_IMAGE_TTL</code></td><td>duration</td><td>0（永不过期）</td><td>图片默认过期时间（如 <code>24h</code>、<code>168h</code>；0 = 永不过期）</td></tr>
       <tr><td><code>guest_image_ttl</code></td><td><code>PICFAST_APP_GUEST_IMAGE_TTL</code></td><td>duration</td><td>0（永不过期）</td><td>游客上传图片的独立过期时间（0 = 使用 <code>default_image_ttl</code>）</td></tr>
