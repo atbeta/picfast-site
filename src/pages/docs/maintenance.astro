@@ -8,11 +8,21 @@ import DocsLayout from '../../layouts/DocsLayout.astro';
 >
   <h1>Backup & Maintenance</h1>
   <p>
-    PicFast includes a <code>picfast maintenance</code> CLI for consistency checks, backups, archive verification, restores, and optional thumbnail repair.
-    Run commands on the <strong>server</strong> or inside the application container — not from the browser. The admin console only surfaces copy‑paste hints.
+    PicFast includes a <strong>Maintenance Dashboard</strong> in the admin console to view disk health, database statistics, and pHash coverage, along with a built-in cleanup tool. For deeper operations, the <code>picfast maintenance</code> CLI handles consistency checks, backups, restores, and thumbnail repairs.
   </p>
 
-  <h2>Before you run</h2>
+  <h2>Admin Dashboard</h2>
+  <p>
+    Navigate to <strong>Maintenance</strong> in the admin console to monitor system health and perform routine cleanups:
+  </p>
+  <ul>
+    <li><strong>Disk Health:</strong> Real-time storage capacity, usage, and inode statistics for the local backend.</li>
+    <li><strong>Database Stats:</strong> Overview of row counts, sizes, and pHash calculation coverage.</li>
+    <li><strong>Cleanup Tool:</strong> Identify and delete unlinked objects from the storage backend (files without a database record).</li>
+    <li><strong>Risk Audit:</strong> Check for configurations that might pose a security or operational risk.</li>
+  </ul>
+
+  <h2>CLI: Before you run</h2>
   <ul>
     <li>Use the same configuration as the running instance (<code>config.yaml</code> / environment) so the CLI can reach PostgreSQL and your storage backends.</li>
     <li>In Docker Compose examples below, replace <code>&lt;service&gt;</code> with your <strong>actual Compose service name</strong> for PicFast (many examples use <code>app</code>; yours may differ — check <code>docker-compose.yml</code>).</li>
@@ -34,6 +44,7 @@ import DocsLayout from '../../layouts/DocsLayout.astro';
       <tr><td><code>inspect</code></td><td>Validates <code>manifest.json</code> and checksums inside a backup tarball.</td></tr>
       <tr><td><code>restore</code></td><td>Preflight by default; <code>--apply</code> performs writes. Restoring into a non‑empty database requires <code>--force</code>.</td></tr>
       <tr><td><code>repair-thumbnails</code></td><td>Rebuilds missing thumbnails from source objects (dry‑run unless <code>--apply</code>).</td></tr>
+      <tr><td><code>recalc-phash</code></td><td>Recalculates missing perceptual hashes (pHash) for all eligible images.</td></tr>
     </tbody>
   </table>
 

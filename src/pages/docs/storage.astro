@@ -66,7 +66,7 @@ import DocsLayout from '../../layouts/DocsLayout.astro';
 &#125;</code></pre>
 
   <h2>Link mode</h2>
-  <p>By default, cloud backends (S3, OSS, COS, Kodo) return direct CDN URLs for uploaded images. Local and WebDAV backends always serve through PicFast's proxy route (<code>/i/&#123;key&#125;.&#123;ext&#125;</code>).</p>
+  <p>By default, cloud backends (S3, OSS, COS, Kodo) return direct CDN URLs for uploaded images. The Local backend always serves through PicFast's proxy route (<code>/i/&#123;key&#125;.&#123;ext&#125;</code>). WebDAV backends default to proxy, but support <code>direct</code> mode which issues a 302 redirect to the WebDAV public endpoint.</p>
   <p>You can change this behavior with the <code>link_mode</code> field:</p>
   <table>
     <thead><tr><th>Value</th><th>Behavior</th></tr></thead>

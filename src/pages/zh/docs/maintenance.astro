@@ -8,11 +8,21 @@ import DocsLayout from '../../../layouts/DocsLayout.astro';
 >
   <h1>备份与维护</h1>
   <p>
-    PicFast 提供 <code>picfast maintenance</code> 命令行，用于一致性巡检、备份导出、归档校验、恢复以及可选的缩略图修复。
-    请在<strong>服务器</strong>或应用容器内执行；管理后台仅提供可复制命令参考，不会在浏览器里替你执行。
+    PicFast 在管理后台内置了<strong>维护仪表盘</strong>，可查看磁盘健康度、数据库统计和 pHash 覆盖率，并提供一键清理工具。对于深层操作，则提供 <code>picfast maintenance</code> 命令行，用于一致性巡检、备份导出、恢复以及缩略图修复。
   </p>
 
-  <h2>执行前注意</h2>
+  <h2>管理后台仪表盘</h2>
+  <p>
+    在管理后台导航至<strong>维护</strong>页面，监控系统健康状态并执行常规清理：
+  </p>
+  <ul>
+    <li><strong>磁盘健康：</strong> 实时查看本地存储后端的容量、使用量和 inode 统计。</li>
+    <li><strong>数据库统计：</strong> 概览记录数、表大小及 pHash 计算覆盖率。</li>
+    <li><strong>清理工具：</strong> 识别并删除存储后端中的未关联对象（即没有数据库记录的孤儿文件）。</li>
+    <li><strong>风险审计：</strong> 检查可能存在安全或运维风险的系统配置。</li>
+  </ul>
+
+  <h2>CLI: 执行前注意</h2>
   <ul>
     <li>使用与线上实例一致的配置（<code>config.yaml</code> / 环境变量），以便 CLI 能连接 PostgreSQL 与各存储后端。</li>
     <li>下文 Compose 示例中的 <code>&lt;service&gt;</code> 须替换为你在 <code>docker-compose.yml</code> 里为 PicFast 定义的<strong>实际服务名</strong>（示例仓库常用 <code>app</code>，你的环境可能不同）。</li>
@@ -34,6 +44,7 @@ import DocsLayout from '../../../layouts/DocsLayout.astro';
       <tr><td><code>inspect</code></td><td>校验备份包内的 <code>manifest.json</code> 与校验和。</td></tr>
       <tr><td><code>restore</code></td><td>默认仅预检；加 <code>--apply</code> 才写入。目标库非空时需显式 <code>--force</code>。</td></tr>
       <tr><td><code>repair-thumbnails</code></td><td>根据源对象重建缺失缩略图（默认演练，<code>--apply</code> 才写入）。</td></tr>
+      <tr><td><code>recalc-phash</code></td><td>为所有符合条件的图片重新计算缺失的感知哈希 (pHash)。</td></tr>
     </tbody>
   </table>
 

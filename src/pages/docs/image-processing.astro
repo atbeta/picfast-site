@@ -120,6 +120,9 @@ https://picfast.example.com/i/abc123.jpg@w_300,h_200,q_60,f_webp</code></pre>
   <h3>EXIF metadata</h3>
   <p>PicFast extracts EXIF metadata (camera model, lens, exposure, GPS, etc.) from every uploaded JPEG and displays it in the image detail drawer. No configuration needed — the data is extracted server-side at upload time.</p>
 
+  <h3>Perceptual Hash (pHash)</h3>
+  <p>During upload, PicFast calculates a 64-bit Perceptual Hash (pHash) for supported image formats. Unlike cryptographic hashes (which change completely if a single pixel changes), pHash remains similar even if the image is resized, slightly cropped, or compressed. This data powers duplicate detection and visual similarity checks.</p>
+
   <h3>Tags</h3>
   <p>Images can be organized with tags. Tags are per-image and managed through the image detail drawer or the <strong>Tags</strong> admin page. Available operations:</p>
   <ul>

@@ -67,7 +67,7 @@ import DocsLayout from '../../../layouts/DocsLayout.astro';
 &#125;</code></pre>
 
   <h2>链接模式</h2>
-  <p>默认情况下，云存储后端（S3、OSS、COS、Kodo）返回 CDN 直链。本地和 WebDAV 后端始终通过 PicFast 的代理路由（<code>/i/&#123;key&#125;.&#123;ext&#125;</code>）提供服务。</p>
+  <p>默认情况下，云存储后端（S3、OSS、COS、Kodo）返回 CDN 直链。本地后端始终通过 PicFast 的代理路由（<code>/i/&#123;key&#125;.&#123;ext&#125;</code>）提供服务。WebDAV 默认使用代理模式，但也支持 <code>direct</code> 模式（通过 302 重定向至 WebDAV 公开端点）。</p>
   <p>可通过 <code>link_mode</code> 字段更改此行为：</p>
   <table>
     <thead><tr><th>值</th><th>行为</th></tr></thead>
