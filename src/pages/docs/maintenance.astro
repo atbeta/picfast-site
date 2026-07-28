@@ -59,6 +59,91 @@ import DocsLayout from '../../layouts/DocsLayout.astro';
   <h2>PostgreSQL client tools</h2>
   <p>If the host does not have <code>pg_dump</code> / <code>pg_restore</code>, the CLI can shell into a Postgres container (e.g. <code>--pg-dump-container</code> / <code>--pg-restore-container</code>) — see <code>--help</code> on <code>backup</code> and <code>restore</code>.</p>
 
+  <h2>Automated Backups</h2>
+  <p>
+    Use host <code>cron</code> to schedule recurring backups — no code changes needed.
+    Two complementary strategies:
+  </p>
+  <table>
+    <thead>
+      <tr><th>Type</th><th>Frequency</th><th>Scope</th><th>Retention</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>db-only</td><td>Hourly</td><td>PostgreSQL metadata only</td><td>Last 48 copies</td></tr>
+      <tr><td>full</td><td>Daily</td><td>Database + object files</td><td>Last 7 copies</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Step 1: Database backup script</h3>
+  <p>Create <code>/opt/picfast/backup-db.sh</code>:</p>
+  <pre><code>#!/bin/bash
+set -euo pipefail
+
+CONTAINER="$${1:-picfast-db}"
+BACKUP_DIR="$${2:-/opt/picfast/data/backups}"
+DB_USER="$${3:-picfast}"
+DB_NAME="$${4:-picfast}"
+RETENTION="$${5:-48}"
+
+TIMESTAMP=$(date +%Y%m%d-%H%M)
+OUTPUT="$BACKUP_DIR/db-$TIMESTAMP.dump.gz"
+mkdir -p "$BACKUP_DIR"
+
+docker exec "$CONTAINER" pg_dump --format=custom -U "$DB_USER" -d "$DB_NAME" \
+    | gzip &gt; "$OUTPUT"
+
+echo "Backup written: $OUTPUT ($(du -h "$OUTPUT" | cut -f1))"
+
+# Purge expired backups
+ls -1t "$BACKUP_DIR"/db-*.dump.gz 2&gt;/dev/null \
+    | tail -n +$((RETENTION + 1)) \
+    | xargs -r rm -v</code></pre>
+  <pre><code>chmod +x /opt/picfast/backup-db.sh</code></pre>
+
+  <h3>Step 2: Full backup script</h3>
+  <p>Create <code>/opt/picfast/backup-full.sh</code>:</p>
+  <pre><code>#!/bin/bash
+set -euo pipefail
+
+PROJECT_DIR="$${1:-/opt/picfast}"
+COMPOSE_FILE="$${2:-$PROJECT_DIR/docker/docker-compose.yml}"
+RETENTION="$${3:-7}"
+
+TIMESTAMP=$(date +%Y%m%d)
+OUTPUT="$PROJECT_DIR/data/backups/full-$TIMESTAMP.tar.gz"
+
+cd "$PROJECT_DIR"
+docker compose -f "$COMPOSE_FILE" run --rm app \
+    picfast maintenance backup \
+    --output "/app/data/backups/full-$TIMESTAMP.tar.gz"
+
+echo "Full backup written: $OUTPUT"
+ls -1t "$PROJECT_DIR"/data/backups/full-*.tar.gz \
+    | tail -n +$((RETENTION + 1)) \
+    | xargs -r rm -v</code></pre>
+  <pre><code>chmod +x /opt/picfast/backup-full.sh</code></pre>
+
+  <h3>Step 3: Cron schedule</h3>
+  <pre><code>crontab -e</code></pre>
+  <pre><code># PicFast automated backups
+0 * * * * /opt/picfast/backup-db.sh picfast-db /opt/picfast/data/backups picfast picfast 48
+0 3 * * * /opt/picfast/backup-full.sh /opt/picfast /opt/picfast/docker/docker-compose.yml 7</code></pre>
+
+  <h3>Step 4 (optional): Offsite sync</h3>
+  <p>Push backup directory and static files to remote storage with <a href="https://rclone.org" target="_blank" rel="noopener">rclone</a>:</p>
+  <pre><code>30 3 * * * rclone sync /opt/picfast/data/backups   remote:bucket/picfast-backups
+30 3 * * * rclone sync /opt/picfast/data/uploads   remote:bucket/picfast-uploads
+30 3 * * * rclone sync /opt/picfast/data/thumbnails remote:bucket/picfast-thumbnails</code></pre>
+
+  <h3>Restore from backup</h3>
+  <pre><code># Database only
+gunzip -c /opt/picfast/data/backups/db-20260728-1400.dump.gz | \
+    docker exec -i picfast-db pg_restore --clean --if-exists --no-owner -U picfast -d picfast
+
+# Full recovery
+docker compose -f docker/docker-compose.yml run --rm app \
+    picfast maintenance restore /app/data/backups/full-20260728.tar.gz --apply --force</code></pre>
+
   <h2>Full archive specification</h2>
   <p>
     Manifest schema, <code>objects.jsonl</code> vs checksum ledger, compatibility rules, and safety notes for operators and contributors live in the PicFast repo:

@@ -59,6 +59,90 @@ import DocsLayout from '../../../layouts/DocsLayout.astro';
   <h2>PostgreSQL 客户端工具</h2>
   <p>若宿主机未安装 <code>pg_dump</code> / <code>pg_restore</code>，可将 CLI 指向已有 Postgres 容器（如 <code>--pg-dump-container</code>、<code>--pg-restore-container</code>），详见 <code>backup</code> 与 <code>restore</code> 的 <code>--help</code>。</p>
 
+  <h2>自动备份</h2>
+  <p>
+    利用宿主机 <code>cron</code> 定时执行备份——无需修改任何代码。两种策略搭配使用：
+  </p>
+  <table>
+    <thead>
+      <tr><th>类型</th><th>频率</th><th>范围</th><th>保留</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>db-only</td><td>每小时</td><td>仅 PostgreSQL 元数据</td><td>最近 48 份</td></tr>
+      <tr><td>full</td><td>每天</td><td>数据库 + 图片文件</td><td>最近 7 份</td></tr>
+    </tbody>
+  </table>
+
+  <h3>第一步：数据库备份脚本</h3>
+  <p>创建 <code>/opt/picfast/backup-db.sh</code>：</p>
+  <pre><code>#!/bin/bash
+set -euo pipefail
+
+CONTAINER="$${1:-picfast-db}"
+BACKUP_DIR="$${2:-/opt/picfast/data/backups}"
+DB_USER="$${3:-picfast}"
+DB_NAME="$${4:-picfast}"
+RETENTION="$${5:-48}"
+
+TIMESTAMP=$(date +%Y%m%d-%H%M)
+OUTPUT="$BACKUP_DIR/db-$TIMESTAMP.dump.gz"
+mkdir -p "$BACKUP_DIR"
+
+docker exec "$CONTAINER" pg_dump --format=custom -U "$DB_USER" -d "$DB_NAME" \
+    | gzip &gt; "$OUTPUT"
+
+echo "备份完成: $OUTPUT ($(du -h "$OUTPUT" | cut -f1))"
+
+# 清理过期备份
+ls -1t "$BACKUP_DIR"/db-*.dump.gz 2&gt;/dev/null \
+    | tail -n +$((RETENTION + 1)) \
+    | xargs -r rm -v</code></pre>
+  <pre><code>chmod +x /opt/picfast/backup-db.sh</code></pre>
+
+  <h3>第二步：全量备份脚本</h3>
+  <p>创建 <code>/opt/picfast/backup-full.sh</code>：</p>
+  <pre><code>#!/bin/bash
+set -euo pipefail
+
+PROJECT_DIR="$${1:-/opt/picfast}"
+COMPOSE_FILE="$${2:-$PROJECT_DIR/docker/docker-compose.yml}"
+RETENTION="$${3:-7}"
+
+TIMESTAMP=$(date +%Y%m%d)
+OUTPUT="$PROJECT_DIR/data/backups/full-$TIMESTAMP.tar.gz"
+
+cd "$PROJECT_DIR"
+docker compose -f "$COMPOSE_FILE" run --rm app \
+    picfast maintenance backup \
+    --output "/app/data/backups/full-$TIMESTAMP.tar.gz"
+
+echo "全量备份完成: $OUTPUT"
+ls -1t "$PROJECT_DIR"/data/backups/full-*.tar.gz \
+    | tail -n +$((RETENTION + 1)) \
+    | xargs -r rm -v</code></pre>
+  <pre><code>chmod +x /opt/picfast/backup-full.sh</code></pre>
+
+  <h3>第三步：配置定时任务</h3>
+  <pre><code>crontab -e</code></pre>
+  <pre><code># PicFast 自动备份
+0 * * * * /opt/picfast/backup-db.sh picfast-db /opt/picfast/data/backups picfast picfast 48
+0 3 * * * /opt/picfast/backup-full.sh /opt/picfast /opt/picfast/docker/docker-compose.yml 7</code></pre>
+
+  <h3>第四步（可选）：异地同步</h3>
+  <p>用 <a href="https://rclone.org" target="_blank" rel="noopener">rclone</a> 将备份和静态文件推送到远程存储：</p>
+  <pre><code>30 3 * * * rclone sync /opt/picfast/data/backups   remote:bucket/picfast-backups
+30 3 * * * rclone sync /opt/picfast/data/uploads   remote:bucket/picfast-uploads
+30 3 * * * rclone sync /opt/picfast/data/thumbnails remote:bucket/picfast-thumbnails</code></pre>
+
+  <h3>从备份恢复</h3>
+  <pre><code># 仅数据库
+gunzip -c /opt/picfast/data/backups/db-20260728-1400.dump.gz | \
+    docker exec -i picfast-db pg_restore --clean --if-exists --no-owner -U picfast -d picfast
+
+# 完整恢复
+docker compose -f docker/docker-compose.yml run --rm app \
+    picfast maintenance restore /app/data/backups/full-20260728.tar.gz --apply --force</code></pre>
+
   <h2>归档格式与完整说明</h2>
   <p>
     Manifest 字段、<code>objects.jsonl</code> 与校验账本的职责、兼容性约定及更多实现细节见 PicFast 仓库文档：
