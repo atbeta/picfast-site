@@ -78,11 +78,11 @@ import DocsLayout from '../../../layouts/DocsLayout.astro';
   <pre><code>#!/bin/bash
 set -euo pipefail
 
-CONTAINER="$${1:-picfast-db}"
-BACKUP_DIR="$${2:-/opt/picfast/data/backups}"
-DB_USER="$${3:-picfast}"
-DB_NAME="$${4:-picfast}"
-RETENTION="$${5:-48}"
+CONTAINER="$&#123;1:-picfast-db&#125;"
+BACKUP_DIR="$&#123;2:-/opt/picfast/data/backups&#125;"
+DB_USER="$&#123;3:-picfast&#125;"
+DB_NAME="$&#123;4:-picfast&#125;"
+RETENTION="$&#123;5:-48&#125;"
 
 TIMESTAMP=$(date +%Y%m%d-%H%M)
 OUTPUT="$BACKUP_DIR/db-$TIMESTAMP.dump.gz"
@@ -104,9 +104,9 @@ ls -1t "$BACKUP_DIR"/db-*.dump.gz 2&gt;/dev/null \
   <pre><code>#!/bin/bash
 set -euo pipefail
 
-PROJECT_DIR="$${1:-/opt/picfast}"
-COMPOSE_FILE="$${2:-$PROJECT_DIR/docker/docker-compose.yml}"
-RETENTION="$${3:-7}"
+PROJECT_DIR="$&#123;1:-/opt/picfast&#125;"
+COMPOSE_FILE="$&#123;2:-$PROJECT_DIR/docker/docker-compose.yml&#125;"
+RETENTION="$&#123;3:-7&#125;"
 
 TIMESTAMP=$(date +%Y%m%d)
 OUTPUT="$PROJECT_DIR/data/backups/full-$TIMESTAMP.tar.gz"
