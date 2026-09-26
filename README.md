@@ -36,7 +36,7 @@ Homepage copy lives in `src/data/home.ts`; keep EN/ZH in sync — never update o
 
 ## Deploy
 
-Vercel, Cloudflare Pages, Netlify, or any static host.
+Cloudflare Workers (static assets) via `wrangler.jsonc` — build output in `dist/` is published as assets-only, no Worker script. Vercel, Netlify, or any static host also work.
 
 ```bash
 pnpm build
