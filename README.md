@@ -19,14 +19,20 @@ pnpm preview  # preview production build
 
 ```
 src/
-├── layouts/         # BaseLayout (homepage) + DocsLayout (docs)
+├── layouts/         # BaseLayout (site shell) + DocsLayout (docs)
+├── components/      # HomePage (shared bilingual homepage) + Icon (typed SVG set)
+├── data/            # home.ts — localized homepage copy (EN/ZH, same shape)
 ├── pages/
-│   ├── index.astro           # Homepage (EN)
-│   ├── zh/index.astro       # Homepage (ZH)
+│   ├── index.astro           # Homepage (EN) — thin wrapper → HomePage
+│   ├── zh/index.astro        # Homepage (ZH)
 │   └── docs/                # EN docs
 │   └── zh/docs/             # ZH docs
-└── public/                   # Static assets
+└── styles/                   # home.css (homepage styles)
+public/
+└── images/                   # Product screenshots from the PicFast web console (EN/ZH)
 ```
+
+Homepage copy lives in `src/data/home.ts`; keep EN/ZH in sync — never update only one locale.
 
 ## Deploy
 

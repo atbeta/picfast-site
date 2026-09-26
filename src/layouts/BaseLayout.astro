@@ -5,19 +5,42 @@ interface Props {
   lang?: string;
 }
 
+const currentPath = Astro.url.pathname;
+const locale = currentPath.startsWith('/zh') ? 'zh' : 'en';
+
 const {
   title,
   description = 'PicFast — Self-hosted image hosting app. Deploy in one command with Docker. Full admin panel, 6 storage backends, API-first with MCP AI integration and ShareX support.',
-  lang = 'en',
+  lang = locale === 'zh' ? 'zh-CN' : 'en',
 } = Astro.props;
-
-const currentPath = Astro.url.pathname;
-const locale = currentPath.startsWith('/zh') ? 'zh' : 'en';
-const switchLocale = locale === 'en' ? '/zh' : '/';
+const switchLocale = currentPath === '/zh'
+  ? '/'
+  : currentPath.startsWith('/zh/')
+    ? currentPath.slice(3) || '/'
+    : currentPath === '/'
+      ? '/zh'
+      : '/zh' + currentPath;
 const switchLocaleLabel = locale === 'en' ? '中文' : 'English';
 const homeLink = locale === 'en' ? '/' : '/zh';
 const docsLink = locale === 'en' ? '/docs/getting-started' : '/zh/docs/getting-started';
+const deploymentLink = locale === 'en' ? '/docs/deployment' : '/zh/docs/deployment';
 const upgradingLink = locale === 'en' ? '/docs/upgrading' : '/zh/docs/upgrading';
+const t = {
+  skip: locale === 'en' ? 'Skip to content' : '跳转到内容',
+  features: locale === 'en' ? 'Features' : '功能',
+  compare: locale === 'en' ? 'Compare' : '对比',
+  quickStart: locale === 'en' ? 'Quick Start' : '快速开始',
+  documentation: locale === 'en' ? 'Documentation' : '文档',
+  cta: locale === 'en' ? 'Get Started' : '开始使用',
+  demo: locale === 'en' ? 'Live Demo' : '在线演示',
+  tagline: locale === 'en'
+    ? 'Self-hosted image hosting app. One command to deploy.'
+    : '自托管图床应用，一行命令即可部署。',
+  product: locale === 'en' ? 'Product' : '产品',
+  resources: locale === 'en' ? 'Resources' : '资源',
+  deployment: locale === 'en' ? 'Deployment' : '部署',
+  upgrading: locale === 'en' ? 'Upgrading' : '升级指南',
+};
 ---
 
 <!doctype html>
@@ -30,19 +53,23 @@ const upgradingLink = locale === 'en' ? '/docs/upgrading' : '/zh/docs/upgrading'
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
     <script is:inline>
       (function() {
-        var t = localStorage.getItem('picfast-theme');
-        if (t) document.documentElement.setAttribute('data-theme', t);
+        try {
+          var t = localStorage.getItem('picfast-theme');
+          if (t === 'dark' || t === 'light') document.documentElement.setAttribute('data-theme', t);
+        } catch (e) {}
       })();
     </script>
     <script is:inline>
       (function() {
-        if (localStorage.getItem('picfast-lang-override')) return;
+        var override = null;
+        try { override = localStorage.getItem('picfast-lang-override'); } catch (e) {}
+        if (override) return;
         var path = window.location.pathname;
-        var isZhPath = path === '/zh' || path.startsWith('/zh/');
-        var isBrowserZh = navigator.language && navigator.language.toLowerCase().startsWith('zh');
+        var isZhPath = path === '/zh' || path.indexOf('/zh/') === 0;
+        var isBrowserZh = navigator.language && navigator.language.toLowerCase().indexOf('zh') === 0;
         if (isBrowserZh && !isZhPath) {
           window.location.replace('/zh' + (path === '/' ? '' : path) + window.location.search + window.location.hash);
         }
@@ -50,6 +77,7 @@ const upgradingLink = locale === 'en' ? '/docs/upgrading' : '/zh/docs/upgrading'
     </script>
   </head>
   <body>
+    <a href="#main-content" class="skip-link">{t.skip}</a>
     <header class="site-header">
       <div class="header-inner">
         <a href={homeLink} class="logo">
@@ -60,7 +88,12 @@ const upgradingLink = locale === 'en' ? '/docs/upgrading' : '/zh/docs/upgrading'
           </svg>
           <span class="logo-text">PicFast</span>
         </a>
-        <nav class="nav-links">
+        <nav class="nav-center" aria-label={locale === 'en' ? 'Primary' : '主导航'}>
+          <a href={`${homeLink}#features`} class="nav-link">{t.features}</a>
+          <a href={`${homeLink}#comparison`} class="nav-link">{t.compare}</a>
+          <a href={docsLink} class="nav-link">{t.documentation}</a>
+        </nav>
+        <div class="nav-links">
           <a href="https://github.com/atbeta/picfast" class="nav-link nav-icon-link" target="_blank" rel="noopener" title="GitHub" aria-label="GitHub">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
               <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
@@ -81,40 +114,44 @@ const upgradingLink = locale === 'en' ? '/docs/upgrading' : '/zh/docs/upgrading'
               <path d="M2 12h20M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/>
             </svg>
           </a>
-        </nav>
+          <a href={docsLink} class="btn btn-primary header-cta">{t.cta}</a>
+        </div>
       </div>
     </header>
 
-    <main>
+    <main id="main-content">
       <slot />
     </main>
 
     <footer class="site-footer">
       <div class="footer-inner">
-        <div class="footer-brand">
-          <a href={homeLink} class="logo">
-            <svg width="20" height="20" viewBox="0 0 28 28" fill="none">
-              <rect width="28" height="28" rx="6" fill="var(--accent)"/>
-              <path d="M7 14L11.5 18.5L17 10L21 16L24 13" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-              <circle cx="8" cy="10" r="2" fill="white"/>
-            </svg>
-            <span>PicFast</span>
-          </a>
-          <p class="footer-tagline">
-            {locale === 'en'
-              ? 'Self-hosted image hosting app. One command to deploy.'
-              : '自托管图床应用，一行命令即可部署。'}
-          </p>
-        </div>
-        <div class="footer-links">
-          <a href={docsLink}>
-            {locale === 'en' ? 'Documentation' : '文档'}
-          </a>
-          <a href={upgradingLink}>
-            {locale === 'en' ? 'Upgrading' : '升级指南'}
-          </a>
-          <a href="https://github.com/atbeta/picfast" target="_blank" rel="noopener">GitHub</a>
-          <a href={switchLocale} class="lang-switch-btn">{switchLocaleLabel}</a>
+        <div class="footer-top">
+          <div class="footer-brand">
+            <a href={homeLink} class="logo">
+              <svg width="20" height="20" viewBox="0 0 28 28" fill="none">
+                <rect width="28" height="28" rx="6" fill="var(--accent)"/>
+                <path d="M7 14L11.5 18.5L17 10L21 16L24 13" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <circle cx="8" cy="10" r="2" fill="white"/>
+              </svg>
+              <span>PicFast</span>
+            </a>
+            <p class="footer-tagline">{t.tagline}</p>
+          </div>
+          <div class="footer-groups">
+            <div class="footer-group">
+              <p class="footer-heading">{t.product}</p>
+              <a href={`${homeLink}#features`}>{t.features}</a>
+              <a href="https://demo.picfast.dev" target="_blank" rel="noopener">{t.demo}</a>
+              <a href="https://github.com/atbeta/picfast" target="_blank" rel="noopener">GitHub</a>
+            </div>
+            <div class="footer-group">
+              <p class="footer-heading">{t.resources}</p>
+              <a href={docsLink}>{t.documentation}</a>
+              <a href={deploymentLink}>{t.deployment}</a>
+              <a href={upgradingLink}>{t.upgrading}</a>
+              <a href={switchLocale} class="lang-switch-btn">{switchLocaleLabel}</a>
+            </div>
+          </div>
         </div>
         <p class="footer-copy">
           GNU GPL v3 · {new Date().getFullYear()}
@@ -128,7 +165,8 @@ const upgradingLink = locale === 'en' ? '/docs/upgrading' : '/zh/docs/upgrading'
         var html = document.documentElement;
 
         function effectiveTheme() {
-          var stored = localStorage.getItem('picfast-theme');
+          var stored = null;
+          try { stored = localStorage.getItem('picfast-theme'); } catch (e) {}
           if (stored === 'dark' || stored === 'light') return stored;
           return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
         }
@@ -136,7 +174,7 @@ const upgradingLink = locale === 'en' ? '/docs/upgrading' : '/zh/docs/upgrading'
         btn.addEventListener('click', function() {
           var next = effectiveTheme() === 'dark' ? 'light' : 'dark';
           html.setAttribute('data-theme', next);
-          localStorage.setItem('picfast-theme', next);
+          try { localStorage.setItem('picfast-theme', next); } catch (e) {}
         });
       })();
     </script>
@@ -178,7 +216,7 @@ const upgradingLink = locale === 'en' ? '/docs/upgrading' : '/zh/docs/upgrading'
       (function() {
         document.querySelectorAll('.lang-switch-btn').forEach(function(btn) {
           btn.addEventListener('click', function() {
-            localStorage.setItem('picfast-lang-override', '1');
+            try { localStorage.setItem('picfast-lang-override', '1'); } catch (e) {}
           });
         });
       })();
@@ -287,6 +325,21 @@ const upgradingLink = locale === 'en' ? '/docs/upgrading' : '/zh/docs/upgrading'
     color: var(--accent-hover);
   }
 
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+    *, *::before, *::after {
+      transition-duration: 0.01ms !important;
+      animation-duration: 0.01ms !important;
+    }
+  }
+
   img {
     max-width: 100%;
   }
@@ -390,6 +443,7 @@ const upgradingLink = locale === 'en' ? '/docs/upgrading' : '/zh/docs/upgrading'
     border: 1px solid var(--border);
     border-radius: var(--radius);
     overflow: hidden;
+    min-width: 0;
   }
 
   .code-block-wrapper pre {
@@ -433,6 +487,24 @@ const upgradingLink = locale === 'en' ? '/docs/upgrading' : '/zh/docs/upgrading'
 </style>
 
 <style>
+  .skip-link {
+    position: absolute;
+    top: -48px;
+    left: 1rem;
+    z-index: 200;
+    padding: 0.5rem 1rem;
+    background: var(--accent);
+    color: #fff;
+    border-radius: var(--radius-sm);
+    font-size: 0.875rem;
+    font-weight: 600;
+    transition: top 0.2s;
+  }
+  .skip-link:focus-visible {
+    top: 0.5rem;
+    color: #fff;
+  }
+
   .site-header {
     position: sticky;
     top: 0;
@@ -457,10 +529,11 @@ const upgradingLink = locale === 'en' ? '/docs/upgrading' : '/zh/docs/upgrading'
     max-width: 1200px;
     margin: 0 auto;
     padding: 0 2rem;
-    height: 56px;
+    height: 60px;
     display: flex;
     align-items: center;
     justify-content: space-between;
+    gap: 1.5rem;
   }
 
   .logo {
@@ -471,15 +544,46 @@ const upgradingLink = locale === 'en' ? '/docs/upgrading' : '/zh/docs/upgrading'
     font-weight: 700;
     font-size: 1.0625rem;
     letter-spacing: -0.02em;
+    flex-shrink: 0;
   }
   .logo:hover {
     color: var(--text);
+  }
+
+  .nav-center {
+    display: flex;
+    align-items: center;
+    gap: 0.125rem;
+    margin-inline: auto;
   }
 
   .nav-links {
     display: flex;
     align-items: center;
     gap: 0.125rem;
+    flex-shrink: 0;
+  }
+
+  .header-cta {
+    margin-left: 0.625rem;
+    padding: 0.4375rem 1rem;
+    font-size: 0.8125rem;
+    min-height: 34px;
+  }
+
+  @media (max-width: 720px) {
+    .nav-center {
+      display: none;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .header-inner {
+      padding: 0 1rem;
+    }
+    .header-cta {
+      display: none;
+    }
   }
 
   .nav-link {
@@ -559,10 +663,17 @@ const upgradingLink = locale === 'en' ? '/docs/upgrading' : '/zh/docs/upgrading'
   .footer-inner {
     max-width: 1200px;
     margin: 0 auto;
-    padding: 2rem 2rem;
+    padding: 2.5rem 2rem 2rem;
     display: flex;
     flex-direction: column;
-    gap: 0.75rem;
+    gap: 2rem;
+  }
+
+  .footer-top {
+    display: flex;
+    justify-content: space-between;
+    gap: 3rem;
+    flex-wrap: wrap;
   }
 
   .footer-brand .logo {
@@ -572,22 +683,44 @@ const upgradingLink = locale === 'en' ? '/docs/upgrading' : '/zh/docs/upgrading'
   .footer-tagline {
     color: var(--text-muted);
     font-size: 0.8125rem;
-    margin-top: 0.25rem;
+    margin-top: 0.5rem;
+    max-width: 260px;
   }
 
-  .footer-links {
+  .footer-groups {
     display: flex;
-    gap: 1.25rem;
+    gap: 4rem;
     flex-wrap: wrap;
   }
 
-  .footer-links a {
+  .footer-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .footer-heading {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-dim);
+    margin-bottom: 0.25rem;
+  }
+
+  .footer-group a {
     color: var(--text-muted);
     font-size: 0.8125rem;
+    width: fit-content;
+  }
+  .footer-group a:hover {
+    color: var(--text);
   }
 
   .footer-copy {
     color: var(--text-dim);
     font-size: 0.75rem;
+    border-top: 1px solid var(--border);
+    padding-top: 1.25rem;
   }
 </style>

@@ -1,0 +1,176 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Icon from './Icon.astro';
+import { homeContent, REPO_URL, DEMO_URL, type Locale } from '../data/home';
+import '../styles/home.css';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const c = homeContent[locale];
+const docs = locale === 'zh' ? '/zh/docs' : '/docs';
+
+const terminalHtml = c.hero.terminalCode
+  .split('\n')
+  .map((line) => (line.startsWith('$ ') ? `<span class="prompt">$</span>${line.slice(1)}` : line))
+  .join('\n');
+---
+
+<BaseLayout title={c.meta.title} description={c.meta.description} lang={locale === 'zh' ? 'zh' : 'en'}>
+  <div class="home">
+    <section class="hero">
+      <div class="container">
+        <div class="hero-badge">
+          <Icon name="check" size={14} />
+          {c.hero.badge}
+        </div>
+        <h1>{c.hero.titleA}<br />{c.hero.titleB}</h1>
+        <p class="hero-sub" set:html={c.hero.sub} />
+        <div class="hero-code">
+          <div class="code-label">
+            <span class="dot red"></span>
+            <span class="dot yellow"></span>
+            <span class="dot green"></span>
+            <span class="code-filename">{c.hero.terminalTitle}</span>
+            <button type="button" class="hero-copy" data-copy-label={c.hero.copyLabel} data-copied-label={c.hero.copiedLabel} aria-label={c.hero.copyLabel}>
+              <Icon name="copy" size={14} />
+            </button>
+          </div>
+          <pre><code set:html={terminalHtml} /></pre>
+        </div>
+        <div class="hero-actions">
+          <a href={`${docs}/getting-started`} class="btn btn-primary">{c.hero.primaryCta}</a>
+          <a href={REPO_URL} class="btn btn-secondary" target="_blank" rel="noopener">
+            <Icon name="github" size={16} />
+            {c.hero.githubCta}
+          </a>
+          <a href={DEMO_URL} class="btn btn-secondary" target="_blank" rel="noopener">
+            <Icon name="external" size={15} />
+            {c.hero.demoCta}
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <section class="showcase">
+      <div class="container">
+        <div class="section-head">
+          <h2 class="section-title">{c.showcase.heading}</h2>
+          <p class="section-sub" set:html={c.showcase.sub} />
+        </div>
+        <figure class="shot-frame">
+          <div class="shot-bar" aria-hidden="true">
+            <span class="dot red"></span>
+            <span class="dot yellow"></span>
+            <span class="dot green"></span>
+            <span class="shot-url">{c.showcase.url}</span>
+          </div>
+          <a href={c.showcase.shot.src} target="_blank" rel="noopener" aria-label={c.showcase.shot.caption}>
+            <img
+              src={c.showcase.shot.src}
+              width={c.showcase.shot.width}
+              height={c.showcase.shot.height}
+              alt={c.showcase.shot.alt}
+              loading="lazy"
+              decoding="async"
+            />
+          </a>
+        </figure>
+        <p class="shot-caption">{c.showcase.shot.caption}</p>
+      </div>
+    </section>
+
+    <section id="features" class="features">
+      <div class="container">
+        <div class="section-head">
+          <h2 class="section-title">{c.features.heading}</h2>
+          <p class="section-sub">{c.features.sub}</p>
+        </div>
+        <div class="features-grid">
+          {c.features.items.map((f) => (
+            <div class="feature-card">
+              <div class="feature-icon">
+                <Icon name={f.icon} size={22} />
+              </div>
+              <h3 set:html={f.title} />
+              <p set:html={f.body} />
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section id="comparison" class="comparison">
+      <div class="container">
+        <div class="section-head">
+          <h2 class="section-title">{c.comparison.heading}</h2>
+        </div>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                {c.comparison.headers.map((h) => <th>{h}</th>)}
+              </tr>
+            </thead>
+            <tbody>
+              {c.comparison.rows.map((row) => (
+                <tr>
+                  {row.map((cell, i) => (
+                    <td>{i === row.length - 1 ? <strong>{cell}</strong> : cell}</td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section id="quick-start" class="quick-start">
+      <div class="container">
+        <div class="section-head">
+          <h2 class="section-title">{c.quickStart.heading}</h2>
+        </div>
+        <div class="quick-start-grid">
+          {c.quickStart.steps.map((s) => (
+            <div class="qs-step">
+              <div class="qs-num">{s.num}</div>
+              <h3>{s.title}</h3>
+              <p set:html={s.body} />
+              {s.code && (
+                <pre class="qs-code"><code>{s.code}</code></pre>
+              )}
+            </div>
+          ))}
+        </div>
+        <p class="qs-cta">
+          <a href={`${docs}/getting-started`} class="btn btn-primary">
+            {c.quickStart.cta}
+            <Icon name="arrow" size={16} />
+          </a>
+        </p>
+      </div>
+    </section>
+  </div>
+</BaseLayout>
+
+<script is:inline>
+  (function() {
+    document.querySelectorAll('.hero-copy').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        var code = btn.closest('.hero-code');
+        var pre = code && code.querySelector('pre');
+        if (!pre) return;
+        var done = function() {
+          btn.classList.add('copied');
+          setTimeout(function() { btn.classList.remove('copied'); }, 2000);
+        };
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(pre.textContent || '').then(done, function() {});
+        }
+      });
+    });
+  })();
+</script>
