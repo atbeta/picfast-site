@@ -12,6 +12,7 @@ import DocsLayout from '../../layouts/DocsLayout.astro';
   base_url: "http://localhost:8080"
   web_dir: ""
   pprof_enabled: false
+  metrics_addr: "127.0.0.1:9190"
 
 database:
   url: "postgres://picfast:picfast@localhost:5432/picfast?sslmode=disable"
@@ -46,6 +47,7 @@ app:
   skip_image_processing: false
   require_email_verification: true
   audit_upload_logs: true
+  audit_log_retention_days: 180
   image_key_min_length: 4
   show_powered_by: true
   show_login_link: true
@@ -87,6 +89,7 @@ app:
       <tr><td><code>base_url</code></td><td><code>PICFAST_SERVER_BASE_URL</code></td><td>string</td><td>http://localhost:8080</td><td>Public URL of the service. Must be set for email verification links and ShareX config to work correctly.</td></tr>
       <tr><td><code>web_dir</code></td><td><code>PICFAST_SERVER_WEB_DIR</code></td><td>string</td><td>""</td><td>Path to frontend dist (optional; auto-detects <code>web-dist/</code> and <code>web/dist/</code>)</td></tr>
       <tr><td><code>pprof_enabled</code></td><td><code>PICFAST_SERVER_PPROF_ENABLED</code></td><td>bool</td><td>false</td><td>Enable Go pprof endpoints at <code>/api/v1/admin/debug/pprof/*</code> (admin only)</td></tr>
+      <tr><td><code>metrics_addr</code></td><td><code>PICFAST_SERVER_METRICS_ADDR</code></td><td>string</td><td>127.0.0.1:9190</td><td>Listen address for the Prometheus <code>/metrics</code> endpoint. Bind to loopback or keep it on the internal Docker network — do not expose it publicly.</td></tr>
     </tbody>
   </table>
 
@@ -127,6 +130,7 @@ app:
       <tr><td><code>max_upload_bytes</code></td><td><code>PICFAST_APP_MAX_UPLOAD_BYTES</code></td><td>int64</td><td>52428800</td><td>Default per-file upload limit in bytes (50 MB). Group-level limits can override this.</td></tr>
       <tr><td><code>require_email_verification</code></td><td><code>PICFAST_APP_REQUIRE_EMAIL_VERIFICATION</code></td><td>bool</td><td>false</td><td>Require email verification before login. Only takes effect when SMTP is configured and reachable.</td></tr>
       <tr><td><code>audit_upload_logs</code></td><td><code>PICFAST_APP_AUDIT_UPLOAD_LOGS</code></td><td>bool</td><td>true</td><td>Log all uploads, tag changes, webhook and user lifecycle events to the audit log table</td></tr>
+      <tr><td><code>audit_log_retention_days</code></td><td><code>PICFAST_APP_AUDIT_LOG_RETENTION_DAYS</code></td><td>int</td><td>180</td><td>Days to keep audit log entries before the hourly cleanup job deletes them. <code>0</code> keeps them forever.</td></tr>
       <tr><td><code>image_key_min_length</code></td><td><code>PICFAST_APP_IMAGE_KEY_MIN_LENGTH</code></td><td>int</td><td>4</td><td>Minimum length for generated image keys (range 4-10). Raise to avoid sequential-looking short URLs.</td></tr>
       <tr><td><code>show_powered_by</code></td><td><code>PICFAST_APP_SHOW_POWERED_BY</code></td><td>bool</td><td>true</td><td>Show "Powered by PicFast" footer line. Set to <code>false</code> for white-label internal deployments.</td></tr>
       <tr><td><code>show_login_link</code></td><td><code>PICFAST_APP_SHOW_LOGIN_LINK</code></td><td>bool</td><td>true</td><td>Show Login button in the public header. Set to <code>false</code> for internal deployments (<code>/login</code> stays reachable directly).</td></tr>

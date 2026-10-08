@@ -67,6 +67,7 @@ if (!verifySignature(secret, ts, JSON.stringify(req.body), sig)) {
     </tbody>
   </table>
   <p>6 次失败后，投递标记为死信。可以在 webhook 详情页手动重放任何失败的投递。</p>
+  <p>处于终态（<code>delivered</code> / <code>dead</code>）的投递记录保留 90 天，之后由每小时清理任务删除。</p>
 
   <h2>请求头</h2>
   <table>

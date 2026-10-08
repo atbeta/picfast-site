@@ -12,6 +12,7 @@ import DocsLayout from '../../../layouts/DocsLayout.astro';
   base_url: "http://localhost:8080"
   web_dir: ""
   pprof_enabled: false
+  metrics_addr: "127.0.0.1:9190"
 
 database:
   url: "postgres://picfast:picfast@localhost:5432/picfast?sslmode=disable"
@@ -46,6 +47,7 @@ app:
   skip_image_processing: false
   require_email_verification: true
   audit_upload_logs: true
+  audit_log_retention_days: 180
   image_key_min_length: 4
   show_powered_by: true
   show_login_link: true
@@ -87,6 +89,7 @@ app:
       <tr><td><code>base_url</code></td><td><code>PICFAST_SERVER_BASE_URL</code></td><td>string</td><td>http://localhost:8080</td><td>服务公开访问地址。验证邮件链接和 ShareX 配置依赖此值，必须设为实际访问域名。</td></tr>
       <tr><td><code>web_dir</code></td><td><code>PICFAST_SERVER_WEB_DIR</code></td><td>string</td><td>""</td><td>前端静态文件目录（可选；自动检测 <code>web-dist/</code> 和 <code>web/dist/</code>）</td></tr>
       <tr><td><code>pprof_enabled</code></td><td><code>PICFAST_SERVER_PPROF_ENABLED</code></td><td>bool</td><td>false</td><td>开启 Go pprof 端点（<code>/api/v1/admin/debug/pprof/*</code>，仅管理员可用）</td></tr>
+      <tr><td><code>metrics_addr</code></td><td><code>PICFAST_SERVER_METRICS_ADDR</code></td><td>string</td><td>127.0.0.1:9190</td><td>Prometheus <code>/metrics</code> 端点的监听地址。请绑定到回环地址或保持在内部 Docker 网络，不要对外暴露。</td></tr>
     </tbody>
   </table>
 
@@ -127,6 +130,7 @@ app:
       <tr><td><code>max_upload_bytes</code></td><td><code>PICFAST_APP_MAX_UPLOAD_BYTES</code></td><td>int64</td><td>52428800</td><td>默认单文件上传限制（50 MB），分组级别的限制可覆盖此值</td></tr>
       <tr><td><code>require_email_verification</code></td><td><code>PICFAST_APP_REQUIRE_EMAIL_VERIFICATION</code></td><td>bool</td><td>false</td><td>登录前必须验证邮箱。仅在 SMTP 配置正确且可达时生效。</td></tr>
       <tr><td><code>audit_upload_logs</code></td><td><code>PICFAST_APP_AUDIT_UPLOAD_LOGS</code></td><td>bool</td><td>true</td><td>记录所有上传、标签变更、Webhook 和用户生命周期事件到审计日志</td></tr>
+      <tr><td><code>audit_log_retention_days</code></td><td><code>PICFAST_APP_AUDIT_LOG_RETENTION_DAYS</code></td><td>int</td><td>180</td><td>审计日志保留天数，到期由每小时清理任务删除。<code>0</code> 表示永不删除。</td></tr>
       <tr><td><code>image_key_min_length</code></td><td><code>PICFAST_APP_IMAGE_KEY_MIN_LENGTH</code></td><td>int</td><td>4</td><td>生成图片 key 的最小长度（范围 4-10）。调大可以避免短 URL 看起来像自增 ID。</td></tr>
       <tr><td><code>show_powered_by</code></td><td><code>PICFAST_APP_SHOW_POWERED_BY</code></td><td>bool</td><td>true</td><td>页脚显示「Powered by PicFast」。内网/白标部署时设为 <code>false</code> 可隐藏。</td></tr>
       <tr><td><code>show_login_link</code></td><td><code>PICFAST_APP_SHOW_LOGIN_LINK</code></td><td>bool</td><td>true</td><td>公共页头显示「登录」按钮。内网部署时设为 <code>false</code> 可隐藏（<code>/login</code> 仍可直接访问）。</td></tr>

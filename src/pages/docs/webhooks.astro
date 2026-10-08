@@ -67,6 +67,7 @@ if (!verifySignature(secret, ts, JSON.stringify(req.body), sig)) {
     </tbody>
   </table>
   <p>After 6 failed attempts, the delivery is marked as dead. You can manually replay any failed delivery from the webhook detail page.</p>
+  <p>Delivery records in a terminal state (<code>delivered</code> / <code>dead</code>) are kept for 90 days, then deleted by the hourly cleanup job.</p>
 
   <h2>Request Headers</h2>
   <table>
