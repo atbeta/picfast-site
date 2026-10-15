@@ -122,6 +122,37 @@ PICFAST_STORAGE_THUMBNAIL_DIR=./data/thumbnails</code></pre>
 docker compose up -d</code></pre>
   <p>Migrations run automatically on startup.</p>
 
+  <h2>Serverless &amp; container PaaS</h2>
+  <p>Managed platforms such as Render, Fly.io, Railway, Koyeb and Zeabur give you a single container, an ephemeral filesystem and no host access. Since 0.26 PicFast ships a <strong>slim image</strong> built for them — pure Go, no libvips, about 13 MB compressed, and much faster cold starts. Three things are required before the first upload:</p>
+  <ul>
+    <li><strong>External PostgreSQL</strong> — the platform runs only the app, so use a managed database (Render Postgres, Neon, Supabase, RDS…). Through a transaction pooler (Supabase <code>:6543</code>, Neon <code>-pooler</code>) append <code>default_query_exec_mode=exec</code> to the connection string, and run migrations over the direct connection string.</li>
+    <li><strong>S3-compatible object storage</strong> — instance disks are ephemeral, and no platform lets several instances share one volume, so uploads kept on the default local storage disappear on redeploy. Cloudflare R2, S3, OSS, COS, TOS, OBS, Kodo and MinIO all work.</li>
+    <li><strong>An external job trigger</strong> — with <code>PICFAST_JOBS_EMBEDDED=false</code>, drive webhook delivery and cleanup from outside the app: <code>POST /internal/jobs/run</code> with <code>Authorization: Bearer $PICFAST_JOBS_TOKEN</code>, or <code>picfast jobs run</code> on a schedule.</li>
+  </ul>
+
+  <h3>Platform notes</h3>
+  <p>Any of these platforms can run the prebuilt slim image directly as a web service:</p>
+  <table>
+    <thead><tr><th>Platform</th><th>Image</th><th>Port</th><th>Scheduled jobs</th><th>Scale to zero</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Render</strong></td><td>prebuilt image</td><td><code>PORT</code>, default <code>10000</code></td><td>Cron Jobs service</td><td>Free plan only</td></tr>
+      <tr><td>Fly.io</td><td><code>[build] image</code> in <code>fly.toml</code></td><td><code>internal_port</code>, default <code>8080</code></td><td><code>fly machine run --schedule</code> (hourly at the finest)</td><td>yes</td></tr>
+      <tr><td>Railway</td><td>Docker Image service</td><td><code>PORT</code> injected</td><td>per-service cron, min. 5 minutes</td><td>yes</td></tr>
+      <tr><td>Koyeb</td><td>Docker service</td><td><code>PORT</code> = lowest exposed port</td><td>not documented — external scheduler</td><td>yes (preview)</td></tr>
+      <tr><td>Zeabur</td><td>Docker Images service</td><td>declare the port yourself</td><td>not documented — external scheduler</td><td>no</td></tr>
+    </tbody>
+  </table>
+  <p>Step-by-step commands, probe paths, release hooks and cron recipes for every platform: <a href="https://github.com/atbeta/picfast/blob/main/docs/serverless.md" target="_blank" rel="noopener">docs/serverless.md</a> (Chinese).</p>
+
+  <h3>Slim image limitations</h3>
+  <ul>
+    <li>No WebP output and no text watermark (the console hides options the server cannot apply).</li>
+    <li>No <code>pg_dump</code>, so the maintenance backup/restore in the console is unavailable — use the full image or dump the database externally.</li>
+    <li>Re-encoded images do not keep EXIF metadata, and WebP sources cannot be resized on the fly (<code>@w_</code>/<code>@q_</code> on a <code>.webp</code> returns the original).</li>
+    <li>The image is distroless and has no shell, so release hooks must exec the binary directly (<code>migrate</code>, <code>jobs run</code>) instead of wrapping them in <code>sh -c</code>.</li>
+  </ul>
+  <p>Slim decodes with Go's standard library, so a single decode holds the whole bitmap in memory (roughly <code>3 × width × height × 4</code> bytes, with a 64-megapixel cap). Give the instance at least 1 GB when image processing is on, or disable processing / lower <code>PICFAST_APP_MAX_UPLOAD_BYTES</code> on 256–512 MB instances.</p>
+
   <h2>Home network &amp; NAS</h2>
   <p>For Synology, QNAP, TrueNAS, Unraid, or Raspberry Pi — with Cloudflare/Tailscale/FRP tunnels — see <a href="/docs/home-network">Home Network &amp; NAS</a>.</p>
 </DocsLayout>

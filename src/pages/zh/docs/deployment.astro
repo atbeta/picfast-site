@@ -122,6 +122,37 @@ PICFAST_STORAGE_THUMBNAIL_DIR=./data/thumbnails</code></pre>
 docker compose up -d</code></pre>
   <p>数据库迁移在启动时自动执行。</p>
 
+  <h2>Serverless 与容器 PaaS</h2>
+  <p>Render、Fly.io、Railway、Koyeb、Zeabur 这类托管平台只给你一个容器、一块临时磁盘，也没有宿主机权限。0.26 起 PicFast 提供专为它们准备的 <strong>slim 镜像</strong>——纯 Go 构建、不含 libvips、压缩后约 13 MB，冷启动明显更快。第一次上传之前需要先准备好三件事：</p>
+  <ul>
+    <li><strong>外部 PostgreSQL</strong> —— 平台只跑应用本身，数据库请用托管服务（Render Postgres、Neon、Supabase、RDS 等）。使用事务模式连接池（Supabase <code>:6543</code>、Neon <code>-pooler</code>）时在连接串追加 <code>default_query_exec_mode=exec</code>，迁移则改用直连连接串。</li>
+    <li><strong>S3 兼容对象存储</strong> —— 实例磁盘是临时的，而且没有平台允许把同一块卷共享给多个实例；留在默认本地存储里的上传文件会在重新部署后消失。Cloudflare R2、S3、OSS、COS、TOS、OBS、Kodo、MinIO 均可。</li>
+    <li><strong>外部定时触发</strong> —— 设 <code>PICFAST_JOBS_EMBEDDED=false</code> 后，webhook 投递与每小时清理改由外部驱动：带 <code>Authorization: Bearer $PICFAST_JOBS_TOKEN</code> 的 <code>POST /internal/jobs/run</code>，或按计划执行 <code>picfast jobs run</code>。</li>
+  </ul>
+
+  <h3>各平台要点</h3>
+  <p>下面这些平台都可以直接用预构建的 slim 镜像跑 Web 服务：</p>
+  <table>
+    <thead><tr><th>平台</th><th>镜像</th><th>端口</th><th>定时任务</th><th>缩容到零</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Render</strong></td><td>预构建镜像</td><td>注入 <code>PORT</code>，默认 <code>10000</code></td><td>Cron Jobs 服务</td><td>仅 Free 档</td></tr>
+      <tr><td>Fly.io</td><td><code>fly.toml</code> 的 <code>[build] image</code></td><td><code>internal_port</code>，默认 <code>8080</code></td><td><code>fly machine run --schedule</code>（最短每小时）</td><td>支持</td></tr>
+      <tr><td>Railway</td><td>Docker Image 服务</td><td>注入 <code>PORT</code></td><td>服务级 cron，最短 5 分钟</td><td>支持</td></tr>
+      <tr><td>Koyeb</td><td>Docker 服务</td><td><code>PORT</code> = 暴露的最小端口</td><td>文档中没有，需外部调度</td><td>支持（预览）</td></tr>
+      <tr><td>Zeabur</td><td>Docker Images 服务</td><td>端口自行声明</td><td>文档中没有，需外部调度</td><td>不支持</td></tr>
+    </tbody>
+  </table>
+  <p>逐平台的命令、探针路径、发布钩子与 cron 写法见 <a href="https://github.com/atbeta/picfast/blob/main/docs/serverless.md" target="_blank" rel="noopener">docs/serverless.md</a>。</p>
+
+  <h3>slim 镜像的能力限制</h3>
+  <ul>
+    <li>不支持 WebP 输出与文字水印（控制台会自动隐藏服务端无法应用的选项）。</li>
+    <li>不含 <code>pg_dump</code>，控制台里的维护备份/恢复不可用——需要时改用完整镜像，或在外部导出数据库。</li>
+    <li>重新编码不保留 EXIF 元数据；也无法对 WebP 源图做动态缩放（<code>.webp</code> 的 <code>@w_</code>/<code>@q_</code> 变体返回原图）。</li>
+    <li>镜像基于 distroless、没有 shell，发布钩子必须直接 exec 二进制（<code>migrate</code>、<code>jobs run</code>），不能包在 <code>sh -c</code> 里。</li>
+  </ul>
+  <p>slim 使用 Go 标准库解码图片，单次解码会把整张位图放进内存（峰值约为 <code>3 × 宽 × 高 × 4</code> 字节，解码像素上限 6400 万）。开启图片处理时请给实例至少 1 GB 内存；只有 256–512 MB 的实例建议关闭图片处理或下调 <code>PICFAST_APP_MAX_UPLOAD_BYTES</code>。</p>
+
   <h2>家庭网络 &amp; NAS</h2>
   <p>如需在 Synology、QNAP、TrueNAS、Unraid 或树莓派上部署，并通过 Cloudflare/Tailscale/FRP 隧道暴露到公网，见 <a href="/zh/docs/home-network">家庭网络 &amp; NAS</a>。</p>
 </DocsLayout>
