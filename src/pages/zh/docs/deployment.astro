@@ -130,6 +130,11 @@ docker compose up -d</code></pre>
     <li><strong>外部定时触发</strong> —— 设 <code>PICFAST_JOBS_EMBEDDED=false</code> 后，webhook 投递与每小时清理改由外部驱动：带 <code>Authorization: Bearer $PICFAST_JOBS_TOKEN</code> 的 <code>POST /internal/jobs/run</code>，或按计划执行 <code>picfast jobs run</code>。</li>
   </ul>
 
+  <h3>在 Render 上一键部署（Free 档，不需要绑卡）</h3>
+  <p><a href="https://render.com/deploy?repo=https://github.com/atbeta/picfast" target="_blank" rel="noopener"><img src="https://render.com/images/deploy-to-render-button.svg" alt="Deploy to Render" height="44" /></a></p>
+  <p>按钮会读取仓库根目录的 <a href="https://github.com/atbeta/picfast/blob/main/render.yaml" target="_blank" rel="noopener"><code>render.yaml</code></a>，创建一个 <strong>Free 档 Web 服务</strong>，直接运行预构建的 slim 镜像——不重新构建、不需要镜像仓库，也<strong>不需要绑银行卡</strong>。创建过程中只需要填一样东西：一个托管 PostgreSQL 连接串（<a href="https://neon.com" target="_blank" rel="noopener">Neon</a> 永久免费且不需要绑卡）。部署完成后打开站点完成初始化向导，把<strong>站点设置 → 站点地址</strong>改成分配到的域名，再到<strong>存储策略</strong>里添加 S3 兼容存储——Backblaze B2、Tigris、Neon Object Storage 都不需要绑卡。</p>
+  <p>Free 档的取舍：0.1 CPU / 512 MB 内存；15 分钟无入站流量后休眠，再访问约 1 分钟启动；每月 750 实例小时；休眠期间后台任务暂停。slim 用纯 Go 解码图片，因此模板已把单文件上传上限降到 10 MiB。需要准点投递的定时任务、更大内存或托管数据库时，升级到付费档。</p>
+
   <h3>各平台要点</h3>
   <p>下面这些平台都可以直接用预构建的 slim 镜像跑 Web 服务：</p>
   <table>

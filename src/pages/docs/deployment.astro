@@ -130,6 +130,11 @@ docker compose up -d</code></pre>
     <li><strong>An external job trigger</strong> — with <code>PICFAST_JOBS_EMBEDDED=false</code>, drive webhook delivery and cleanup from outside the app: <code>POST /internal/jobs/run</code> with <code>Authorization: Bearer $PICFAST_JOBS_TOKEN</code>, or <code>picfast jobs run</code> on a schedule.</li>
   </ul>
 
+  <h3>One-click deploy on Render (Free instance)</h3>
+  <p><a href="https://render.com/deploy?repo=https://github.com/atbeta/picfast" target="_blank" rel="noopener"><img src="https://render.com/images/deploy-to-render-button.svg" alt="Deploy to Render" height="44" /></a></p>
+  <p>The button reads <a href="https://github.com/atbeta/picfast/blob/main/render.yaml" target="_blank" rel="noopener"><code>render.yaml</code></a> and creates a single <strong>Free web service</strong> running the prebuilt slim image — no build, no registry, and no credit card. Render asks for one thing while creating it: a managed PostgreSQL connection string (<a href="https://neon.com" target="_blank" rel="noopener">Neon</a> is free forever and needs no card). After it deploys, open the site to complete the setup wizard, set <strong>Settings → Site URL</strong> to the assigned domain, and add an S3-compatible strategy under <strong>Storage Strategies</strong> — Backblaze B2, Tigris and Neon Object Storage all work without a card.</p>
+  <p>Free-instance trade-offs: 0.1 CPU / 512 MB RAM, spins down after 15 minutes without inbound traffic (about a minute to come back), 750 instance hours per month, and background jobs pause while it is spun down. The blueprint lowers the per-file upload cap to 10 MiB, since the slim image decodes in pure Go. Upgrade to a paid plan when you need scheduled jobs, more memory, or a managed database.</p>
+
   <h3>Platform notes</h3>
   <p>Any of these platforms can run the prebuilt slim image directly as a web service:</p>
   <table>
